@@ -1,0 +1,44 @@
+{
+  "name": "RichiestaAiuto",
+  "type": "object",
+  "properties": {
+    "squadra_id": {
+      "type": "string",
+      "description": "ID della squadra che chiede aiuto"
+    },
+    "squadra_nome": {
+      "type": "string",
+      "description": "Nome della squadra"
+    },
+    "tappa_numero": {
+      "type": "number",
+      "description": "Numero della tappa (1-10)"
+    },
+    "tappa_titolo": {
+      "type": "string",
+      "description": "Titolo della tappa"
+    },
+    "evento_id": {
+      "type": "string",
+      "description": "ID dell'evento"
+    },
+    "messaggio": {
+      "type": "string",
+      "description": "Messaggio opzionale della squadra"
+    },
+    "risolta": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se la richiesta \u00e8 stata gestita"
+    },
+    "risposta_admin": {
+      "type": "string",
+      "description": "Risposta dell'admin"
+    }
+  },
+  "required": [
+    "squadra_id",
+    "squadra_nome",
+    "tappa_numero"
+  ]
+}

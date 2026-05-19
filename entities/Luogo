@@ -1,0 +1,39 @@
+{
+  "name": "Luogo",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome del luogo (es. Kalsa)"
+    },
+    "nome_en": {
+      "type": "string",
+      "description": "Nome in inglese"
+    },
+    "citta": {
+      "type": "string",
+      "description": "Citt\u00e0 (es. Palermo)"
+    },
+    "descrizione": {
+      "type": "string",
+      "description": "Descrizione del quartiere/zona"
+    },
+    "descrizione_en": {
+      "type": "string",
+      "description": "Descrizione in inglese"
+    },
+    "immagine_url": {
+      "type": "string",
+      "description": "Immagine rappresentativa del luogo"
+    },
+    "attivo": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se il luogo \u00e8 disponibile per giocare"
+    }
+  },
+  "required": [
+    "nome",
+    "citta"
+  ]
+}

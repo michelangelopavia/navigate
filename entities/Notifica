@@ -1,0 +1,37 @@
+{
+  "name": "Notifica",
+  "type": "object",
+  "properties": {
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "tappa_superata",
+        "richiesta_aiuto",
+        "gioco_completato",
+        "nuova_iscrizione"
+      ],
+      "description": "Tipo di notifica"
+    },
+    "squadra_id": {
+      "type": "string"
+    },
+    "squadra_nome": {
+      "type": "string"
+    },
+    "evento_id": {
+      "type": "string"
+    },
+    "messaggio": {
+      "type": "string",
+      "description": "Testo della notifica"
+    },
+    "letta": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "tipo",
+    "messaggio"
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "name": "Squadra",
+  "type": "object",
+  "properties": {
+    "nome_squadra": {
+      "type": "string",
+      "description": "Nome della squadra"
+    },
+    "referente_nome": {
+      "type": "string",
+      "description": "Nome del referente"
+    },
+    "referente_cognome": {
+      "type": "string",
+      "description": "Cognome del referente"
+    },
+    "referente_email": {
+      "type": "string",
+      "description": "Email del referente"
+    },
+    "referente_telefono": {
+      "type": "string",
+      "description": "Telefono del referente (opzionale)"
+    },
+    "referente_eta": {
+      "type": "number",
+      "description": "Et\u00e0 del referente (minimo 18 anni)"
+    },
+    "altri_giocatori": {
+      "type": "array",
+      "description": "Lista altri giocatori (max 9)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "cognome": {
+            "type": "string"
+          },
+          "eta": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "tipo_gioco": {
+      "type": "string",
+      "enum": [
+        "libero",
+        "evento"
+      ],
+      "description": "Tipo di gioco: libero (quando vuoi) o evento (finestra temporale)"
+    },
+    "luogo_id": {
+      "type": "string",
+      "description": "ID del luogo scelto (per gioco libero)"
+    },
+    "evento_id": {
+      "type": "string",
+      "description": "ID dell'evento (per gioco evento)"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID dell'utente che ha creato la squadra"
+    },
+    "percorso": {
+      "type": "array",
+      "description": "Array di 10 ID tappe assegnate",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tappa_corrente": {
+      "type": "number",
+      "default": 0,
+      "description": "Indice della tappa corrente (0-9)"
+    },
+    "completata": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se ha completato tutte le tappe"
+    },
+    "tempo_inizio": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Quando ha iniziato a giocare"
+    },
+    "tempo_fine": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Quando ha completato"
+    },
+    "tempo_inizio_tappa_corrente": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp inizio tappa corrente (per calcolo tempo effettivo)"
+    },
+    "tempi_tappe": {
+      "type": "array",
+      "description": "Tempo impiegato per ogni tappa in secondi",
+      "items": {
+        "type": "number"
+      }
+    },
+    "punteggio": {
+      "type": "number",
+      "default": 0,
+      "description": "Punteggio totale (10 punti senza aiuto, 5 con aiuto, 0 se saltata)"
+    },
+    "aiuti_usati": {
+      "type": "array",
+      "description": "Indici delle tappe dove \u00e8 stato usato l'aiuto",
+      "items": {
+        "type": "number"
+      }
+    },
+    "tappe_saltate": {
+      "type": "array",
+      "description": "Indici delle tappe saltate",
+      "items": {
+        "type": "number"
+      }
+    },
+    "errori_per_tappa": {
+      "type": "array",
+      "description": "Numero di tentativi sbagliati per ogni tappa",
+      "items": {
+        "type": "number"
+      }
+    }
+  },
+  "required": [
+    "nome_squadra",
+    "referente_nome",
+    "referente_cognome",
+    "referente_email",
+    "tipo_gioco"
+  ]
+}

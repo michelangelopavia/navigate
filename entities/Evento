@@ -1,0 +1,71 @@
+{
+  "name": "Evento",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome dell'evento/sfida"
+    },
+    "nome_en": {
+      "type": "string",
+      "description": "Nome in inglese"
+    },
+    "luogo_id": {
+      "type": "string",
+      "description": "ID del luogo dell'evento"
+    },
+    "data_inizio": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e ora di inizio evento"
+    },
+    "data_fine": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e ora di fine evento"
+    },
+    "descrizione": {
+      "type": "string",
+      "description": "Descrizione dell'evento"
+    },
+    "descrizione_en": {
+      "type": "string",
+      "description": "Descrizione in inglese"
+    },
+    "attivo": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se l'evento \u00e8 attivo per le iscrizioni"
+    },
+    "concluso": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se l'evento \u00e8 terminato"
+    },
+    "email_gestori": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Email dei gestori che riceveranno notifiche sulle iscrizioni"
+    },
+    "immagine_copertina": {
+      "type": "string",
+      "description": "URL immagine di copertina per social sharing"
+    },
+    "og_title": {
+      "type": "string",
+      "description": "Titolo per Open Graph (social)"
+    },
+    "og_description": {
+      "type": "string",
+      "description": "Descrizione breve per Open Graph (social)"
+    }
+  },
+  "required": [
+    "nome",
+    "luogo_id",
+    "data_inizio",
+    "data_fine"
+  ]
+}

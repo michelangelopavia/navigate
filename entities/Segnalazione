@@ -1,0 +1,38 @@
+{
+  "name": "Segnalazione",
+  "type": "object",
+  "properties": {
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "malfunzionamento",
+        "altro"
+      ],
+      "default": "malfunzionamento",
+      "description": "Tipo di segnalazione"
+    },
+    "messaggio": {
+      "type": "string",
+      "description": "Descrizione del problema"
+    },
+    "email_utente": {
+      "type": "string",
+      "description": "Email dell'utente che segnala"
+    },
+    "squadra_id": {
+      "type": "string",
+      "description": "ID squadra se in gioco"
+    },
+    "pagina": {
+      "type": "string",
+      "description": "Pagina dove si \u00e8 verificato il problema"
+    },
+    "risolta": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "messaggio"
+  ]
+}

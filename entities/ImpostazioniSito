@@ -1,0 +1,29 @@
+{
+  "name": "ImpostazioniSito",
+  "type": "object",
+  "properties": {
+    "chiave": {
+      "type": "string",
+      "description": "Chiave univoca (es. 'seo_defaults')"
+    },
+    "site_title": {
+      "type": "string",
+      "description": "Titolo del sito"
+    },
+    "site_description": {
+      "type": "string",
+      "description": "Descrizione del sito"
+    },
+    "site_image": {
+      "type": "string",
+      "description": "Immagine di default per social sharing"
+    },
+    "site_url": {
+      "type": "string",
+      "description": "URL base del sito"
+    }
+  },
+  "required": [
+    "chiave"
+  ]
+}

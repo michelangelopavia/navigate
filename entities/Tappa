@@ -1,0 +1,92 @@
+{
+  "name": "Tappa",
+  "type": "object",
+  "properties": {
+    "titolo": {
+      "type": "string",
+      "description": "Nome della tappa/luogo"
+    },
+    "titolo_en": {
+      "type": "string",
+      "description": "Nome in inglese"
+    },
+    "indovinello": {
+      "type": "string",
+      "description": "Testo dell'indovinello"
+    },
+    "indovinello_en": {
+      "type": "string",
+      "description": "Indovinello in inglese"
+    },
+    "risposta_corretta": {
+      "type": "string",
+      "description": "Risposta principale"
+    },
+    "risposta_corretta_en": {
+      "type": "string",
+      "description": "Risposta principale in inglese"
+    },
+    "risposte_alternative": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Varianti accettate (es. blu, blue, azzurro)"
+    },
+    "risposte_alternative_en": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Varianti accettate in inglese"
+    },
+    "suggerimento": {
+      "type": "string",
+      "description": "Suggerimento che appare se si chiede aiuto"
+    },
+    "suggerimento_en": {
+      "type": "string",
+      "description": "Suggerimento in inglese"
+    },
+    "difficolta": {
+      "type": "string",
+      "enum": [
+        "facile",
+        "media",
+        "difficile"
+      ],
+      "description": "Livello di difficolt\u00e0"
+    },
+    "luogo_id": {
+      "type": "string",
+      "description": "ID del luogo a cui appartiene la tappa"
+    },
+    "immagine_url": {
+      "type": "string",
+      "description": "URL immagine del luogo"
+    },
+    "approfondimento": {
+      "type": "string",
+      "description": "Informazioni che appaiono dopo aver indovinato"
+    },
+    "approfondimento_en": {
+      "type": "string",
+      "description": "Approfondimento in inglese"
+    },
+    "associazione": {
+      "type": "string",
+      "description": "Nome dell'associazione collegata"
+    },
+    "link_associazione": {
+      "type": "string",
+      "description": "Link al sito dell'associazione"
+    }
+  },
+  "required": [
+    "titolo",
+    "indovinello",
+    "risposta_corretta",
+    "difficolta",
+    "luogo_id"
+  ]
+}

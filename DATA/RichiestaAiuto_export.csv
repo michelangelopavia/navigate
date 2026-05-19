@@ -1,0 +1,9 @@
+squadra_id,squadra_nome,tappa_numero,tappa_titolo,evento_id,messaggio,risolta,risposta_admin,id,created_date,updated_date,created_by_id,created_by,is_sample
+"6932bc94e0fbff339b33294a","Neunauti","2","Tappa 7","","Mi ricevi?","true","sì ti ricevo ma non posso scriverti al momento
+","6932bccbb5e93e07d92d39d0","2025-12-05T11:06:51.226000","2025-12-05T11:08:19.535000","6932bc2dc36bd68105f0f76f","andrea.foschini5@gmail.com","false"
+"6932ab3b4ff892305e542ae2","Sale e pepe","1","Tappa 2","","aiutoooo","true","","6932ab56c735adc695b91063","2025-12-05T09:52:22.386000","2025-12-05T11:09:07.025000","6932aae74656fef6d0176e2e","lucrezia@mannino.it","false"
+"6932a7af675d2209139e0a0e","🪿☕️⭐️","1","Tappa 46","","indizi indovinello","true","Le risposte alle tappe al momento sono tutte: Risposta tappa ""numero della tappa"" 
+es: Risposta tappa 35","6932a8714a2fd31025aac668","2025-12-05T09:40:01.276000","2025-12-05T09:44:55.962000","6932a77883c89e4d55e50a4b","mielevera16@gmail.com","false"
+"6932a7d47bb8ecf81cf5292e","impavidi esploratori","1","Tappa 6","","???
+","true","Le risposte alle tappe al momento sono tutte: Risposta tappa ""numero della tappa"" 
+es: Risposta tappa 35","6932a83de40e335d2465535c","2025-12-05T09:39:09.401000","2025-12-05T09:45:18.732000","6932a792b9ca96152cf381a3","alicelicastri0@gmail.com","false"
