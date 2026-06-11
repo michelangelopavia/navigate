@@ -1,0 +1,14 @@
+services:
+  mysql:
+    image: mariadb:10.11
+    container_name: navigate_db
+    environment:
+      MYSQL_ROOT_PASSWORD: navigate_dev
+      MYSQL_DATABASE: navigate
+    ports:
+      - "3306:3306"
+    volumes:
+      - navigate_db_data:/var/lib/mysql
+
+volumes:
+  navigate_db_data:
