@@ -29,4 +29,15 @@ const Squadra = sequelize.define('Squadra', {
   underscored: true,
 });
 
+const SQUADRA_JSON_FIELDS = ['percorso', 'tempi_tappe', 'aiuti_usati', 'tappe_saltate', 'errori_per_tappa', 'altri_giocatori'];
+Squadra.prototype.toJSON = function () {
+  const values = this.get({ plain: true });
+  for (const field of SQUADRA_JSON_FIELDS) {
+    if (typeof values[field] === 'string') {
+      try { values[field] = JSON.parse(values[field]); } catch { /* lascia invariato */ }
+    }
+  }
+  return values;
+};
+
 module.exports = Squadra;
