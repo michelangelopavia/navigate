@@ -52,10 +52,25 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+const POST_ALLOWED_FIELDS = [
+  'nome_squadra', 'tipo_gioco', 'luogo_id', 'evento_id', 'percorso',
+  'referente_nome', 'referente_cognome', 'referente_email', 'referente_telefono',
+  'altri_giocatori',
+];
+
+const PUT_ALLOWED_FIELDS = [
+  'tappa_corrente', 'completata', 'punteggio', 'tempo_fine', 'tempo_inizio',
+  'tempo_inizio_tappa_corrente', 'tempi_tappe', 'aiuti_usati', 'tappe_saltate',
+  'errori_per_tappa',
+];
+
+const pick = (obj, fields) =>
+  Object.fromEntries(fields.filter(f => f in obj).map(f => [f, obj[f]]));
+
 // POST /api/squadre — utente autenticato
 router.post('/', auth, async (req, res) => {
   try {
-    const squadra = await Squadra.create({ ...req.body, user_id: req.user.id });
+    const squadra = await Squadra.create({ ...pick(req.body, POST_ALLOWED_FIELDS), user_id: req.user.id });
     res.status(201).json(squadra);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -71,7 +86,7 @@ router.put('/:id', auth, async (req, res) => {
     if (req.user.role !== 'admin' && squadra.user_id !== req.user.id)
       return res.status(403).json({ error: 'Non autorizzato' });
 
-    await squadra.update(req.body);
+    await squadra.update(pick(req.body, PUT_ALLOWED_FIELDS));
     res.json(squadra);
   } catch (err) {
     res.status(500).json({ error: err.message });
