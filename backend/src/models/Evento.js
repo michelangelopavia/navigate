@@ -19,4 +19,12 @@ const Evento = sequelize.define('Evento', {
   underscored: true,
 });
 
+Evento.prototype.toJSON = function () {
+  const values = this.get({ plain: true });
+  if (typeof values.email_gestori === 'string') {
+    try { values.email_gestori = JSON.parse(values.email_gestori); } catch { /* lascia invariato */ }
+  }
+  return values;
+};
+
 module.exports = Evento;

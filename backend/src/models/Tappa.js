@@ -22,4 +22,12 @@ const Tappa = sequelize.define('Tappa', {
   underscored: true,
 });
 
+Tappa.prototype.toJSON = function () {
+  const values = this.get({ plain: true });
+  if (typeof values.risposte_alternative === 'string') {
+    try { values.risposte_alternative = JSON.parse(values.risposte_alternative); } catch { /* lascia invariato */ }
+  }
+  return values;
+};
+
 module.exports = Tappa;
