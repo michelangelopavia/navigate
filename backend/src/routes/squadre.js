@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
       where,
       order: parseOrder(req.query._sort),
     };
-    if (req.query._limit) options.limit = parseInt(req.query._limit);
+    options.limit = Math.min(parseInt(req.query._limit) || 50, 200);
 
     const squadre = await Squadra.findAll(options);
     res.json(squadre);
