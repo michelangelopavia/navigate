@@ -1,12 +1,19 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const auth = require('../middleware/auth');
 const { sendEmail } = require('../services/email');
 
 const router = express.Router();
 
+const emailLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Too many email requests, please try again later' },
+});
+
 // POST /api/integrations/email — autenticato
 // Rimpiazza base44.integrations.Core.SendEmail
-router.post('/email', auth, async (req, res) => {
+router.post('/email', auth, emailLimiter, async (req, res) => {
   try {
     const { to, subject, body } = req.body;
     if (!to || !subject || !body)
