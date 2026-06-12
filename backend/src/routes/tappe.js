@@ -72,4 +72,58 @@ router.delete('/:id', auth, isAdmin, async (req, res) => {
   }
 });
 
+const normalizza = (str) =>
+  str.trim().toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ');
+
+const levenshtein = (a, b) => {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  const matrix = [];
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      const cost = a[j - 1] === b[i - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return matrix[b.length][a.length];
+};
+
+// POST /api/tappe/:id/verify-answer — autenticato
+router.post('/:id/verify-answer', auth, async (req, res) => {
+  try {
+    const { risposta } = req.body;
+    if (!risposta) return res.status(400).json({ error: 'risposta is required' });
+
+    const tappa = await Tappa.findByPk(req.params.id);
+    if (!tappa) return res.status(404).json({ error: 'Non trovata' });
+
+    const inputNorm = normalizza(risposta);
+    const risposteAccettate = [
+      tappa.risposta_corretta,
+      ...(tappa.risposte_alternative || []),
+      tappa.risposta_corretta_en,
+      ...(tappa.risposte_alternative_en || []),
+    ].filter(Boolean);
+
+    const correct = risposteAccettate.some(r => {
+      const rNorm = normalizza(r);
+      if (inputNorm === rNorm) return true;
+      const maxErrori = rNorm.length <= 4 ? 1 : 2;
+      return levenshtein(inputNorm, rNorm) <= maxErrori;
+    });
+
+    res.json({ correct });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

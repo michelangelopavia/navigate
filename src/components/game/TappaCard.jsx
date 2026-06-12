@@ -7,16 +7,16 @@ import { Lightbulb, Send, Loader2, SkipForward, Clock, AlertCircle } from "lucid
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageContext";
 
-export default function TappaCard({ 
-  tappa, 
-  numeroTappa, 
-  onRispostaCorretta, 
+export default function TappaCard({
+  tappa,
+  numeroTappa,
+  onRispostaCorretta,
   onRispostaSbagliata,
   onUsaAiuto,
   onSalta,
   aiutoUsato,
   tempoInizioTappa,
-  isLoading 
+  isLoading
 }) {
   const { t, getLocalized, language } = useLanguage();
   const [risposta, setRisposta] = useState('');
@@ -24,6 +24,7 @@ export default function TappaCard({
   const [tentativi, setTentativi] = useState(0);
   const [mostraSuggerimento, setMostraSuggerimento] = useState(false);
   const [tempoTrascorso, setTempoTrascorso] = useState(0);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const TEMPO_SALTA = 15 * 60; // 15 minuti in secondi
 
@@ -38,7 +39,7 @@ export default function TappaCard({
 
   useEffect(() => {
     if (!tempoInizioTappa) return;
-    
+
     const interval = setInterval(() => {
       const elapsed = Math.floor((Date.now() - tempoInizioTappa) / 1000);
       setTempoTrascorso(elapsed);
@@ -56,73 +57,36 @@ export default function TappaCard({
     return `${min}:${String(sec).padStart(2, '0')}`;
   };
 
-  // Funzione per normalizzare le stringhe
-  const normalizza = (str) => {
-    return str
-      .trim()
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // rimuove accenti
-      .replace(/[^a-z0-9\s]/g, '') // rimuove punteggiatura
-      .replace(/\s+/g, ' '); // normalizza spazi
-  };
-
-  // Calcola distanza di Levenshtein per fuzzy matching
-  const levenshtein = (a, b) => {
-    if (a.length === 0) return b.length;
-    if (b.length === 0) return a.length;
-    const matrix = [];
-    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
-    for (let i = 1; i <= b.length; i++) {
-      for (let j = 1; j <= a.length; j++) {
-        const cost = a[j - 1] === b[i - 1] ? 0 : 1;
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j - 1] + cost
-        );
-      }
-    }
-    return matrix[b.length][a.length];
-  };
-
-  // Verifica se la risposta è accettabile
-  const verificaRisposta = (input) => {
-    const inputNorm = normalizza(input);
-    
-    // Tutte le risposte accettate (italiana + inglese)
-    const risposteAccettate = [
-      tappa.risposta_corretta,
-      ...(tappa.risposte_alternative || []),
-      ...(language === 'en' ? [tappa.risposta_corretta_en, ...(tappa.risposte_alternative_en || [])] : [])
-    ].filter(Boolean);
-
-    for (const risposta of risposteAccettate) {
-      const rispostaNorm = normalizza(risposta);
-      
-      // Match esatto dopo normalizzazione
-      if (inputNorm === rispostaNorm) return true;
-      
-      // Fuzzy match: tollera 1-2 errori in base alla lunghezza
-      const maxErrori = rispostaNorm.length <= 4 ? 1 : 2;
-      if (levenshtein(inputNorm, rispostaNorm) <= maxErrori) return true;
-    }
-    
-    return false;
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!risposta.trim()) return;
+    if (!risposta.trim() || isVerifying) return;
 
-    if (verificaRisposta(risposta)) {
-      onRispostaCorretta();
-    } else {
+    setIsVerifying(true);
+    try {
+      const token = localStorage.getItem('navigate_token');
+      const res = await fetch(`/api/tappe/${tappa.id}/verify-answer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ risposta }),
+      });
+      const { correct } = await res.json();
+
+      if (correct) {
+        onRispostaCorretta();
+      } else {
+        setErrore(true);
+        setTentativi(t => t + 1);
+        onRispostaSbagliata?.();
+        setTimeout(() => setErrore(false), 500);
+      }
+    } catch {
       setErrore(true);
-      setTentativi(t => t + 1);
-      onRispostaSbagliata?.();
       setTimeout(() => setErrore(false), 500);
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -164,8 +128,8 @@ export default function TappaCard({
 
         {/* Immagine */}
         {tappa.immagine_url && (
-          <img 
-            src={tappa.immagine_url} 
+          <img
+            src={tappa.immagine_url}
             alt={getLocalized(tappa, 'titolo')}
             className="w-full h-48 object-cover"
           />
@@ -181,7 +145,7 @@ export default function TappaCard({
 
           {/* Suggerimento (se usato) */}
           {mostraSuggerimento && (tappa.suggerimento || tappa.suggerimento_en) && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               className="bg-[#FFD800]/20 p-4 rounded-lg border border-[#FFD800]"
@@ -203,9 +167,9 @@ export default function TappaCard({
               onChange={(e) => setRisposta(e.target.value)}
               placeholder={t('yourAnswer')}
               className={`text-lg py-6 ${errore ? 'border-red-500 bg-red-50' : 'border-[#1f7a8c]'}`}
-              disabled={isLoading}
+              disabled={isLoading || isVerifying}
             />
-            
+
             {tentativi > 0 && (
               <p className="text-sm text-red-500 flex items-center gap-1">
                 <AlertCircle className="w-4 h-4" />
@@ -213,12 +177,12 @@ export default function TappaCard({
               </p>
             )}
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-[#1f7a8c] hover:bg-[#022b3a] text-lg py-6"
-              disabled={isLoading || !risposta.trim()}
+              disabled={isLoading || isVerifying || !risposta.trim()}
             >
-              {isLoading ? (
+              {isLoading || isVerifying ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
@@ -248,8 +212,8 @@ export default function TappaCard({
               variant="outline"
               onClick={onSalta}
               disabled={!puoSaltare || isLoading}
-              className={`flex-1 ${puoSaltare 
-                ? 'border-[#db222a] text-[#db222a] hover:bg-[#db222a]/10' 
+              className={`flex-1 ${puoSaltare
+                ? 'border-[#db222a] text-[#db222a] hover:bg-[#db222a]/10'
                 : 'border-gray-300 text-gray-400'}`}
             >
               <SkipForward className="w-4 h-4 mr-2" />
