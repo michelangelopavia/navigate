@@ -1,6 +1,6 @@
 const express = require('express');
 const { Op } = require('sequelize');
-const { Squadra } = require('../models');
+const { Squadra, Evento } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
 
@@ -85,6 +85,15 @@ router.put('/:id', auth, async (req, res) => {
 
     if (req.user.role !== 'admin' && squadra.user_id !== req.user.id)
       return res.status(403).json({ error: 'Non autorizzato' });
+
+    if (req.user.role !== 'admin' && squadra.evento_id) {
+      const evento = await Evento.findByPk(squadra.evento_id);
+      if (evento) {
+        const now = new Date();
+        if (now < new Date(evento.data_inizio) || now > new Date(evento.data_fine))
+          return res.status(403).json({ error: 'Event is not currently active' });
+      }
+    }
 
     await squadra.update(pick(req.body, PUT_ALLOWED_FIELDS));
     res.json(squadra);
