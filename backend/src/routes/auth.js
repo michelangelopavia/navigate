@@ -3,10 +3,22 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const crypto = require('crypto');
 const { User } = require('../models');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
+
+// Codici temporanei per lo scambio OAuth — durata 5 minuti
+const oauthCodes = new Map();
+const OAUTH_CODE_TTL = 5 * 60 * 1000;
+
+const generateOAuthCode = (token) => {
+  const code = crypto.randomBytes(32).toString('hex');
+  oauthCodes.set(code, token);
+  setTimeout(() => oauthCodes.delete(code), OAUTH_CODE_TTL);
+  return code;
+};
 
 const generateToken = (user) =>
   jwt.sign(
@@ -100,8 +112,20 @@ router.get('/google/callback',
   passport.authenticate('google', { session: false, failureRedirect: `${process.env.FRONTEND_URL}/login?error=oauth` }),
   (req, res) => {
     const token = generateToken(req.user);
-    res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
+    const code = generateOAuthCode(token);
+    res.redirect(`${process.env.FRONTEND_URL}/auth/callback?code=${code}`);
   }
 );
+
+// POST /api/auth/google/exchange — scambia il codice temporaneo con il JWT
+router.post('/google/exchange', (req, res) => {
+  const { code } = req.body;
+  if (!code || !oauthCodes.has(code))
+    return res.status(400).json({ error: 'Invalid or expired code' });
+
+  const token = oauthCodes.get(code);
+  oauthCodes.delete(code);
+  res.json({ token });
+});
 
 module.exports = router;
