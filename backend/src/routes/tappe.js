@@ -17,7 +17,10 @@ router.get('/', async (req, res) => {
     if (req.query.attivo !== undefined) where.attivo = parseBool(req.query.attivo);
 
     const tappe = await Tappa.findAll({ where, order: [['ordine', 'ASC']] });
-    res.json(tappe);
+    res.json(tappe.map(t => {
+      const { risposta_corretta, risposte_alternative, ...safe } = t.toJSON();
+      return safe;
+    }));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -28,7 +31,8 @@ router.get('/:id', async (req, res) => {
   try {
     const tappa = await Tappa.findByPk(req.params.id);
     if (!tappa) return res.status(404).json({ error: 'Non trovata' });
-    res.json(tappa);
+    const { risposta_corretta, risposte_alternative, ...safe } = tappa.toJSON();
+    res.json(safe);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
