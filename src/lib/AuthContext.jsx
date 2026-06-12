@@ -38,17 +38,27 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [checkAuth]);
 
-  // Legge il token dall'URL (callback OAuth Google)
+  // Legge il codice temporaneo dall'URL (callback OAuth Google) e lo scambia con il JWT
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-    if (token) {
-      localStorage.setItem('navigate_token', token);
-      // Rimuove il token dall'URL
-      params.delete('token');
+    const code = params.get('code');
+    if (code) {
+      params.delete('code');
       const newUrl = window.location.pathname + (params.toString() ? `?${params}` : '');
       window.history.replaceState({}, '', newUrl);
-      checkAuth();
+
+      fetch('/api/auth/google/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      })
+        .then((r) => r.json())
+        .then(({ token }) => {
+          if (token) {
+            localStorage.setItem('navigate_token', token);
+            checkAuth();
+          }
+        });
     }
   }, [checkAuth]);
 
