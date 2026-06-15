@@ -75,35 +75,14 @@ export default function Iscrizione() {
     enabled: !!user?.id
   });
 
-  const generaPercorso = () => {
-    const tappeFacili = tappe.filter((t) => t.difficolta === 'facile');
-    const tappeMedie = tappe.filter((t) => t.difficolta === 'media');
-    const tappeDifficili = tappe.filter((t) => t.difficolta === 'difficile');
-
-    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
-
-    const selezionateFacili = shuffle(tappeFacili).slice(0, 4);
-    const selezionateMedie = shuffle(tappeMedie).slice(0, 4);
-    const selezionateDifficili = shuffle(tappeDifficili).slice(0, 2);
-
-    return [
-    ...selezionateFacili.map((t) => t.id),
-    ...selezionateMedie.map((t) => t.id),
-    ...selezionateDifficili.map((t) => t.id)];
-
-  };
-
   const createSquadraMutation = useMutation({
     mutationFn: async (data) => {
-      const percorso = generaPercorso();
-
       const squadraData = {
         ...data,
         user_id: user.id,
         tipo_gioco: eventoId ? 'evento' : 'libero',
         luogo_id: luogo?.id,
         evento_id: eventoId || null,
-        percorso,
         tappa_corrente: 0,
         completata: false,
         tempi_tappe: []

@@ -1,6 +1,6 @@
 const express = require('express');
 const { Op } = require('sequelize');
-const { Squadra, Evento } = require('../models');
+const { Squadra, Evento, Tappa } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
 
@@ -53,7 +53,7 @@ router.get('/:id', async (req, res) => {
 });
 
 const POST_ALLOWED_FIELDS = [
-  'nome_squadra', 'tipo_gioco', 'luogo_id', 'evento_id', 'percorso',
+  'nome_squadra', 'tipo_gioco', 'luogo_id', 'evento_id',
   'referente_nome', 'referente_cognome', 'referente_email', 'referente_telefono',
   'altri_giocatori',
 ];
@@ -70,7 +70,25 @@ const pick = (obj, fields) =>
 // POST /api/squadre — utente autenticato
 router.post('/', auth, async (req, res) => {
   try {
-    const squadra = await Squadra.create({ ...pick(req.body, POST_ALLOWED_FIELDS), user_id: req.user.id });
+    const data = pick(req.body, POST_ALLOWED_FIELDS);
+
+    const tappe = await Tappa.findAll({
+      where: { luogo_id: data.luogo_id, attivo: true },
+      attributes: ['id', 'difficolta'],
+    });
+
+    const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+    const facili    = shuffle(tappe.filter(t => t.difficolta === 'facile')).slice(0, 4).map(t => t.id);
+    const medie     = shuffle(tappe.filter(t => t.difficolta === 'media')).slice(0, 4).map(t => t.id);
+    const difficili = shuffle(tappe.filter(t => t.difficolta === 'difficile')).slice(0, 2).map(t => t.id);
+
+    if (facili.length < 4 || medie.length < 4 || difficili.length < 2) {
+      return res.status(422).json({ error: 'Tappe insufficienti per generare un percorso' });
+    }
+
+    const percorso = [...facili, ...medie, ...difficili];
+    const squadra = await Squadra.create({ ...data, user_id: req.user.id, percorso });
+
     res.status(201).json(squadra);
   } catch (err) {
     res.status(500).json({ error: err.message });
