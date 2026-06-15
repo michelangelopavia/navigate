@@ -59,8 +59,8 @@ const POST_ALLOWED_FIELDS = [
 ];
 
 const PUT_ALLOWED_FIELDS = [
-  'tappa_corrente', 'completata', 'punteggio', 'tempo_fine', 'tempo_inizio',
-  'tempo_inizio_tappa_corrente', 'tempi_tappe', 'aiuti_usati', 'tappe_saltate',
+  'tappa_corrente', 'completata', 'punteggio',
+  'tempi_tappe', 'aiuti_usati', 'tappe_saltate',
   'errori_per_tappa',
 ];
 
@@ -113,7 +113,23 @@ router.put('/:id', auth, async (req, res) => {
       }
     }
 
-    await squadra.update(pick(req.body, PUT_ALLOWED_FIELDS));
+    const updates = pick(req.body, PUT_ALLOWED_FIELDS);
+    const now = new Date();
+
+    if (!squadra.tempo_inizio && Array.isArray(req.body.aiuti_usati)) {
+      updates.tempo_inizio = now;
+      updates.tempo_inizio_tappa_corrente = now;
+    }
+
+    if (typeof updates.tappa_corrente === 'number' && updates.tappa_corrente > squadra.tappa_corrente) {
+      if (updates.completata) {
+        updates.tempo_fine = now;
+      } else {
+        updates.tempo_inizio_tappa_corrente = now;
+      }
+    }
+
+    await squadra.update(updates);
     res.json(squadra);
   } catch (err) {
     res.status(500).json({ error: err.message });

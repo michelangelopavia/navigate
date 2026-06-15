@@ -151,10 +151,7 @@ export default function Gioca() {
 
   const iniziaGiocoMutation = useMutation({
     mutationFn: async () => {
-      const now = new Date().toISOString();
       return base44.entities.Squadra.update(squadraId, {
-        tempo_inizio: now,
-        tempo_inizio_tappa_corrente: now,
         aiuti_usati: [],
         tappe_saltate: [],
         punteggio: 0,
@@ -217,13 +214,6 @@ export default function Gioca() {
         completata,
         punteggio: punteggioFinale
       };
-
-      if (completata) {
-        updates.tempo_fine = new Date().toISOString();
-      } else {
-        // Salva timestamp inizio prossima tappa
-        updates.tempo_inizio_tappa_corrente = new Date().toISOString();
-      }
 
       await base44.entities.Squadra.update(squadraId, updates);
 
