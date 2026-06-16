@@ -9,6 +9,7 @@ const emailLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   message: { error: 'Too many email requests, please try again later' },
+  keyGenerator: (req) => String(req.user.id),
 });
 
 // POST /api/integrations/email — autenticato
