@@ -48,7 +48,7 @@ async function main() {
 
   // ── Utenti ───────────────────────────────────────────────────────────────────
   console.log('Utenti:');
-  await seedUser('admin@navigate.it', 'Admin1234!', 'Amministratore', 'admin');
+  await seedUser('admin@navigate.it', process.env.ADMIN_SEED_PASSWORD || 'Admin1234!', 'Amministratore', 'admin');
   await seedUser('test@navigate.it',  'Test1234!',  'Utente Test',    'user');
 
   // ── Dati di gioco (solo se il DB è vuoto) ────────────────────────────────────
@@ -139,7 +139,7 @@ async function main() {
 
   console.log('\n✅ Seed completato!');
   console.log('\nCredenziali di accesso:');
-  console.log('  Admin: admin@navigate.it / Admin1234!');
+  console.log('  Admin: admin@navigate.it / (password da ADMIN_SEED_PASSWORD)');
   console.log('  Test:  test@navigate.it  / Test1234!');
 
   await sequelize.close();
