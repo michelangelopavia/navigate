@@ -158,12 +158,8 @@ export default function Home() {
             </p>
             <div className="text-xs opacity-80 flex items-center justify-center gap-2">
               <span>un progetto di</span>
-              <a href="https://neunoi.it" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                <img 
-                  src="https://neunoi.it/wp-content/uploads/2025/12/neunoi_logo_bianco.png" 
-                  alt="neu [nòi]" 
-                  className="h-6 inline"
-                />
+              <a href="https://karascio.it" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                <strong>Karasciò</strong>
               </a>
             </div>
           </motion.div>
@@ -390,21 +386,13 @@ export default function Home() {
         {/* Footer */}
         <div className="mt-16 py-6 border-t border-gray-200">
           <div className="flex justify-between items-center text-gray-500 text-sm">
-            <a 
-              href="https://neunoi.it" 
-              target="_blank" 
+            <a
+              href="https://karascio.it"
+              target="_blank"
               rel="noopener noreferrer"
               className="hover:text-[#1f7a8c] transition-colors"
             >
-              a project by <strong>neu [nòi]</strong>
-            </a>
-            <a 
-              href="https://karascio.it" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-[#1f7a8c] transition-colors"
-            >
-              powered by <strong>Karasciò</strong>
+              a project by <strong>Karasciò</strong>
             </a>
           </div>
         </div>
