@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '@/components/LanguageContext';
 import LanguageSelector from '@/components/LanguageSelector';
 import MetaTags from '@/components/MetaTags';
+import { LOGO_URL } from '@/lib/branding';
 
 export default function Home() {
   const { t, getLocalized, language } = useLanguage();
@@ -86,10 +87,12 @@ export default function Home() {
       <div className="bg-white border-b border-[#022b3a]/10 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <img
-              src="https://neunoi.it/wp-content/uploads/2025/12/Logo-neunoi.png"
-              alt="NAVIGATE"
-              className="w-10 h-10 rounded-lg object-contain" />
+            {LOGO_URL && (
+              <img
+                src={LOGO_URL}
+                alt="NAVIGATE"
+                className="w-10 h-10 rounded-lg object-contain" />
+            )}
 
             <div>
               <span className="font-bold text-[#022b3a] text-lg">NAVIGATE</span>

@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, LogIn, UserPlus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { createPageUrl } from '@/utils';
+import { LOGO_URL } from '@/lib/branding';
 
 export default function Login() {
   const { isAuthenticated, isLoadingAuth, login } = useAuth();
@@ -79,11 +80,13 @@ export default function Login() {
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <img
-            src="https://neunoi.it/wp-content/uploads/2025/12/Logo-neunoi.png"
-            alt="NAVIGATE"
-            className="w-16 h-16 rounded-xl object-contain mx-auto mb-3"
-          />
+          {LOGO_URL && (
+            <img
+              src={LOGO_URL}
+              alt="NAVIGATE"
+              className="w-16 h-16 rounded-xl object-contain mx-auto mb-3"
+            />
+          )}
           <h1 className="text-2xl font-bold text-[#022b3a]">NAVIGATE</h1>
           <p className="text-gray-500 text-sm">Perdetevi nella città, giocando!</p>
         </div>

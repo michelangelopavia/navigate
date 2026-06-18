@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Loader2 } from 'lucide-react';
+import { LOGO_URL } from '@/lib/branding';
 
 export default function ShareEvento() {
   const [metaData, setMetaData] = useState(null);
@@ -23,7 +24,7 @@ export default function ShareEvento() {
           const meta = {
             title: evento.og_title || evento.nome || 'NAVIGATE',
             description: evento.og_description || (evento.descrizione ? evento.descrizione.replace(/<[^>]*>/g, '').substring(0, 200) : ''),
-            image: evento.immagine_copertina || 'https://neunoi.it/wp-content/uploads/2025/12/Logo-neunoi.png'
+            image: evento.immagine_copertina || LOGO_URL
           };
           
           setMetaData(meta);
