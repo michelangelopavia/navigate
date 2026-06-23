@@ -14,8 +14,10 @@ import { useLanguage } from '@/components/LanguageContext';
 import LanguageSelector from '@/components/LanguageSelector';
 import MetaTags from '@/components/MetaTags';
 import { LOGO_URL } from '@/lib/branding';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function Home() {
+  const { logout } = useAuth();
   const { t, getLocalized, language } = useLanguage();
   const dateLocale = language === 'en' ? enUS : it;
   const queryClient = useQueryClient();
@@ -76,10 +78,6 @@ export default function Home() {
     base44.auth.redirectToLogin(window.location.href);
   };
 
-  const handleLogout = () => {
-    base44.auth.logout(window.location.href);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#bfdbf7]/30 via-white to-[#022b3a]/5">
       <MetaTags />
@@ -118,7 +116,7 @@ export default function Home() {
                     </Button>
                   </Link>
                 )}
-                <Button variant="ghost" size="sm" onClick={handleLogout} className="text-[#db222a]">
+                <Button variant="ghost" size="sm" onClick={logout} className="text-[#db222a]">
                   <LogOut className="w-4 h-4" />
                 </Button>
               </>

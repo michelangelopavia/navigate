@@ -13,8 +13,10 @@ import { createPageUrl } from '@/utils';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function Profilo() {
+  const { logout } = useAuth();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
@@ -55,10 +57,6 @@ export default function Profilo() {
       queryClient.invalidateQueries(['mie-squadre']);
     }
   });
-
-  const handleLogout = () => {
-    base44.auth.logout(createPageUrl('Home'));
-  };
 
   const formatTempo = (secondi) => {
     if (!secondi) return '--:--';
@@ -109,7 +107,7 @@ export default function Profilo() {
               Home
             </Button>
           </Link>
-          <Button variant="ghost" onClick={handleLogout} className="text-red-600 hover:bg-red-50">
+          <Button variant="ghost" onClick={logout} className="text-red-600 hover:bg-red-50">
             <LogOut className="w-4 h-4 mr-2" />
             Esci
           </Button>
