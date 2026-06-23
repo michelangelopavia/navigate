@@ -14,7 +14,8 @@ export default function ApprofondimentoModal({
   numeroTappa,
   onProsegui,
   userEmail,
-  squadraId
+  squadraId,
+  eventoId
 }) {
   const saltata = tappa?.saltata || false;
   const [showSegnalazione, setShowSegnalazione] = useState(false);
@@ -117,6 +118,7 @@ export default function ApprofondimentoModal({
               onClose={() => setShowSegnalazione(false)}
               userEmail={userEmail}
               squadraId={squadraId}
+              eventoId={eventoId}
             />
             </>
             );
