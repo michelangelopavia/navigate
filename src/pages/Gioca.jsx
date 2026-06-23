@@ -543,6 +543,7 @@ export default function Gioca() {
           onProsegui={handleProsegui}
           userEmail={user?.email}
           squadraId={squadraId}
+          eventoId={squadra.evento_id}
         />
 
         {/* Modal Segnalazione */}
@@ -551,6 +552,7 @@ export default function Gioca() {
           onClose={() => setShowSegnalazione(false)}
           userEmail={user?.email}
           squadraId={squadraId}
+          eventoId={squadra.evento_id}
         />
       </div>
     </div>

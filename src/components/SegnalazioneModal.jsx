@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertTriangle, Send, Loader2, CheckCircle } from "lucide-react";
 
-export default function SegnalazioneModal({ isOpen, onClose, userEmail, squadraId }) {
+export default function SegnalazioneModal({ isOpen, onClose, userEmail, squadraId, eventoId }) {
   const [messaggio, setMessaggio] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [inviata, setInviata] = useState(false);
@@ -23,18 +23,22 @@ export default function SegnalazioneModal({ isOpen, onClose, userEmail, squadraI
     
     // Crea segnalazione
     await base44.entities.Segnalazione.create({
-      tipo: 'malfunzionamento',
-      messaggio: messaggio.trim(),
-      email_utente: userEmail || 'anonimo',
-      squadra_id: squadraId || null,
-      pagina: window.location.pathname
+      descrizione: messaggio.trim(),
+      user_email: userEmail || 'anonimo',
+      squadra_id: squadraId || null
     });
 
-    // Invia email all'admin
-    await base44.integrations.Core.SendEmail({
-      to: 'admin@navigate.it', // Sostituire con email reale
-      subject: '🚨 Segnalazione malfunzionamento - NAVIGATE',
-      body: `
+    // Invia email ai gestori dell'evento, se la segnalazione è legata a un evento
+    if (eventoId) {
+      const eventi = await base44.entities.Evento.filter({ id: eventoId });
+      const evento = eventi[0];
+      if (evento?.email_gestori?.length > 0) {
+        for (const emailGestore of evento.email_gestori) {
+          try {
+            await base44.integrations.Core.SendEmail({
+              to: emailGestore,
+              subject: '🚨 Segnalazione malfunzionamento - NAVIGATE',
+              body: `
 Nuova segnalazione di malfunzionamento:
 
 Messaggio: ${messaggio}
@@ -44,8 +48,14 @@ Dettagli:
 - Squadra ID: ${squadraId || 'N/A'}
 - Pagina: ${window.location.href}
 - Data: ${new Date().toLocaleString('it-IT')}
-      `
-    });
+              `
+            });
+          } catch (e) {
+            console.error('Errore invio email:', e);
+          }
+        }
+      }
+    }
 
     setIsLoading(false);
     setInviata(true);
