@@ -106,7 +106,9 @@ export default function GestioneRichieste() {
                           )}
                           <p className="text-xs text-gray-400 flex items-center gap-1">
                             <Clock className="w-3 h-3" />
-                            {format(new Date(richiesta.created_date), 'dd MMM HH:mm', { locale: it })}
+                            {(richiesta.createdAt || richiesta.created_at)
+                              ? format(new Date(richiesta.createdAt || richiesta.created_at), 'dd MMM HH:mm', { locale: it })
+                              : '—'}
                           </p>
                         </div>
                         <div className="md:w-64">

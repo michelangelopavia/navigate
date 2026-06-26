@@ -254,7 +254,9 @@ export default function Profilo() {
                             </div>
                             <div className="flex items-center gap-2 text-sm text-gray-400 mt-1">
                               <Calendar className="w-4 h-4" />
-                              {format(new Date(squadra.tempo_fine || squadra.created_date), 'dd MMM yyyy', { locale: it })}
+                              {(squadra.tempo_fine || squadra.createdAt || squadra.created_at)
+                                ? format(new Date(squadra.tempo_fine || squadra.createdAt || squadra.created_at), 'dd MMM yyyy', { locale: it })
+                                : '—'}
                             </div>
                           </div>
                           <div className="text-right">
