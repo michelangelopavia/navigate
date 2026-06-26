@@ -77,7 +77,9 @@ export default function NotifichePanel({ notifiche, onSegnaLetta, onChiudiTutte 
                       {notifica.messaggio}
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      {format(new Date(notifica.created_at), 'dd MMM HH:mm', { locale: it })}
+                      {(notifica.createdAt || notifica.created_at)
+                        ? format(new Date(notifica.createdAt || notifica.created_at), 'dd MMM HH:mm', { locale: it })
+                        : '—'}
                     </p>
                   </div>
                   {!notifica.letta && (
