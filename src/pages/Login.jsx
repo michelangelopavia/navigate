@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, LogIn, UserPlus } from 'lucide-react';
+import { Loader2, LogIn, UserPlus, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { createPageUrl } from '@/utils';
 import { LOGO_URL } from '@/lib/branding';
@@ -20,6 +20,8 @@ export default function Login() {
   const [registerForm, setRegisterForm] = useState({ email: '', password: '', full_name: '' });
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
+  const [showLoginPassword,    setShowLoginPassword]    = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
 
   // Se già autenticato o il token OAuth è appena arrivato, vai alla home
   useEffect(() => {
@@ -143,12 +145,24 @@ export default function Login() {
                   </div>
                   <div>
                     <Label htmlFor="login-password">Password</Label>
-                    <Input
-                      id="login-password" type="password" required className="mt-1"
-                      placeholder="••••••••"
-                      value={loginForm.password}
-                      onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                    />
+                    <div className="relative mt-1">
+                      <Input
+                        id="login-password"
+                        type={showLoginPassword ? 'text' : 'password'}
+                        required
+                        className="pr-10"
+                        placeholder="••••••••"
+                        value={loginForm.password}
+                        onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowLoginPassword(!showLoginPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
                   <Button type="submit" className="w-full bg-[#1f7a8c] hover:bg-[#022b3a]" disabled={loading}>
                     {loading
@@ -181,12 +195,25 @@ export default function Login() {
                   </div>
                   <div>
                     <Label htmlFor="reg-password">Password</Label>
-                    <Input
-                      id="reg-password" type="password" required minLength={8} className="mt-1"
-                      placeholder="••••••••"
-                      value={registerForm.password}
-                      onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
-                    />
+                    <div className="relative mt-1">
+                      <Input
+                        id="reg-password"
+                        type={showRegisterPassword ? 'text' : 'password'}
+                        required
+                        minLength={8}
+                        className="pr-10"
+                        placeholder="••••••••"
+                        value={registerForm.password}
+                        onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowRegisterPassword(!showRegisterPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showRegisterPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                     <p className="text-xs text-gray-400 mt-1">Minimo 8 caratteri</p>
                   </div>
                   <Button type="submit" className="w-full bg-[#1f7a8c] hover:bg-[#022b3a]" disabled={loading}>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   User, ArrowLeft, Trophy, Clock, MapPin, Calendar,
-  Play, CheckCircle, LogOut, Trash2
+  Play, CheckCircle, LogOut, Trash2, Users
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -189,6 +189,10 @@ export default function Profilo() {
                              <Badge variant="outline">Non iniziato</Badge>
                            )}
                          </div>
+                         <div className="flex items-center gap-2 text-sm text-gray-400 mt-1">
+                           <Users className="w-4 h-4" />
+                           {(squadra.altri_giocatori?.length || 0) + 1} giocatori
+                         </div>
                        </div>
                        <div className="flex items-center gap-2 flex-shrink-0">
                          <Button
@@ -259,6 +263,10 @@ export default function Profilo() {
                               {(squadra.tempo_fine || squadra.createdAt || squadra.created_at)
                                 ? format(new Date(squadra.tempo_fine || squadra.createdAt || squadra.created_at), 'dd MMM yyyy', { locale: it })
                                 : '—'}
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-400 mt-1">
+                              <Users className="w-4 h-4" />
+                              {(squadra.altri_giocatori?.length || 0) + 1} giocatori
                             </div>
                           </div>
                           <div className="text-right">
