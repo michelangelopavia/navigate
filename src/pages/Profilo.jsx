@@ -220,11 +220,6 @@ export default function Profilo() {
               <CardContent>
                 <Trophy className="w-12 h-12 mx-auto mb-2 text-gray-300" />
                 <p className="text-gray-500">Nessuna giocata completata ancora</p>
-                <Link to={createPageUrl('Iscrizione')}>
-                  <Button className="mt-4 bg-[#1f7a8c] hover:bg-[#022b3a]">
-                    Inizia una nuova caccia
-                  </Button>
-                </Link>
               </CardContent>
             </Card>
           ) : (
