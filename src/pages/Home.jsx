@@ -4,7 +4,17 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Users, Trophy, ArrowRight, LogIn, UserPlus, Play, Settings, User, LogOut, X } from 'lucide-react';
+import { MapPin, Calendar, Users, Trophy, ArrowRight, LogIn, UserPlus, Play, Settings, User, LogOut, Trash2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { format } from 'date-fns';
@@ -25,6 +35,7 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loadingAuth, setLoadingAuth] = useState(true);
+  const [squadraToDelete, setSquadraToDelete] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -210,22 +221,16 @@ export default function Home() {
                 </div>
                 {squadraPronta || squadraInCorso ? (
                   <>
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-bold text-lg text-green-700">{(squadraPronta || squadraInCorso)?.nome_squadra}</h3>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          if (confirm('Sei sicuro di voler annullare questa iscrizione?')) {
-                            deleteSquadraMutation.mutate((squadraPronta || squadraInCorso).id);
-                          }
-                        }}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    <p className="text-green-600 text-sm">Squadra iscritta</p>
+                    <h3 className="font-bold text-lg text-green-700 mb-1">{(squadraPronta || squadraInCorso)?.nome_squadra}</h3>
+                    <p className="text-green-600 text-sm mb-3">Squadra iscritta</p>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setSquadraToDelete((squadraPronta || squadraInCorso).id)}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </>
                 ) : (
                   <>
@@ -395,6 +400,29 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <AlertDialog open={!!squadraToDelete} onOpenChange={() => setSquadraToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Eliminare questa iscrizione?</AlertDialogTitle>
+            <AlertDialogDescription>
+              L'iscrizione verrà eliminata e non potrai recuperarla.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                deleteSquadraMutation.mutate(squadraToDelete);
+                setSquadraToDelete(null);
+              }}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Sì, elimina iscrizione
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
