@@ -4,10 +4,20 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   User, ArrowLeft, Trophy, Clock, MapPin, Calendar,
-  Play, CheckCircle, LogOut, X
+  Play, CheckCircle, LogOut, Trash2
 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { format } from 'date-fns';
@@ -19,6 +29,7 @@ export default function Profilo() {
   const { logout } = useAuth();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [squadraToDelete, setSquadraToDelete] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -161,26 +172,12 @@ export default function Profilo() {
                 >
                   <Card className="border-blue-200 bg-blue-50">
                    <CardContent className="p-4">
-                     <div className="flex items-center justify-between">
-                       <div className="flex-1 pr-4">
-                         <div className="flex items-center justify-between mb-1">
-                           <h3 className="font-bold text-gray-800">{squadra.nome_squadra}</h3>
-                           <Button
-                             variant="ghost"
-                             size="sm"
-                             onClick={() => {
-                               if (confirm('Sei sicuro di voler annullare questa iscrizione?')) {
-                                 deleteSquadraMutation.mutate(squadra.id);
-                               }
-                             }}
-                             className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
-                           >
-                             <X className="w-4 h-4" />
-                           </Button>
-                         </div>
+                     <div className="flex items-center justify-between gap-3">
+                       <div className="flex-1">
+                         <h3 className="font-bold text-gray-800 mb-1">{squadra.nome_squadra}</h3>
                          <div className="flex items-center gap-2 text-sm text-gray-500">
                            <MapPin className="w-4 h-4" />
-                           {squadra.evento_id 
+                           {squadra.evento_id
                              ? getEventoNome(squadra.evento_id) || 'Evento'
                              : getLuogoNome(squadra.luogo_id)}
                          </div>
@@ -193,12 +190,22 @@ export default function Profilo() {
                            )}
                          </div>
                        </div>
-                       <Link to={createPageUrl(`Gioca?squadra=${squadra.id}`)}>
-                         <Button className="bg-blue-500 hover:bg-blue-600">
-                           <Play className="w-4 h-4 mr-1" />
-                           {squadra.tempo_inizio ? 'Continua' : 'Inizia'}
+                       <div className="flex items-center gap-2 flex-shrink-0">
+                         <Button
+                           variant="outline"
+                           size="icon"
+                           onClick={() => setSquadraToDelete(squadra.id)}
+                           className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                         >
+                           <Trash2 className="w-4 h-4" />
                          </Button>
-                       </Link>
+                         <Link to={createPageUrl(`Gioca?squadra=${squadra.id}`)}>
+                           <Button className="bg-blue-500 hover:bg-blue-600">
+                             <Play className="w-4 h-4 mr-1" />
+                             {squadra.tempo_inizio ? 'Continua' : 'Inizia'}
+                           </Button>
+                         </Link>
+                       </div>
                      </div>
                    </CardContent>
                   </Card>
@@ -283,6 +290,29 @@ export default function Profilo() {
           </Link>
         </div>
       </div>
+
+      <AlertDialog open={!!squadraToDelete} onOpenChange={() => setSquadraToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Eliminare questa iscrizione?</AlertDialogTitle>
+            <AlertDialogDescription>
+              L'iscrizione verrà eliminata e non potrai recuperarla.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                deleteSquadraMutation.mutate(squadraToDelete);
+                setSquadraToDelete(null);
+              }}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Sì, elimina iscrizione
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
