@@ -97,21 +97,19 @@ export default function Gioca() {
       base44.entities.Squadra.update(squadraId, {
         completata: true,
         tempo_fine: new Date().toISOString()
-      });
-      queryClient.invalidateQueries(['squadra', squadraId]);
+      }).then(() => queryClient.invalidateQueries(['squadra', squadraId]));
     }
 
     // Evento: chiudi automaticamente alla data_fine
     if (evento) {
       const now = new Date();
       const fineEvento = new Date(evento.data_fine);
-      
+
       if (now > fineEvento) {
         base44.entities.Squadra.update(squadraId, {
           completata: true,
           tempo_fine: evento.data_fine
-        });
-        queryClient.invalidateQueries(['squadra', squadraId]);
+        }).then(() => queryClient.invalidateQueries(['squadra', squadraId]));
       }
     }
   }, [tempoCorrente, squadra?.completata, evento?.data_fine]);

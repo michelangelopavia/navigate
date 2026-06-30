@@ -49,7 +49,8 @@ export default function CompletamentoCard({ squadra, tempoTotale }) {
 
   const calcolaPunteggio = () => {
     let punti = 0;
-    for (let i = 0; i < 10; i++) {
+    const tappeGiocate = squadra.tappa_corrente ?? 10;
+    for (let i = 0; i < tappeGiocate; i++) {
       if (squadra.tappe_saltate?.includes(i)) {
         punti += 0;
       } else if (squadra.aiuti_usati?.includes(i)) {
@@ -61,7 +62,7 @@ export default function CompletamentoCard({ squadra, tempoTotale }) {
     return punti;
   };
 
-  const punteggio = squadra.punteggio || calcolaPunteggio();
+  const punteggio = squadra.punteggio ?? calcolaPunteggio();
   const numGiocatori = 1 + (squadra.altri_giocatori?.length || 0);
 
   return (
@@ -101,7 +102,7 @@ export default function CompletamentoCard({ squadra, tempoTotale }) {
         {/* Riepilogo tappe */}
         <div className="bg-gray-50 p-4 rounded-lg">
           <p className="text-sm text-gray-600 text-center">
-            <span className="font-medium">Tappe completate:</span> {10 - (squadra.tappe_saltate?.length || 0)}/10
+            <span className="font-medium">Tappe completate:</span> {(squadra.tappa_corrente ?? 10) - (squadra.tappe_saltate?.length || 0)}/10
             {squadra.aiuti_usati?.length > 0 && (
               <span className="ml-2">• <span className="text-[#FFD800]">{squadra.aiuti_usati.length} aiuti usati</span></span>
             )}
