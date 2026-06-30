@@ -35,7 +35,7 @@ export default function ApprofondimentoModal({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg mx-auto max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-lg mx-auto max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
           <DialogTitle className={`flex items-center gap-2 ${saltata ? 'text-gray-600' : 'text-green-600'}`}>
             {saltata ? '📍' : <PartyPopper className="w-6 h-6" />}

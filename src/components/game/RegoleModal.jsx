@@ -12,7 +12,7 @@ import { Trophy, Lightbulb, SkipForward, Clock, Star, Timer, AlertTriangle } fro
 export default function RegoleModal({ isOpen, onClose, onStart, isEvento = false }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
           <DialogTitle className="text-2xl text-center text-[#022b3a]">
             Come si gioca

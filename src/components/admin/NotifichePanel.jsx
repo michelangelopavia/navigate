@@ -54,7 +54,7 @@ export default function NotifichePanel({ notifiche, onSegnaLetta, onChiudiTutte 
         </div>
       </CardHeader>
       
-      <CardContent className="p-0 max-h-[400px] overflow-y-auto">
+      <CardContent className="p-0 max-h-[400px] overflow-y-auto custom-scrollbar">
         <AnimatePresence>
           {notifiche.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
