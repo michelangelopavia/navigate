@@ -245,7 +245,7 @@ export default function GestioneEventi() {
             >
               <Card className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
-                  <div className="flex flex-col md:flex-row md:items-center gap-4">
+                  <div className="flex flex-col md:flex-row md:items-start gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <Calendar className="w-5 h-5 text-blue-500" />
