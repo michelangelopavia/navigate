@@ -121,6 +121,11 @@ router.put('/:id', auth, async (req, res) => {
       updates.tempo_inizio_tappa_corrente = now;
     }
 
+    // Imposta tempo_fine quando la partita viene completata (timeout o completamento normale)
+    if (updates.completata && !squadra.completata) {
+      updates.tempo_fine = now;
+    }
+
     if (typeof updates.tappa_corrente === 'number' && updates.tappa_corrente > squadra.tappa_corrente) {
       if (updates.completata) {
         updates.tempo_fine = now;

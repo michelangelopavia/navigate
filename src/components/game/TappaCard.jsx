@@ -33,9 +33,14 @@ export default function TappaCard({
     setRisposta('');
     setErrore(false);
     setTentativi(0);
-    setMostraSuggerimento(aiutoUsato); // Mostra solo se già usato in questa tappa
+    setMostraSuggerimento(aiutoUsato);
     setTempoTrascorso(0);
   }, [numeroTappa]);
+
+  // Ripristina il suggerimento se aiutoUsato arriva true dopo un remount
+  useEffect(() => {
+    if (aiutoUsato) setMostraSuggerimento(true);
+  }, [aiutoUsato]);
 
   useEffect(() => {
     if (!tempoInizioTappa) return;
