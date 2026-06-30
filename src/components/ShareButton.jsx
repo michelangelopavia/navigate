@@ -8,7 +8,7 @@ export default function ShareButton({ eventoId, variant = "outline", size = "sm"
 
   const getShareUrl = () => {
     // URL diretto dell'evento
-    return `${window.location.origin}${window.location.pathname}#/DettaglioEvento?id=${eventoId}`;
+    return `${window.location.origin}/DettaglioEvento?id=${eventoId}`;
   };
 
   const handleCopy = async () => {
