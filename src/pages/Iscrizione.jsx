@@ -68,6 +68,13 @@ export default function Iscrizione() {
     enabled: !!luogo?.id
   });
 
+  // Verifica se la finestra dell'evento è già aperta (stessa logica di Gioca.jsx)
+  const isEventoInFinestra = () => {
+    if (!evento) return false;
+    const now = new Date();
+    return now >= new Date(evento.data_inizio) && now <= new Date(evento.data_fine);
+  };
+
   // Squadre precedenti dell'utente per pre-compilare
   const { data: squadrePrecedenti = [] } = useQuery({
     queryKey: ['squadre-utente', user?.id],
@@ -180,26 +187,28 @@ export default function Iscrizione() {
                 }
               </div>
               
-              {eventoId ?
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                  <Clock className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-                  <p className="text-blue-800 font-medium">
-                    Potrai giocare durante la finestra dell'evento
-                  </p>
-                </div> :
+              <div className="flex flex-col gap-4 pt-2">
+                {eventoId && !isEventoInFinestra() ?
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <Clock className="w-6 h-6 text-blue-500 mx-auto mb-2" />
+                    <p className="text-blue-800 font-medium">
+                      Potrai giocare durante la finestra dell'evento
+                    </p>
+                  </div> :
 
-              <Link to={createPageUrl(`Gioca?squadra=${squadraCreata.id}`)}>
-                  <Button className="w-full bg-[#FFD800] hover:bg-[#FFD800]/80 text-[#022b3a] text-lg py-6 font-bold">
-                    Inizia a Giocare Ora
+                <Link to={createPageUrl(`Gioca?squadra=${squadraCreata.id}`)}>
+                    <Button className="w-full bg-[#FFD800] hover:bg-[#FFD800]/80 text-[#022b3a] text-lg py-6 font-bold">
+                      Inizia a Giocare Ora
+                    </Button>
+                  </Link>
+                }
+
+                <Link to={createPageUrl('Home')}>
+                  <Button variant="outline" className="w-full">
+                    Torna alla Home
                   </Button>
                 </Link>
-              }
-              
-              <Link to={createPageUrl('Home')}>
-                <Button variant="outline" className="w-full">
-                  Torna alla Home
-                </Button>
-              </Link>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
