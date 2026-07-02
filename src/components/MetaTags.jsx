@@ -13,15 +13,15 @@ export default function MetaTags({
   const { data: seoSettings } = useQuery({
     queryKey: ['seo-settings'],
     queryFn: async () => {
-      const settings = await base44.entities.ImpostazioniSito.filter({ chiave: 'seo_defaults' });
+      const settings = await base44.entities.ImpostazioniSito.list();
       return settings[0] || null;
     },
     staleTime: 60000
   });
 
-  const siteTitle = seoSettings?.site_title || 'NAVIGATE - Perdetevi nella città, giocando!';
-  const defaultDescription = seoSettings?.site_description || 'Scopri la città attraverso una caccia al tesoro interattiva. Risolvi indovinelli, esplora luoghi nascosti e vivi un\'avventura unica con NAVIGATE.';
-  const defaultImage = seoSettings?.site_image || LOGO_URL;
+  const siteTitle = seoSettings?.og_title || 'NAVIGATE - Perdetevi nella città, giocando!';
+  const defaultDescription = seoSettings?.og_description || 'Scopri la città attraverso una caccia al tesoro interattiva. Risolvi indovinelli, esplora luoghi nascosti e vivi un\'avventura unica con NAVIGATE.';
+  const defaultImage = seoSettings?.og_image_url || LOGO_URL;
   
   const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
   const finalDescription = description || defaultDescription;
