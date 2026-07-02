@@ -15,6 +15,9 @@ const createEntity = (endpoint) => ({
   create: (data) =>
     client.post(`/${endpoint}`, data).then((r) => r.data),
 
+  bulkCreate: (items) =>
+    Promise.all(items.map((data) => client.post(`/${endpoint}`, data).then((r) => r.data))),
+
   update: (id, data) =>
     client.put(`/${endpoint}/${id}`, data).then((r) => r.data),
 
