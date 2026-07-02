@@ -63,7 +63,7 @@ export default function GestioneEventi() {
     attivo: true,
     concluso: false,
     email_gestori: [],
-    immagine_copertina: '',
+    og_image_url: '',
     og_title: '',
     og_description: ''
   });
@@ -124,7 +124,7 @@ export default function GestioneEventi() {
       attivo: true,
       concluso: false,
       email_gestori: [],
-      immagine_copertina: '',
+      og_image_url: '',
       og_title: '',
       og_description: ''
     });
@@ -159,7 +159,7 @@ export default function GestioneEventi() {
       attivo: evento.attivo,
       concluso: evento.concluso,
       email_gestori: evento.email_gestori || [],
-      immagine_copertina: evento.immagine_copertina || '',
+      og_image_url: evento.og_image_url || '',
       og_title: evento.og_title || '',
       og_description: evento.og_description || ''
     });
@@ -485,16 +485,16 @@ export default function GestioneEventi() {
                 <h4 className="font-semibold text-purple-800">Immagine di Copertina & Social</h4>
                 
                 <div>
-                  <Label htmlFor="immagine_copertina">Immagine di Copertina (URL)</Label>
+                  <Label htmlFor="og_image_url">Immagine di Copertina (URL)</Label>
                   <Input
-                    id="immagine_copertina"
-                    value={formData.immagine_copertina}
-                    onChange={(e) => setFormData({ ...formData, immagine_copertina: e.target.value })}
+                    id="og_image_url"
+                    value={formData.og_image_url}
+                    onChange={(e) => setFormData({ ...formData, og_image_url: e.target.value })}
                     placeholder="https://esempio.com/immagine.jpg"
                   />
                   <p className="text-xs text-gray-500 mt-1">Usata per condivisione social e promozione</p>
-                  {formData.immagine_copertina && (
-                    <img src={formData.immagine_copertina} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded border" />
+                  {formData.og_image_url && (
+                    <img src={formData.og_image_url} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded border" />
                   )}
                 </div>
 

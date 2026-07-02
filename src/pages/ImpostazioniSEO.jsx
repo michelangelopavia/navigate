@@ -13,21 +13,21 @@ import { createPageUrl } from '@/utils';
 export default function ImpostazioniSEO() {
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
-    site_title: '',
-    site_description: '',
-    site_image: '',
+    og_title: '',
+    og_description: '',
+    og_image_url: '',
     site_url: ''
   });
 
   const { data: impostazioni, isLoading } = useQuery({
     queryKey: ['impostazioni-seo'],
     queryFn: async () => {
-      const settings = await base44.entities.ImpostazioniSito.filter({ chiave: 'seo_defaults' });
+      const settings = await base44.entities.ImpostazioniSito.list();
       if (settings[0]) {
         setFormData({
-          site_title: settings[0].site_title || '',
-          site_description: settings[0].site_description || '',
-          site_image: settings[0].site_image || '',
+          og_title: settings[0].og_title || '',
+          og_description: settings[0].og_description || '',
+          og_image_url: settings[0].og_image_url || '',
           site_url: settings[0].site_url || ''
         });
       }
@@ -40,10 +40,7 @@ export default function ImpostazioniSEO() {
       if (impostazioni) {
         return base44.entities.ImpostazioniSito.update(impostazioni.id, data);
       } else {
-        return base44.entities.ImpostazioniSito.create({
-          chiave: 'seo_defaults',
-          ...data
-        });
+        return base44.entities.ImpostazioniSito.create(data);
       }
     },
     onSuccess: () => {
@@ -97,40 +94,40 @@ export default function ImpostazioniSEO() {
               </div>
 
               <div>
-                <Label htmlFor="site_title">Titolo del Sito</Label>
+                <Label htmlFor="og_title">Titolo del Sito</Label>
                 <Input
-                  id="site_title"
-                  value={formData.site_title}
-                  onChange={(e) => setFormData({ ...formData, site_title: e.target.value })}
+                  id="og_title"
+                  value={formData.og_title}
+                  onChange={(e) => setFormData({ ...formData, og_title: e.target.value })}
                   placeholder="NAVIGATE - Perdetevi nella città, giocando!"
                 />
               </div>
 
               <div>
-                <Label htmlFor="site_description">Descrizione del Sito</Label>
+                <Label htmlFor="og_description">Descrizione del Sito</Label>
                 <Textarea
-                  id="site_description"
-                  value={formData.site_description}
-                  onChange={(e) => setFormData({ ...formData, site_description: e.target.value })}
+                  id="og_description"
+                  value={formData.og_description}
+                  onChange={(e) => setFormData({ ...formData, og_description: e.target.value })}
                   placeholder="Descrizione che apparirà quando qualcuno condivide il link del sito..."
                   rows={4}
                 />
               </div>
 
               <div>
-                <Label htmlFor="site_image">Immagine di Default (URL)</Label>
+                <Label htmlFor="og_image_url">Immagine di Default (URL)</Label>
                 <Input
-                  id="site_image"
-                  value={formData.site_image}
-                  onChange={(e) => setFormData({ ...formData, site_image: e.target.value })}
+                  id="og_image_url"
+                  value={formData.og_image_url}
+                  onChange={(e) => setFormData({ ...formData, og_image_url: e.target.value })}
                   placeholder="https://esempio.com/immagine-default.jpg"
                 />
                 <p className="text-xs text-gray-500 mt-1">Immagine mostrata nelle anteprime social</p>
-                {formData.site_image && (
-                  <img 
-                    src={formData.site_image} 
-                    alt="Preview" 
-                    className="mt-2 w-48 h-48 object-cover rounded border" 
+                {formData.og_image_url && (
+                  <img
+                    src={formData.og_image_url}
+                    alt="Preview"
+                    className="mt-2 w-48 h-48 object-cover rounded border"
                   />
                 )}
               </div>

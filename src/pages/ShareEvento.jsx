@@ -24,7 +24,7 @@ export default function ShareEvento() {
           const meta = {
             title: evento.og_title || evento.nome || 'NAVIGATE',
             description: evento.og_description || (evento.descrizione ? evento.descrizione.replace(/<[^>]*>/g, '').substring(0, 200) : ''),
-            image: evento.immagine_copertina || LOGO_URL
+            image: evento.og_image_url || LOGO_URL
           };
           
           setMetaData(meta);

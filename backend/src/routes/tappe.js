@@ -2,13 +2,22 @@ const express = require('express');
 const { Tappa } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
+const optionalAuth = require('../middleware/optionalAuth');
 
 const router = express.Router();
 
 const parseBool = (v) => v === 'true' ? true : v === 'false' ? false : v;
 
+const isReqAdmin = (req) => req.user?.role === 'admin' || req.user?.role === 'super_admin';
+
+const stripRisposte = (t) => {
+  const { risposta_corretta, risposte_alternative, risposta_corretta_en, risposte_alternative_en, ...safe } = t.toJSON();
+  return safe;
+};
+
 // GET /api/tappe — pubblico, filtrabile per luogo_id, difficolta, attivo
-router.get('/', async (req, res) => {
+// mostra le risposte corrette solo se chi chiama è un admin autenticato
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const where = {};
     if (req.query.id)        where.id = req.query.id;
@@ -17,22 +26,19 @@ router.get('/', async (req, res) => {
     if (req.query.attivo !== undefined) where.attivo = parseBool(req.query.attivo);
 
     const tappe = await Tappa.findAll({ where, order: [['ordine', 'ASC']] });
-    res.json(tappe.map(t => {
-      const { risposta_corretta, risposte_alternative, ...safe } = t.toJSON();
-      return safe;
-    }));
+    const admin = isReqAdmin(req);
+    res.json(tappe.map(t => admin ? t.toJSON() : stripRisposte(t)));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// GET /api/tappe/:id
-router.get('/:id', async (req, res) => {
+// GET /api/tappe/:id — stesso criterio di visibilità della lista
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const tappa = await Tappa.findByPk(req.params.id);
     if (!tappa) return res.status(404).json({ error: 'Non trovata' });
-    const { risposta_corretta, risposte_alternative, ...safe } = tappa.toJSON();
-    res.json(safe);
+    res.json(isReqAdmin(req) ? tappa.toJSON() : stripRisposte(tappa));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

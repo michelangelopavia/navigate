@@ -8,6 +8,7 @@ const ImpostazioniSito = sequelize.define('ImpostazioniSito', {
   og_image_url:     { type: DataTypes.STRING, allowNull: true },
   meta_description: { type: DataTypes.TEXT, allowNull: true },
   site_name:        { type: DataTypes.STRING, allowNull: true },
+  site_url:         { type: DataTypes.STRING, allowNull: true },
 }, {
   tableName: 'impostazioni_sito',
   underscored: true,

@@ -94,7 +94,7 @@ export default function DettaglioEvento() {
       <MetaTags
         title={evento.og_title || getLocalized(evento, 'nome')}
         description={evento.og_description || getLocalized(evento, 'descrizione')?.replace(/<[^>]*>/g, '').substring(0, 200)}
-        image={evento.immagine_copertina}
+        image={evento.og_image_url}
         url={eventoUrl}
         type="event"
       />
