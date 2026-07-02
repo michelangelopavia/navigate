@@ -14,6 +14,8 @@ const Evento = sequelize.define('Evento', {
   concluso:     { type: DataTypes.BOOLEAN, defaultValue: false },
   email_gestori: { type: DataTypes.JSON, defaultValue: [] },
   og_image_url: { type: DataTypes.STRING, allowNull: true },
+  og_title:     { type: DataTypes.STRING, allowNull: true },
+  og_description: { type: DataTypes.TEXT, allowNull: true },
 }, {
   tableName: 'eventi',
   underscored: true,
