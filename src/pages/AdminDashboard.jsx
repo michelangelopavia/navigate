@@ -4,17 +4,31 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  MapPin, Calendar, Users, Bell, Trophy, AlertCircle, Home, Settings
+import {
+  MapPin, Calendar, Users, Bell, Trophy, AlertCircle, Home, Settings, Loader2
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { useAuth } from '@/lib/AuthContext';
 
 import NotifichePanel from '@/components/admin/NotifichePanel';
 import ClassificaEvento from '@/components/admin/ClassificaEvento';
 
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
+  const { user, isLoadingAuth } = useAuth();
+
+  if (isLoadingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+      </div>
+    );
+  }
+
+  if (user?.role !== 'admin' && user?.role !== 'super_admin') {
+    return <Navigate to={createPageUrl('Home')} replace />;
+  }
 
   const { data: luoghi = [] } = useQuery({
     queryKey: ['luoghi'],

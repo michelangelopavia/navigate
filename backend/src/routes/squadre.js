@@ -8,6 +8,8 @@ const router = express.Router();
 
 const parseBool = (v) => v === 'true' ? true : v === 'false' ? false : v;
 
+const isReqAdmin = (req) => req.user?.role === 'admin' || req.user?.role === 'super_admin';
+
 // Converte il parametro _sort in clause Sequelize
 // Es: '-created_date' → [['created_at', 'DESC']], 'punteggio' → [['punteggio', 'ASC']]
 const parseOrder = (sort) => {
@@ -101,10 +103,10 @@ router.put('/:id', auth, async (req, res) => {
     const squadra = await Squadra.findByPk(req.params.id);
     if (!squadra) return res.status(404).json({ error: 'Non trovata' });
 
-    if (req.user.role !== 'admin' && squadra.user_id !== req.user.id)
+    if (!isReqAdmin(req) && squadra.user_id !== req.user.id)
       return res.status(403).json({ error: 'Non autorizzato' });
 
-    if (req.user.role !== 'admin' && squadra.evento_id) {
+    if (!isReqAdmin(req) && squadra.evento_id) {
       const evento = await Evento.findByPk(squadra.evento_id);
       if (evento) {
         const now = new Date();
@@ -147,7 +149,7 @@ router.delete('/:id', auth, async (req, res) => {
     const squadra = await Squadra.findByPk(req.params.id);
     if (!squadra) return res.status(404).json({ error: 'Non trovata' });
 
-    if (req.user.role !== 'admin' && squadra.user_id !== req.user.id)
+    if (!isReqAdmin(req) && squadra.user_id !== req.user.id)
       return res.status(403).json({ error: 'Non autorizzato' });
 
     await squadra.destroy();

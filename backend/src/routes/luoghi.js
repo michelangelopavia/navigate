@@ -2,6 +2,7 @@ const express = require('express');
 const { Luogo } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
+const scopeToSedi = require('../middleware/scopeToSedi');
 
 const router = express.Router();
 
@@ -32,9 +33,12 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/luoghi — admin
+// POST /api/luoghi — solo super_admin (creare una nuova sede è una vista globale)
 router.post('/', auth, isAdmin, async (req, res) => {
   try {
+    if (req.user.role !== 'super_admin') {
+      return res.status(403).json({ error: 'Solo il super admin può creare nuove sedi' });
+    }
     const luogo = await Luogo.create(req.body);
     res.status(201).json(luogo);
   } catch (err) {
@@ -42,11 +46,14 @@ router.post('/', auth, isAdmin, async (req, res) => {
   }
 });
 
-// PUT /api/luoghi/:id — admin
-router.put('/:id', auth, isAdmin, async (req, res) => {
+// PUT /api/luoghi/:id — super_admin, o admin assegnato a questa sede
+router.put('/:id', auth, isAdmin, scopeToSedi, async (req, res) => {
   try {
     const luogo = await Luogo.findByPk(req.params.id);
     if (!luogo) return res.status(404).json({ error: 'Non trovato' });
+    if (req.sedeIds && !req.sedeIds.includes(luogo.id)) {
+      return res.status(403).json({ error: 'Non sei assegnato a questa sede' });
+    }
     await luogo.update(req.body);
     res.json(luogo);
   } catch (err) {
@@ -54,9 +61,12 @@ router.put('/:id', auth, isAdmin, async (req, res) => {
   }
 });
 
-// DELETE /api/luoghi/:id — admin
+// DELETE /api/luoghi/:id — solo super_admin (eliminare una sede è una vista globale)
 router.delete('/:id', auth, isAdmin, async (req, res) => {
   try {
+    if (req.user.role !== 'super_admin') {
+      return res.status(403).json({ error: 'Solo il super admin può eliminare una sede' });
+    }
     const luogo = await Luogo.findByPk(req.params.id);
     if (!luogo) return res.status(404).json({ error: 'Non trovato' });
     await luogo.destroy();
