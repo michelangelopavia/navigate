@@ -43,6 +43,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ReactQuill from 'react-quill';
+import { toast } from 'sonner';
 
 export default function GestioneEventi() {
   const queryClient = useQueryClient();
@@ -91,6 +92,12 @@ export default function GestioneEventi() {
       queryClient.invalidateQueries(['eventi']);
       setShowForm(false);
       resetForm();
+      toast.success('Evento creato con successo!');
+    },
+    onError: () => {
+      toast.error('Errore nella creazione dell\'evento', {
+        description: 'Riprova tra qualche istante.'
+      });
     }
   });
 
@@ -101,6 +108,12 @@ export default function GestioneEventi() {
       setShowForm(false);
       setEventoEdit(null);
       resetForm();
+      toast.success('Evento aggiornato con successo!');
+    },
+    onError: () => {
+      toast.error('Errore nel salvataggio dell\'evento', {
+        description: 'Riprova tra qualche istante.'
+      });
     }
   });
 
@@ -109,6 +122,12 @@ export default function GestioneEventi() {
     onSuccess: () => {
       queryClient.invalidateQueries(['eventi']);
       setEventoDelete(null);
+      toast.success('Evento eliminato');
+    },
+    onError: () => {
+      toast.error('Errore nell\'eliminazione dell\'evento', {
+        description: 'Riprova tra qualche istante.'
+      });
     }
   });
 

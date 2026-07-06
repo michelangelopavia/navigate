@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Save, Globe, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { toast } from 'sonner';
 
 export default function ImpostazioniSEO() {
   const queryClient = useQueryClient();
@@ -45,7 +46,12 @@ export default function ImpostazioniSEO() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['impostazioni-seo']);
-      alert('Impostazioni salvate con successo!');
+      toast.success('Impostazioni salvate con successo!');
+    },
+    onError: () => {
+      toast.error('Errore nel salvataggio', {
+        description: 'Riprova tra qualche istante.'
+      });
     }
   });
 

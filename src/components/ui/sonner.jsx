@@ -1,16 +1,20 @@
-"use client";
-import { useTheme } from "next-themes"
 import { Toaster as Sonner } from "sonner"
 
 const Toaster = ({
   ...props
 }) => {
-  const { theme = "system" } = useTheme()
-
   return (
     (<Sonner
-      theme={theme}
+      position="top-center"
+      duration={5000}
+      richColors
+      closeButton
       className="toaster group"
+      style={{
+        '--toast-close-button-start': 'unset',
+        '--toast-close-button-end': '0',
+        '--toast-close-button-transform': 'translate(35%, -35%)'
+      }}
       toastOptions={{
         classNames: {
           toast:
