@@ -3,6 +3,7 @@ const { Tappa } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
 const optionalAuth = require('../middleware/optionalAuth');
+const scopeToSedi = require('../middleware/scopeToSedi');
 
 const router = express.Router();
 
@@ -44,9 +45,12 @@ router.get('/:id', optionalAuth, async (req, res) => {
   }
 });
 
-// POST /api/tappe — admin
-router.post('/', auth, isAdmin, async (req, res) => {
+// POST /api/tappe — admin (solo sulla propria sede, se admin di sede)
+router.post('/', auth, isAdmin, scopeToSedi, async (req, res) => {
   try {
+    if (req.sedeIds && !req.sedeIds.includes(req.body.luogo_id)) {
+      return res.status(403).json({ error: 'Non sei assegnato a questa sede' });
+    }
     const tappa = await Tappa.create(req.body);
     res.status(201).json(tappa);
   } catch (err) {
@@ -54,11 +58,14 @@ router.post('/', auth, isAdmin, async (req, res) => {
   }
 });
 
-// PUT /api/tappe/:id — admin
-router.put('/:id', auth, isAdmin, async (req, res) => {
+// PUT /api/tappe/:id — admin (solo sulla propria sede, se admin di sede)
+router.put('/:id', auth, isAdmin, scopeToSedi, async (req, res) => {
   try {
     const tappa = await Tappa.findByPk(req.params.id);
     if (!tappa) return res.status(404).json({ error: 'Non trovata' });
+    if (req.sedeIds && !req.sedeIds.includes(tappa.luogo_id)) {
+      return res.status(403).json({ error: 'Non sei assegnato a questa sede' });
+    }
     await tappa.update(req.body);
     res.json(tappa);
   } catch (err) {
@@ -66,11 +73,14 @@ router.put('/:id', auth, isAdmin, async (req, res) => {
   }
 });
 
-// DELETE /api/tappe/:id — admin
-router.delete('/:id', auth, isAdmin, async (req, res) => {
+// DELETE /api/tappe/:id — admin (solo sulla propria sede, se admin di sede)
+router.delete('/:id', auth, isAdmin, scopeToSedi, async (req, res) => {
   try {
     const tappa = await Tappa.findByPk(req.params.id);
     if (!tappa) return res.status(404).json({ error: 'Non trovata' });
+    if (req.sedeIds && !req.sedeIds.includes(tappa.luogo_id)) {
+      return res.status(403).json({ error: 'Non sei assegnato a questa sede' });
+    }
     await tappa.destroy();
     res.json({ success: true });
   } catch (err) {

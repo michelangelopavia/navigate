@@ -2,6 +2,7 @@ const express = require('express');
 const { Evento } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
+const scopeToSedi = require('../middleware/scopeToSedi');
 
 const router = express.Router();
 
@@ -34,9 +35,12 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/eventi — admin
-router.post('/', auth, isAdmin, async (req, res) => {
+// POST /api/eventi — admin (solo sulla propria sede, se admin di sede)
+router.post('/', auth, isAdmin, scopeToSedi, async (req, res) => {
   try {
+    if (req.sedeIds && !req.sedeIds.includes(req.body.luogo_id)) {
+      return res.status(403).json({ error: 'Non sei assegnato a questa sede' });
+    }
     const evento = await Evento.create(req.body);
     res.status(201).json(evento);
   } catch (err) {
@@ -44,11 +48,14 @@ router.post('/', auth, isAdmin, async (req, res) => {
   }
 });
 
-// PUT /api/eventi/:id — admin
-router.put('/:id', auth, isAdmin, async (req, res) => {
+// PUT /api/eventi/:id — admin (solo sulla propria sede, se admin di sede)
+router.put('/:id', auth, isAdmin, scopeToSedi, async (req, res) => {
   try {
     const evento = await Evento.findByPk(req.params.id);
     if (!evento) return res.status(404).json({ error: 'Non trovato' });
+    if (req.sedeIds && !req.sedeIds.includes(evento.luogo_id)) {
+      return res.status(403).json({ error: 'Non sei assegnato a questa sede' });
+    }
     await evento.update(req.body);
     res.json(evento);
   } catch (err) {
@@ -56,11 +63,14 @@ router.put('/:id', auth, isAdmin, async (req, res) => {
   }
 });
 
-// DELETE /api/eventi/:id — admin
-router.delete('/:id', auth, isAdmin, async (req, res) => {
+// DELETE /api/eventi/:id — admin (solo sulla propria sede, se admin di sede)
+router.delete('/:id', auth, isAdmin, scopeToSedi, async (req, res) => {
   try {
     const evento = await Evento.findByPk(req.params.id);
     if (!evento) return res.status(404).json({ error: 'Non trovato' });
+    if (req.sedeIds && !req.sedeIds.includes(evento.luogo_id)) {
+      return res.status(403).json({ error: 'Non sei assegnato a questa sede' });
+    }
     await evento.destroy();
     res.json({ success: true });
   } catch (err) {
