@@ -78,6 +78,12 @@ export default function Home() {
   const squadraInCorso = mieSquadre.find((s) => !s.completata && s.tempo_inizio);
   const squadraPronta = mieSquadre.find((s) => !s.completata && !s.tempo_inizio);
 
+  // Un evento è davvero finito se non compare più tra gli eventi attivi,
+  // indipendentemente da squadraInCorso.completata (che si aggiorna solo
+  // visitando Gioca.jsx e può quindi essere ancora false)
+  const eventoTerminato = squadraInCorso?.evento_id &&
+    !eventi.some((e) => e.id === squadraInCorso.evento_id);
+
   const deleteSquadraMutation = useMutation({
     mutationFn: (squadraId) => base44.entities.Squadra.delete(squadraId),
     onSuccess: () => {
@@ -258,12 +264,19 @@ export default function Home() {
                   3
                 </div>
                 <h3 className="font-bold text-lg mb-2 text-[#022b3a]">
-                  {squadraInCorso ? t('continuePlay') : t('step3Play')}
+                  {eventoTerminato ? 'Evento terminato' : squadraInCorso ? t('continuePlay') : t('step3Play')}
                 </h3>
                 <p className="text-gray-500 text-sm mb-4">
-                  {squadraInCorso ? `${t('stage')} ${squadraInCorso.tappa_corrente + 1}/10` : t('step3Desc')}
+                  {eventoTerminato ? 'Consulta la classifica finale' : squadraInCorso ? `${t('stage')} ${squadraInCorso.tappa_corrente + 1}/10` : t('step3Desc')}
                 </p>
-                {squadraInCorso ? (
+                {eventoTerminato ? (
+                  <Link to={createPageUrl(`Classifica?evento=${squadraInCorso.evento_id}`)}>
+                    <Button className="w-full bg-[#1f7a8c] hover:bg-[#022b3a]">
+                      <Play className="w-4 h-4 mr-2" />
+                      Vedi Classifica
+                    </Button>
+                  </Link>
+                ) : squadraInCorso ? (
                   <Link to={createPageUrl(`Gioca?squadra=${squadraInCorso.id}`)}>
                     <Button className="w-full bg-[#FFD800] hover:bg-[#FFD800]/80 text-[#022b3a]">
                       <Play className="w-4 h-4 mr-2" />
