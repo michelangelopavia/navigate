@@ -126,7 +126,7 @@ export default function Home() {
                     {user?.full_name?.split(' ')[0] || t('profile')}
                   </Button>
                 </Link>
-                {user?.role === 'admin' && (
+                {(user?.role === 'admin' || user?.role === 'super_admin') && (
                   <Link to={createPageUrl('AdminDashboard')}>
                     <Button variant="ghost" size="sm" className="text-[#022b3a]">
                       <Settings className="w-4 h-4" />
