@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { useAuth } from '@/lib/AuthContext';
 
 import ClassificaEvento from '@/components/admin/ClassificaEvento';
 
 export default function Classifica() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
   const urlParams = new URLSearchParams(window.location.search);
   const eventoId = urlParams.get('evento');
 
@@ -39,10 +42,10 @@ export default function Classifica() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 p-4 md:p-6">
       <div className="max-w-3xl mx-auto">
-        <Link to={createPageUrl('AdminDashboard')}>
+        <Link to={createPageUrl(isAdmin ? 'AdminDashboard' : 'Home')}>
           <Button variant="ghost" className="mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Torna al Pannello
+            {isAdmin ? 'Torna al Pannello' : 'Torna alla Home'}
           </Button>
         </Link>
 
