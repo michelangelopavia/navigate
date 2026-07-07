@@ -1,7 +1,9 @@
 const express = require('express');
-const { Notifica } = require('../models');
+const { Op } = require('sequelize');
+const { Notifica, Squadra } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
+const scopeToSedi = require('../middleware/scopeToSedi');
 
 const router = express.Router();
 
@@ -13,12 +15,19 @@ const TIPI_AMMESSI = ['nuova_iscrizione', 'tappa_superata', 'gioco_completato', 
 const pick = (obj, fields) =>
   Object.fromEntries(fields.filter((f) => f in obj).map((f) => [f, obj[f]]));
 
-// GET /api/notifiche — admin
-router.get('/', auth, isAdmin, async (req, res) => {
+// GET /api/notifiche — admin (solo della propria sede, se admin di sede)
+// Le notifiche non hanno luogo_id diretto: si risale tramite la squadra.
+// Una notifica senza squadra_id non è attribuibile a nessuna sede,
+// quindi resta visibile solo al super_admin.
+router.get('/', auth, isAdmin, scopeToSedi, async (req, res) => {
   try {
     const where = {};
     if (req.query.letta !== undefined) where.letta = parseBool(req.query.letta);
     if (req.query.evento_id) where.evento_id = req.query.evento_id;
+    if (req.sedeIds) {
+      const squadreScope = await Squadra.findAll({ where: { luogo_id: req.sedeIds }, attributes: ['id'] });
+      where.squadra_id = { [Op.in]: squadreScope.map((s) => s.id) };
+    }
 
     const notifiche = await Notifica.findAll({ where, order: [['created_at', 'DESC']] });
     res.json(notifiche);
