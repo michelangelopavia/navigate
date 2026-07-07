@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  MapPin, Calendar, Users, Bell, Trophy, AlertCircle, Home, Settings, Loader2
+  MapPin, Calendar, Users, Bell, Trophy, AlertCircle, Home, Settings, Loader2, UserCog, AlertTriangle
 } from 'lucide-react';
 import { Link, Navigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -124,6 +124,20 @@ export default function AdminDashboard() {
                 SEO
               </Button>
             </Link>
+            <Link to={createPageUrl('GestioneSegnalazioni')}>
+              <Button variant="outline" className="border-orange-300 text-orange-600 hover:bg-orange-50">
+                <AlertTriangle className="w-4 h-4 mr-2" />
+                Segnalazioni
+              </Button>
+            </Link>
+            {user?.role === 'super_admin' && (
+              <Link to={createPageUrl('AssegnaAdminSede')}>
+                <Button variant="outline" className="border-purple-300 text-purple-600 hover:bg-purple-50">
+                  <UserCog className="w-4 h-4 mr-2" />
+                  Assegna Admin
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
 

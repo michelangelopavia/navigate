@@ -36,6 +36,20 @@ export const entities = {
   ImpostazioniSito: createEntity('impostazioni-sito'),
 };
 
+export const adminLuoghi = {
+  list: () =>
+    client.get('/admin-luoghi').then((r) => r.data),
+
+  listUsers: () =>
+    client.get('/admin-luoghi/users').then((r) => r.data),
+
+  assign: (email, luogo_id) =>
+    client.post('/admin-luoghi', { email, luogo_id }).then((r) => r.data),
+
+  remove: (id) =>
+    client.delete(`/admin-luoghi/${id}`).then((r) => r.data),
+};
+
 export const auth = {
   me: () =>
     client.get('/auth/me').then((r) => r.data),

@@ -15,6 +15,7 @@ import {
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/lib/AuthContext';
 import {
   Dialog,
   DialogContent,
@@ -35,6 +36,9 @@ import {
 
 export default function GestioneLuoghi() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'super_admin';
+  const puoModificare = (luogoId) => isSuperAdmin || (user?.sedi_ids || []).includes(luogoId);
   const [showForm, setShowForm] = useState(false);
   const [luogoEdit, setLuogoEdit] = useState(null);
   const [luogoDelete, setLuogoDelete] = useState(null);
@@ -147,13 +151,15 @@ export default function GestioneLuoghi() {
               <p className="text-gray-500 text-sm">Crea e gestisci i luoghi di gioco</p>
             </div>
           </div>
-          <Button 
-            onClick={() => { setLuogoEdit(null); resetForm(); setShowForm(true); }}
-            className="bg-orange-500 hover:bg-orange-600"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Nuovo Luogo
-          </Button>
+          {isSuperAdmin && (
+            <Button
+              onClick={() => { setLuogoEdit(null); resetForm(); setShowForm(true); }}
+              className="bg-orange-500 hover:bg-orange-600"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nuovo Luogo
+            </Button>
+          )}
         </div>
 
         {/* Lista Luoghi */}
@@ -208,23 +214,29 @@ export default function GestioneLuoghi() {
                           )}
                         </div>
                       </div>
-                      <div className="flex md:flex-col gap-2 p-4 border-t md:border-t-0 md:border-l">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => openEdit(luogo)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="text-red-500 hover:bg-red-50"
-                          onClick={() => setLuogoDelete(luogo)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      {(puoModificare(luogo.id) || isSuperAdmin) && (
+                        <div className="flex md:flex-col gap-2 p-4 border-t md:border-t-0 md:border-l">
+                          {puoModificare(luogo.id) && (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => openEdit(luogo)}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          )}
+                          {isSuperAdmin && (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="text-red-500 hover:bg-red-50"
+                              onClick={() => setLuogoDelete(luogo)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

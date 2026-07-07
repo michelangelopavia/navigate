@@ -44,9 +44,13 @@ import {
 } from "@/components/ui/select";
 import ReactQuill from 'react-quill';
 import { toast } from 'sonner';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function GestioneEventi() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'super_admin';
+  const puoModificare = (luogoId) => isSuperAdmin || (user?.sedi_ids || []).includes(luogoId);
   const [showForm, setShowForm] = useState(false);
   const [eventoEdit, setEventoEdit] = useState(null);
   const [eventoDelete, setEventoDelete] = useState(null);
@@ -80,6 +84,8 @@ export default function GestioneEventi() {
     queryKey: ['luoghi'],
     queryFn: () => base44.entities.Luogo.list()
   });
+
+  const luoghiAssegnabili = isSuperAdmin ? luoghi : luoghi.filter(l => (user?.sedi_ids || []).includes(l.id));
 
   const { data: squadre = [] } = useQuery({
     queryKey: ['squadre'],
@@ -135,7 +141,7 @@ export default function GestioneEventi() {
     setFormData({
       nome: '',
       nome_en: '',
-      luogo_id: luoghi[0]?.id || '',
+      luogo_id: luoghiAssegnabili[0]?.id || '',
       data_inizio: '',
       data_fine: '',
       descrizione: '',
@@ -244,13 +250,15 @@ export default function GestioneEventi() {
               <p className="text-gray-500 text-sm">Crea e gestisci le competizioni</p>
             </div>
           </div>
-          <Button 
-            onClick={() => { setEventoEdit(null); resetForm(); setShowForm(true); }}
-            className="bg-orange-500 hover:bg-orange-600"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Nuovo Evento
-          </Button>
+          {(isSuperAdmin || luoghiAssegnabili.length > 0) && (
+            <Button
+              onClick={() => { setEventoEdit(null); resetForm(); setShowForm(true); }}
+              className="bg-orange-500 hover:bg-orange-600"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nuovo Evento
+            </Button>
+          )}
         </div>
 
         {/* Lista Eventi */}
@@ -331,23 +339,25 @@ export default function GestioneEventi() {
                           </Button>
                         )}
                       </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => openEdit(evento)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="text-red-500 hover:bg-red-50"
-                          onClick={() => setEventoDelete(evento)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      {puoModificare(evento.luogo_id) && (
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => openEdit(evento)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="text-red-500 hover:bg-red-50"
+                            onClick={() => setEventoDelete(evento)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -404,7 +414,7 @@ export default function GestioneEventi() {
                     <SelectValue placeholder="Seleziona un luogo" />
                   </SelectTrigger>
                   <SelectContent>
-                    {luoghi.map(l => (
+                    {luoghiAssegnabili.map(l => (
                       <SelectItem key={l.id} value={l.id}>
                         {l.nome} ({l.citta})
                       </SelectItem>
