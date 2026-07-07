@@ -215,16 +215,18 @@ export default function Gioca() {
 
       await base44.entities.Squadra.update(squadraId, updates);
 
-      // Notifica
-      await base44.entities.Notifica.create({
-        tipo: completata ? 'gioco_completato' : 'tappa_superata',
-        squadra_id: squadraId,
-        squadra_nome: squadra.nome_squadra,
-        evento_id: squadra.evento_id,
-        messaggio: completata 
-          ? `🏆 ${squadra.nome_squadra} ha completato con ${punteggioFinale} punti!`
-          : `✓ ${squadra.nome_squadra} ha superato la tappa ${nuovaTappa}`
+      // Notifica — solo in modalità evento, il gioco libero mostra solo le segnalazioni
+      if (squadra.evento_id) {
+        await base44.entities.Notifica.create({
+          tipo: completata ? 'gioco_completato' : 'tappa_superata',
+          squadra_id: squadraId,
+          squadra_nome: squadra.nome_squadra,
+          evento_id: squadra.evento_id,
+          messaggio: completata
+            ? `🏆 ${squadra.nome_squadra} ha completato con ${punteggioFinale} punti!`
+            : `✓ ${squadra.nome_squadra} ha superato la tappa ${nuovaTappa}`
         });
+      }
 
       return { nuovaTappa, completata };
     },

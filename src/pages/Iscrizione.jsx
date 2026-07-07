@@ -97,14 +97,16 @@ export default function Iscrizione() {
 
       const squadra = await base44.entities.Squadra.create(squadraData);
 
-      // Crea notifica per admin
-      await base44.entities.Notifica.create({
-        tipo: 'nuova_iscrizione',
-        squadra_id: squadra.id,
-        squadra_nome: data.nome_squadra,
-        evento_id: eventoId || null,
-        messaggio: `Nuova squadra iscritta: ${data.nome_squadra} ${eventoId ? '(evento)' : `(${luogo?.nome})`}`
-      });
+      // Notifica per admin — solo in modalità evento, il gioco libero mostra solo le segnalazioni
+      if (eventoId) {
+        await base44.entities.Notifica.create({
+          tipo: 'nuova_iscrizione',
+          squadra_id: squadra.id,
+          squadra_nome: data.nome_squadra,
+          evento_id: eventoId,
+          messaggio: `Nuova squadra iscritta: ${data.nome_squadra} (evento)`
+        });
+      }
 
       // Invia email ai gestori se è un evento
       if (eventoId && evento?.email_gestori?.length > 0) {
