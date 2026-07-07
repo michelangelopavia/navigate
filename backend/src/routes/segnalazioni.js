@@ -1,8 +1,10 @@
 const express = require('express');
 const { Op } = require('sequelize');
-const { Segnalazione, Squadra, Notifica } = require('../models');
+const { Segnalazione, Squadra, Notifica, Evento } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
+const { sendEmail } = require('../services/email');
+const { getSedeAdminEmails, getSuperAdminEmails } = require('../services/adminEmails');
 const scopeToSedi = require('../middleware/scopeToSedi');
 
 const router = express.Router();
@@ -37,6 +39,35 @@ router.post('/', async (req, res) => {
       squadra_nome: squadra?.nome_squadra || null,
       messaggio: segnalazione.descrizione,
     });
+
+    // Email sempre ad admin sede + super_admin (segnalazioni rare, meritano visibilità garantita),
+    // più email_gestori se la segnalazione arriva da una squadra iscritta a un evento.
+    // Non deve mai far fallire la creazione della segnalazione se l'invio fallisce.
+    try {
+      const evento = squadra?.evento_id ? await Evento.findByPk(squadra.evento_id) : null;
+      const destinatari = [...new Set([
+        ...(await getSedeAdminEmails(squadra?.luogo_id)),
+        ...(await getSuperAdminEmails()),
+        ...(evento?.email_gestori || []),
+      ])];
+
+      for (const to of destinatari) {
+        await sendEmail({
+          to,
+          subject: '🚨 Segnalazione malfunzionamento - NAVIGATE',
+          body: `
+            <h2>Nuova segnalazione</h2>
+            <p><strong>Messaggio:</strong> ${segnalazione.descrizione}</p>
+            <p><strong>Squadra:</strong> ${squadra?.nome_squadra || 'N/D'}</p>
+            <p><strong>Email utente:</strong> ${segnalazione.user_email || 'Anonimo'}</p>
+            <hr>
+            <p>Data: ${new Date().toLocaleString('it-IT')}</p>
+          `,
+        });
+      }
+    } catch (emailErr) {
+      console.error('Errore invio email segnalazione:', emailErr.message);
+    }
 
     res.status(201).json(segnalazione);
   } catch (err) {
