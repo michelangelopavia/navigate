@@ -32,9 +32,13 @@ import {
 
 import TappaForm from '@/components/admin/TappaForm';
 import ImportTappeCSV from '@/components/admin/ImportTappeCSV';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function GestioneTappe() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'super_admin';
+  const puoModificare = (luogoId) => isSuperAdmin || (user?.sedi_ids || []).includes(luogoId);
   const [search, setSearch] = useState('');
   const [filtroLivello, setFiltroLivello] = useState('tutti');
   const [filtroLuogo, setFiltroLuogo] = useState('tutti');
@@ -51,6 +55,8 @@ export default function GestioneTappe() {
     queryKey: ['luoghi'],
     queryFn: () => base44.entities.Luogo.list()
   });
+
+  const luoghiAssegnabili = isSuperAdmin ? luoghi : luoghi.filter(l => (user?.sedi_ids || []).includes(l.id));
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Tappa.create(data),
@@ -140,18 +146,20 @@ export default function GestioneTappe() {
               <p className="text-gray-500 text-sm">Crea e modifica gli indovinelli</p>
             </div>
           </div>
-          <Button 
-            onClick={() => { setTappaEdit(null); setShowForm(true); }}
-            className="bg-orange-500 hover:bg-orange-600"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Nuova Tappa
-          </Button>
+          {(isSuperAdmin || luoghiAssegnabili.length > 0) && (
+            <Button
+              onClick={() => { setTappaEdit(null); setShowForm(true); }}
+              className="bg-orange-500 hover:bg-orange-600"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nuova Tappa
+            </Button>
+          )}
         </div>
 
         {/* Import CSV */}
-        <ImportTappeCSV 
-          luoghi={luoghi}
+        <ImportTappeCSV
+          luoghi={luoghiAssegnabili}
           onImport={(tappe) => bulkCreateMutation.mutateAsync(tappe)}
         />
 
@@ -246,23 +254,25 @@ export default function GestioneTappe() {
                           Risposta: <span className="font-medium">{tappa.risposta_corretta}</span>
                         </p>
                       </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => { setTappaEdit(tappa); setShowForm(true); }}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="text-red-500 hover:bg-red-50"
-                          onClick={() => setTappaDelete(tappa)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      {puoModificare(tappa.luogo_id) && (
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => { setTappaEdit(tappa); setShowForm(true); }}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="text-red-500 hover:bg-red-50"
+                            onClick={() => setTappaDelete(tappa)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -286,7 +296,7 @@ export default function GestioneTappe() {
           onClose={() => { setShowForm(false); setTappaEdit(null); }}
           onSubmit={handleSubmit}
           tappa={tappaEdit}
-          luoghi={luoghi}
+          luoghi={luoghiAssegnabili}
           isLoading={createMutation.isPending || updateMutation.isPending}
         />
 

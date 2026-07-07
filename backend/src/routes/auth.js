@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const crypto = require('crypto');
-const { User } = require('../models');
+const { User, AdminLuogo } = require('../models');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
@@ -27,10 +27,19 @@ const generateToken = (user) =>
     { expiresIn: '30d' }
   );
 
-const safeUser = (u) => ({
-  id: u.id, email: u.email, full_name: u.full_name,
-  role: u.role, avatar_url: u.avatar_url,
-});
+// sedi_ids: null per user/super_admin (nessuna restrizione da mostrare in UI),
+// array di luogo_id per admin di sede (usato dal frontend per nascondere azioni non consentite)
+const safeUser = async (u) => {
+  let sedi_ids = null;
+  if (u.role === 'admin') {
+    const assegnazioni = await AdminLuogo.findAll({ where: { user_id: u.id }, attributes: ['luogo_id'] });
+    sedi_ids = assegnazioni.map((a) => a.luogo_id);
+  }
+  return {
+    id: u.id, email: u.email, full_name: u.full_name,
+    role: u.role, avatar_url: u.avatar_url, sedi_ids,
+  };
+};
 
 // Google OAuth (solo se configurato)
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
@@ -74,7 +83,7 @@ router.post('/register', async (req, res) => {
 
     const password_hash = await bcrypt.hash(password, 10);
     const user = await User.create({ email, password_hash, full_name, provider: 'local' });
-    res.status(201).json({ token: generateToken(user), user: safeUser(user) });
+    res.status(201).json({ token: generateToken(user), user: await safeUser(user) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -91,15 +100,15 @@ router.post('/login', async (req, res) => {
     if (!await bcrypt.compare(password, user.password_hash))
       return res.status(401).json({ error: 'Credenziali non valide' });
 
-    res.json({ token: generateToken(user), user: safeUser(user) });
+    res.json({ token: generateToken(user), user: await safeUser(user) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // GET /api/auth/me
-router.get('/me', auth, (req, res) => {
-  res.json(safeUser(req.user));
+router.get('/me', auth, async (req, res) => {
+  res.json(await safeUser(req.user));
 });
 
 // GET /api/auth/google
