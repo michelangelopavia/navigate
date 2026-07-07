@@ -3,6 +3,8 @@ const { Op } = require('sequelize');
 const { Squadra, Evento, Tappa } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
+const { sendEmail } = require('../services/email');
+const { getSedeAdminEmails, getSuperAdminEmails } = require('../services/adminEmails');
 
 const router = express.Router();
 
@@ -90,6 +92,36 @@ router.post('/', auth, async (req, res) => {
 
     const percorso = [...facili, ...medie, ...difficili];
     const squadra = await Squadra.create({ ...data, user_id: req.user.id, percorso });
+
+    // Email di iscrizione all'admin della sede (fallback super_admin solo se la sede è orfana),
+    // più email_gestori se è un'iscrizione a un evento. Non deve mai far fallire la creazione.
+    try {
+      const sedeEmails = await getSedeAdminEmails(data.luogo_id);
+      const destinatari = new Set(sedeEmails.length ? sedeEmails : await getSuperAdminEmails());
+      if (data.evento_id) {
+        const evento = await Evento.findByPk(data.evento_id);
+        (evento?.email_gestori || []).forEach((e) => destinatari.add(e));
+      }
+
+      for (const to of destinatari) {
+        await sendEmail({
+          to,
+          subject: `Nuova iscrizione: ${data.nome_squadra}`,
+          body: `
+            <h2>Nuova squadra iscritta ${data.evento_id ? 'all\'evento' : 'in gioco libero'}</h2>
+            <p><strong>Squadra:</strong> ${data.nome_squadra}</p>
+            <p><strong>Referente:</strong> ${data.referente_nome} ${data.referente_cognome}</p>
+            <p><strong>Email:</strong> ${data.referente_email}</p>
+            <p><strong>Telefono:</strong> ${data.referente_telefono || 'N/D'}</p>
+            <p><strong>Numero giocatori:</strong> ${(data.altri_giocatori?.length || 0) + 1}</p>
+            <hr>
+            <p>Data iscrizione: ${new Date().toLocaleString('it-IT')}</p>
+          `,
+        });
+      }
+    } catch (emailErr) {
+      console.error('Errore invio email iscrizione:', emailErr.message);
+    }
 
     res.status(201).json(squadra);
   } catch (err) {

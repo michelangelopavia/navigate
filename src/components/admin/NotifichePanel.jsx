@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, CheckCircle, Trophy, HelpCircle, UserPlus, Check, X } from 'lucide-react';
+import { Bell, CheckCircle, Trophy, HelpCircle, UserPlus, AlertTriangle, Check, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,6 +14,7 @@ export default function NotifichePanel({ notifiche, onSegnaLetta, onChiudiTutte 
       case 'gioco_completato': return <Trophy className="w-5 h-5 text-yellow-500" />;
       case 'richiesta_aiuto': return <HelpCircle className="w-5 h-5 text-blue-500" />;
       case 'nuova_iscrizione': return <UserPlus className="w-5 h-5 text-purple-500" />;
+      case 'segnalazione': return <AlertTriangle className="w-5 h-5 text-orange-500" />;
       default: return <Bell className="w-5 h-5 text-gray-500" />;
     }
   };
@@ -24,6 +25,7 @@ export default function NotifichePanel({ notifiche, onSegnaLetta, onChiudiTutte 
       case 'gioco_completato': return 'border-l-yellow-500 bg-yellow-50';
       case 'richiesta_aiuto': return 'border-l-blue-500 bg-blue-50';
       case 'nuova_iscrizione': return 'border-l-purple-500 bg-purple-50';
+      case 'segnalazione': return 'border-l-orange-500 bg-orange-50';
       default: return 'border-l-gray-500 bg-gray-50';
     }
   };

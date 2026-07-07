@@ -97,40 +97,18 @@ export default function Iscrizione() {
 
       const squadra = await base44.entities.Squadra.create(squadraData);
 
-      // Notifica per admin — solo in modalità evento, il gioco libero mostra solo le segnalazioni
-      if (eventoId) {
-        await base44.entities.Notifica.create({
-          tipo: 'nuova_iscrizione',
-          squadra_id: squadra.id,
-          squadra_nome: data.nome_squadra,
-          evento_id: eventoId,
-          messaggio: `Nuova squadra iscritta: ${data.nome_squadra} (evento)`
-        });
-      }
+      // Notifica per admin — l'iscrizione è un evento raro (una volta per squadra),
+      // a differenza della progressione di gioco (tappa_superata/gioco_completato,
+      // fino a 10 volte per squadra) che invece resta solo per evento
+      await base44.entities.Notifica.create({
+        tipo: 'nuova_iscrizione',
+        squadra_id: squadra.id,
+        squadra_nome: data.nome_squadra,
+        evento_id: eventoId || null,
+        messaggio: `Nuova squadra iscritta: ${data.nome_squadra} ${eventoId ? '(evento)' : `(${luogo?.nome})`}`
+      });
 
-      // Invia email ai gestori se è un evento
-      if (eventoId && evento?.email_gestori?.length > 0) {
-        for (const emailGestore of evento.email_gestori) {
-          try {
-            await base44.integrations.Core.SendEmail({
-              to: emailGestore,
-              subject: `Nuova iscrizione: ${evento.nome}`,
-              body: `
-                <h2>Nuova squadra iscritta all'evento "${evento.nome}"</h2>
-                <p><strong>Squadra:</strong> ${data.nome_squadra}</p>
-                <p><strong>Referente:</strong> ${data.referente_nome} ${data.referente_cognome}</p>
-                <p><strong>Email:</strong> ${data.referente_email}</p>
-                <p><strong>Telefono:</strong> ${data.referente_telefono || 'N/D'}</p>
-                <p><strong>Numero giocatori:</strong> ${(data.altri_giocatori?.length || 0) + 1}</p>
-                <hr>
-                <p>Data iscrizione: ${new Date().toLocaleString('it-IT')}</p>
-              `
-            });
-          } catch (e) {
-            console.error('Errore invio email:', e);
-          }
-        }
-      }
+      // L'email di iscrizione la invia il backend (POST /api/squadre), a admin sede + email_gestori
 
       return squadra;
     },
