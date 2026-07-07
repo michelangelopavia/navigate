@@ -1,4 +1,4 @@
-import { entities, auth } from './entities';
+import { entities, auth, adminLuoghi } from './entities';
 import client from './client';
 
 // Compatibilità drop-in con il vecchio @base44/sdk.
@@ -6,6 +6,7 @@ import client from './client';
 export const base44 = {
   entities,
   auth,
+  adminLuoghi,
   integrations: {
     Core: {
       SendEmail: (/** @type {{to:string,subject:string,body:string}} */ { to, subject, body }) =>
