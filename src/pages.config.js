@@ -10,6 +10,7 @@ import GestioneRichieste from './pages/GestioneRichieste';
 import GestioneLuoghi from './pages/GestioneLuoghi';
 import AssegnaAdminSede from './pages/AssegnaAdminSede';
 import GestioneSegnalazioni from './pages/GestioneSegnalazioni';
+import Statistiche from './pages/Statistiche';
 import Profilo from './pages/Profilo';
 import Classifiche from './pages/Classifiche';
 import DettaglioEvento from './pages/DettaglioEvento';
@@ -31,6 +32,7 @@ export const PAGES = {
     "GestioneLuoghi": GestioneLuoghi,
     "AssegnaAdminSede": AssegnaAdminSede,
     "GestioneSegnalazioni": GestioneSegnalazioni,
+    "Statistiche": Statistiche,
     "Profilo": Profilo,
     "Classifiche": Classifiche,
     "DettaglioEvento": DettaglioEvento,

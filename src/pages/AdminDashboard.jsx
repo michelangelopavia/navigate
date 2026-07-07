@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  MapPin, Calendar, Users, Bell, Trophy, AlertCircle, Home, Settings, Loader2, UserCog, AlertTriangle
+  MapPin, Calendar, Users, Bell, Trophy, AlertCircle, Home, Settings, Loader2, UserCog, AlertTriangle, BarChart3
 } from 'lucide-react';
 import { Link, Navigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -128,6 +128,12 @@ export default function AdminDashboard() {
               <Button variant="outline" className="border-orange-300 text-orange-600 hover:bg-orange-50">
                 <AlertTriangle className="w-4 h-4 mr-2" />
                 Segnalazioni
+              </Button>
+            </Link>
+            <Link to={createPageUrl('Statistiche')}>
+              <Button variant="outline" className="border-blue-300 text-blue-600 hover:bg-blue-50">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                Statistiche
               </Button>
             </Link>
             {user?.role === 'super_admin' && (
