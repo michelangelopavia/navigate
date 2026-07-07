@@ -7,6 +7,12 @@ const router = express.Router();
 
 const parseBool = (v) => v === 'true' ? true : v === 'false' ? false : v;
 
+const POST_ALLOWED_FIELDS = ['tipo', 'squadra_id', 'squadra_nome', 'evento_id', 'messaggio'];
+const TIPI_AMMESSI = ['nuova_iscrizione', 'tappa_superata', 'gioco_completato', 'segnalazione'];
+
+const pick = (obj, fields) =>
+  Object.fromEntries(fields.filter((f) => f in obj).map((f) => [f, obj[f]]));
+
 // GET /api/notifiche — admin
 router.get('/', auth, isAdmin, async (req, res) => {
   try {
@@ -24,7 +30,11 @@ router.get('/', auth, isAdmin, async (req, res) => {
 // POST /api/notifiche — autenticato (il gioco crea notifiche)
 router.post('/', auth, async (req, res) => {
   try {
-    const notifica = await Notifica.create(req.body);
+    const data = pick(req.body, POST_ALLOWED_FIELDS);
+    if (!TIPI_AMMESSI.includes(data.tipo)) {
+      return res.status(400).json({ error: 'Tipo notifica non valido' });
+    }
+    const notifica = await Notifica.create(data);
     res.status(201).json(notifica);
   } catch (err) {
     res.status(500).json({ error: err.message });
