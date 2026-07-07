@@ -1,6 +1,6 @@
 const express = require('express');
 const { Op } = require('sequelize');
-const { Segnalazione, Squadra } = require('../models');
+const { Segnalazione, Squadra, Notifica } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
 const scopeToSedi = require('../middleware/scopeToSedi');
@@ -29,6 +29,15 @@ router.get('/', auth, isAdmin, scopeToSedi, async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const segnalazione = await Segnalazione.create(req.body);
+
+    const squadra = segnalazione.squadra_id ? await Squadra.findByPk(segnalazione.squadra_id) : null;
+    await Notifica.create({
+      tipo: 'segnalazione',
+      squadra_id: segnalazione.squadra_id || null,
+      squadra_nome: squadra?.nome_squadra || null,
+      messaggio: segnalazione.descrizione,
+    });
+
     res.status(201).json(segnalazione);
   } catch (err) {
     res.status(500).json({ error: err.message });
