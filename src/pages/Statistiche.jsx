@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from "@/components/ui/table";
-import { BarChart3, ArrowLeft, Loader2, MapPin } from 'lucide-react';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import { BarChart3, ArrowLeft, Loader2, MapPin, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
@@ -21,10 +25,29 @@ const Pct = ({ value, count }) => {
 };
 
 export default function Statistiche() {
-  const { data: statistiche = [], isLoading } = useQuery({
-    queryKey: ['statistiche-tappe'],
+  const [eventoId, setEventoId] = useState('tutte');
+
+  // Query separata e sempre non filtrata: serve solo a sapere quali luoghi sono nello
+  // scope dell'admin loggato, così il menu degli eventi non si svuota quando si
+  // seleziona un evento specifico (che restituirebbe un solo luogo dall'endpoint).
+  const { data: scopeData = [] } = useQuery({
+    queryKey: ['statistiche-tappe', 'tutte'],
     queryFn: () => base44.statistiche.tappe(),
   });
+
+  const { data: statistiche = [], isLoading } = useQuery({
+    queryKey: ['statistiche-tappe', eventoId],
+    queryFn: () => base44.statistiche.tappe(eventoId === 'tutte' ? undefined : eventoId),
+  });
+
+  const { data: eventi = [] } = useQuery({
+    queryKey: ['eventi'],
+    queryFn: () => base44.entities.Evento.list(),
+  });
+
+  const luogoIdsInScope = new Set(scopeData.map((l) => l.luogo_id));
+  const eventiFiltrabili = eventi.filter((e) => luogoIdsInScope.has(e.luogo_id));
+  const eventoSelezionato = eventoId === 'tutte' ? null : eventiFiltrabili.find((e) => e.id === eventoId);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -39,6 +62,21 @@ export default function Statistiche() {
             <h1 className="text-2xl font-bold text-gray-900">Statistiche per Tappa</h1>
             <p className="text-gray-500 text-sm">Quali tappe sono più difficili, saltate o richiedono aiuto</p>
           </div>
+        </div>
+
+        <div className="mb-6 flex items-center gap-2 max-w-xs">
+          <Calendar className="w-4 h-4 text-gray-400 shrink-0" />
+          <Select value={eventoId} onValueChange={setEventoId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Tutte le partite" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="tutte">Tutte le partite</SelectItem>
+              {eventiFiltrabili.map((e) => (
+                <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {isLoading ? (
@@ -61,9 +99,22 @@ export default function Statistiche() {
               return (
                 <Card key={luogo.luogo_id}>
                   <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-orange-500" />
-                      {luogo.luogo_nome}
+                    <CardTitle className="text-lg flex items-center gap-2 flex-wrap">
+                      {eventoSelezionato ? (
+                        <>
+                          <Calendar className="w-5 h-5 text-blue-500" />
+                          {eventoSelezionato.nome}
+                          <Badge variant="outline" className="font-normal">
+                            <MapPin className="w-3 h-3 mr-1" />
+                            {luogo.luogo_nome}
+                          </Badge>
+                        </>
+                      ) : (
+                        <>
+                          <MapPin className="w-5 h-5 text-orange-500" />
+                          {luogo.luogo_nome}
+                        </>
+                      )}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="overflow-x-auto">
