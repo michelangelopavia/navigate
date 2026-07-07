@@ -108,29 +108,7 @@ export default function Iscrizione() {
         messaggio: `Nuova squadra iscritta: ${data.nome_squadra} ${eventoId ? '(evento)' : `(${luogo?.nome})`}`
       });
 
-      // Invia email ai gestori se è un evento
-      if (eventoId && evento?.email_gestori?.length > 0) {
-        for (const emailGestore of evento.email_gestori) {
-          try {
-            await base44.integrations.Core.SendEmail({
-              to: emailGestore,
-              subject: `Nuova iscrizione: ${evento.nome}`,
-              body: `
-                <h2>Nuova squadra iscritta all'evento "${evento.nome}"</h2>
-                <p><strong>Squadra:</strong> ${data.nome_squadra}</p>
-                <p><strong>Referente:</strong> ${data.referente_nome} ${data.referente_cognome}</p>
-                <p><strong>Email:</strong> ${data.referente_email}</p>
-                <p><strong>Telefono:</strong> ${data.referente_telefono || 'N/D'}</p>
-                <p><strong>Numero giocatori:</strong> ${(data.altri_giocatori?.length || 0) + 1}</p>
-                <hr>
-                <p>Data iscrizione: ${new Date().toLocaleString('it-IT')}</p>
-              `
-            });
-          } catch (e) {
-            console.error('Errore invio email:', e);
-          }
-        }
-      }
+      // L'email di iscrizione la invia il backend (POST /api/squadre), a admin sede + email_gestori
 
       return squadra;
     },

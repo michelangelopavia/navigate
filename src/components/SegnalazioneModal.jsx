@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertTriangle, Send, Loader2, CheckCircle } from "lucide-react";
 
-export default function SegnalazioneModal({ isOpen, onClose, userEmail, squadraId, eventoId }) {
+export default function SegnalazioneModal({ isOpen, onClose, userEmail, squadraId }) {
   const [messaggio, setMessaggio] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [inviata, setInviata] = useState(false);
@@ -28,34 +28,7 @@ export default function SegnalazioneModal({ isOpen, onClose, userEmail, squadraI
       squadra_id: squadraId || null
     });
 
-    // Invia email ai gestori dell'evento, se la segnalazione è legata a un evento
-    if (eventoId) {
-      const eventi = await base44.entities.Evento.filter({ id: eventoId });
-      const evento = eventi[0];
-      if (evento?.email_gestori?.length > 0) {
-        for (const emailGestore of evento.email_gestori) {
-          try {
-            await base44.integrations.Core.SendEmail({
-              to: emailGestore,
-              subject: '🚨 Segnalazione malfunzionamento - NAVIGATE',
-              body: `
-Nuova segnalazione di malfunzionamento:
-
-Messaggio: ${messaggio}
-
-Dettagli:
-- Email utente: ${userEmail || 'Non loggato'}
-- Squadra ID: ${squadraId || 'N/A'}
-- Pagina: ${window.location.href}
-- Data: ${new Date().toLocaleString('it-IT')}
-              `
-            });
-          } catch (e) {
-            console.error('Errore invio email:', e);
-          }
-        }
-      }
-    }
+    // L'email di segnalazione la invia il backend (POST /api/segnalazioni), a admin sede + super_admin
 
     setIsLoading(false);
     setInviata(true);
