@@ -33,6 +33,7 @@ app.use('/api/squadre',         require('./src/routes/squadre'));
 app.use('/api/notifiche',       require('./src/routes/notifiche'));
 app.use('/api/richieste-aiuto', require('./src/routes/richiesteAiuto'));
 app.use('/api/segnalazioni',    require('./src/routes/segnalazioni'));
+app.use('/api/statistiche',     require('./src/routes/statistiche'));
 app.use('/api/impostazioni-sito', require('./src/routes/impostazioniSito'));
 app.use('/api/integrations',    require('./src/routes/integrations'));
 

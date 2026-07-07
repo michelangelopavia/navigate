@@ -36,6 +36,11 @@ export const entities = {
   ImpostazioniSito: createEntity('impostazioni-sito'),
 };
 
+export const statistiche = {
+  tappe: (eventoId) =>
+    client.get('/statistiche/tappe', { params: eventoId ? { evento_id: eventoId } : {} }).then((r) => r.data),
+};
+
 export const adminLuoghi = {
   list: () =>
     client.get('/admin-luoghi').then((r) => r.data),
