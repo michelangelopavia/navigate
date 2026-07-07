@@ -26,6 +26,7 @@ app.use(passport.initialize());
 // Routes API
 app.use('/api/auth',            require('./src/routes/auth'));
 app.use('/api/luoghi',          require('./src/routes/luoghi'));
+app.use('/api/admin-luoghi',    require('./src/routes/adminLuoghi'));
 app.use('/api/tappe',           require('./src/routes/tappe'));
 app.use('/api/eventi',          require('./src/routes/eventi'));
 app.use('/api/squadre',         require('./src/routes/squadre'));
