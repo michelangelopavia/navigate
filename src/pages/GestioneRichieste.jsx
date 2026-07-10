@@ -29,7 +29,7 @@ export default function GestioneRichieste() {
     mutationFn: async ({ id, risposta }) => {
       return base44.entities.RichiestaAiuto.update(id, {
         risolta: true,
-        risposta_admin: risposta
+        risposta
       });
     },
     onSuccess: () => {
@@ -88,7 +88,7 @@ export default function GestioneRichieste() {
                             <span className="font-bold text-blue-800">{richiesta.squadra_nome}</span>
                             <Badge className="bg-orange-100 text-orange-700">
                               <MapPin className="w-3 h-3 mr-1" />
-                              Tappa {richiesta.tappa_numero}
+                              Tappa {richiesta.tappa_numero + 1}
                             </Badge>
                           </div>
                           {richiesta.tappa_titolo && (
@@ -162,13 +162,13 @@ export default function GestioneRichieste() {
                       <div>
                         <span className="font-medium text-gray-700">{richiesta.squadra_nome}</span>
                         <span className="text-gray-400 mx-2">•</span>
-                        <span className="text-sm text-gray-500">Tappa {richiesta.tappa_numero}</span>
+                        <span className="text-sm text-gray-500">Tappa {richiesta.tappa_numero + 1}</span>
                       </div>
                       <Badge className="bg-green-100 text-green-700">Risolta</Badge>
                     </div>
-                    {richiesta.risposta_admin && (
+                    {richiesta.risposta && (
                       <p className="text-sm text-gray-600 mt-2 pl-4 border-l-2 border-green-300">
-                        {richiesta.risposta_admin}
+                        {richiesta.risposta}
                       </p>
                     )}
                   </CardContent>

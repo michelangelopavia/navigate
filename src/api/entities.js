@@ -31,7 +31,13 @@ export const entities = {
   Luogo:            createEntity('luoghi'),
   Evento:           createEntity('eventi'),
   Notifica:         createEntity('notifiche'),
-  RichiestaAiuto:   createEntity('richieste-aiuto'),
+  RichiestaAiuto:   {
+    ...createEntity('richieste-aiuto'),
+    // Usato lato giocatore (Gioca.jsx): legge solo le richieste della propria squadra,
+    // a differenza di .filter() che chiama l'endpoint admin-only.
+    mie: (squadraId) =>
+      client.get('/richieste-aiuto/mie', { params: { squadra_id: squadraId } }).then((r) => r.data),
+  },
   Segnalazione:     createEntity('segnalazioni'),
   ImpostazioniSito: createEntity('impostazioni-sito'),
 };

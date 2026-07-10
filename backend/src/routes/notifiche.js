@@ -10,7 +10,7 @@ const router = express.Router();
 const parseBool = (v) => v === 'true' ? true : v === 'false' ? false : v;
 
 const POST_ALLOWED_FIELDS = ['tipo', 'squadra_id', 'squadra_nome', 'evento_id', 'messaggio'];
-const TIPI_AMMESSI = ['nuova_iscrizione', 'tappa_superata', 'gioco_completato', 'segnalazione'];
+const TIPI_AMMESSI = ['nuova_iscrizione', 'tappa_superata', 'gioco_completato', 'segnalazione', 'richiesta_aiuto'];
 
 const pick = (obj, fields) =>
   Object.fromEntries(fields.filter((f) => f in obj).map((f) => [f, obj[f]]));
