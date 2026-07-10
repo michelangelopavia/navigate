@@ -6,6 +6,8 @@ const Segnalazione = sequelize.define('Segnalazione', {
   user_email: { type: DataTypes.STRING, allowNull: true },
   squadra_id: { type: DataTypes.UUID, allowNull: true },
   descrizione: { type: DataTypes.TEXT, allowNull: false },
+  risolta:    { type: DataTypes.BOOLEAN, defaultValue: false },
+  note_admin: { type: DataTypes.TEXT, allowNull: true },
 }, {
   tableName: 'segnalazioni',
   underscored: true,

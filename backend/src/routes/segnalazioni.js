@@ -9,6 +9,10 @@ const scopeToSedi = require('../middleware/scopeToSedi');
 
 const router = express.Router();
 
+const PUT_ALLOWED_FIELDS = ['risolta', 'note_admin'];
+const pick = (obj, fields) =>
+  Object.fromEntries(fields.filter((f) => f in obj).map((f) => [f, obj[f]]));
+
 // GET /api/segnalazioni — admin (solo della propria sede, se admin di sede)
 // Le segnalazioni non hanno luogo_id diretto: si risale tramite la squadra.
 // Una segnalazione senza squadra_id non è attribuibile a nessuna sede,
@@ -70,6 +74,24 @@ router.post('/', async (req, res) => {
     }
 
     res.status(201).json(segnalazione);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/segnalazioni/:id — admin (segna risolta/note_admin, solo della propria sede se admin di sede)
+router.put('/:id', auth, isAdmin, scopeToSedi, async (req, res) => {
+  try {
+    const s = await Segnalazione.findByPk(req.params.id);
+    if (!s) return res.status(404).json({ error: 'Non trovata' });
+    if (req.sedeIds) {
+      const squadra = s.squadra_id ? await Squadra.findByPk(s.squadra_id) : null;
+      if (!squadra || !req.sedeIds.includes(squadra.luogo_id)) {
+        return res.status(403).json({ error: 'Non sei assegnato a questa sede' });
+      }
+    }
+    await s.update(pick(req.body, PUT_ALLOWED_FIELDS));
+    res.json(s);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
