@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 const { Squadra, Evento, Tappa } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
+const scopeToSedi = require('../middleware/scopeToSedi');
 const { sendEmail } = require('../services/email');
 const { getSedeAdminEmails, getSuperAdminEmails } = require('../services/adminEmails');
 
@@ -11,6 +12,9 @@ const router = express.Router();
 const parseBool = (v) => v === 'true' ? true : v === 'false' ? false : v;
 
 const isReqAdmin = (req) => req.user?.role === 'admin' || req.user?.role === 'super_admin';
+
+// Un admin di sede può agire solo sulle squadre della propria sede; super_admin non ha limiti (req.sedeIds === null)
+const isSedeAllowed = (req, luogoId) => req.sedeIds === null || req.sedeIds.includes(luogoId);
 
 // Converte il parametro _sort in clause Sequelize
 // Es: '-created_date' → [['created_at', 'DESC']], 'punteggio' → [['punteggio', 'ASC']]
@@ -129,14 +133,17 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// PUT /api/squadre/:id — proprietario o admin
-router.put('/:id', auth, async (req, res) => {
+// PUT /api/squadre/:id — proprietario o admin (di sede: solo squadre della propria sede)
+router.put('/:id', auth, scopeToSedi, async (req, res) => {
   try {
     const squadra = await Squadra.findByPk(req.params.id);
     if (!squadra) return res.status(404).json({ error: 'Non trovata' });
 
     if (!isReqAdmin(req) && squadra.user_id !== req.user.id)
       return res.status(403).json({ error: 'Non autorizzato' });
+
+    if (isReqAdmin(req) && !isSedeAllowed(req, squadra.luogo_id))
+      return res.status(403).json({ error: 'Non autorizzato per questa sede' });
 
     if (!isReqAdmin(req) && squadra.evento_id) {
       const evento = await Evento.findByPk(squadra.evento_id);
@@ -175,14 +182,17 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-// DELETE /api/squadre/:id — proprietario o admin
-router.delete('/:id', auth, async (req, res) => {
+// DELETE /api/squadre/:id — proprietario o admin (di sede: solo squadre della propria sede)
+router.delete('/:id', auth, scopeToSedi, async (req, res) => {
   try {
     const squadra = await Squadra.findByPk(req.params.id);
     if (!squadra) return res.status(404).json({ error: 'Non trovata' });
 
     if (!isReqAdmin(req) && squadra.user_id !== req.user.id)
       return res.status(403).json({ error: 'Non autorizzato' });
+
+    if (isReqAdmin(req) && !isSedeAllowed(req, squadra.luogo_id))
+      return res.status(403).json({ error: 'Non autorizzato per questa sede' });
 
     await squadra.destroy();
     res.json({ success: true });
