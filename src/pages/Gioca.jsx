@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Play, Clock, MapPin, AlertCircle, AlertTriangle } from 'lucide-react';
+import { Loader2, Play, Clock, MapPin, AlertCircle, AlertTriangle, HelpCircle, CheckCircle, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
@@ -14,6 +14,7 @@ import ApprofondimentoModal from '@/components/game/ApprofondimentoModal';
 import RegoleModal from '@/components/game/RegoleModal';
 import CompletamentoCard from '@/components/game/CompletamentoCard';
 import SegnalazioneModal from '@/components/SegnalazioneModal';
+import RichiestaAiutoModal from '@/components/RichiestaAiutoModal';
 
 export default function Gioca() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -23,12 +24,14 @@ export default function Gioca() {
   const [showApprofondimento, setShowApprofondimento] = useState(false);
   const [showRegole, setShowRegole] = useState(false);
   const [showSegnalazione, setShowSegnalazione] = useState(false);
+  const [showRichiestaAiuto, setShowRichiestaAiuto] = useState(false);
   const [tappaCompletata, setTappaCompletata] = useState(null);
   const [tempoCorrente, setTempoCorrente] = useState(0);
   const [tempoInizioTappa, setTempoInizioTappa] = useState(null);
   const [aiutoUsatoTappaCorrente, setAiutoUsatoTappaCorrente] = useState(false);
   const [user, setUser] = useState(null);
   const [tempoEffettivoTappa, setTempoEffettivoTappa] = useState(0);
+  const [rispostaAiutoChiusa, setRispostaAiutoChiusa] = useState([]);
 
   const timerRef = useRef(null);
   const tempoTappaRef = useRef(null);
@@ -71,6 +74,36 @@ export default function Gioca() {
     queryKey: ['tappe'],
     queryFn: () => base44.entities.Tappa.list()
   });
+
+  // Richieste di aiuto della squadra — polling per far comparire la risposta dell'admin
+  // senza che il giocatore debba ricaricare la pagina.
+  const { data: richiesteAiuto = [] } = useQuery({
+    queryKey: ['richieste-aiuto-squadra', squadraId],
+    queryFn: () => base44.entities.RichiestaAiuto.mie(squadraId),
+    enabled: !!squadraId,
+    refetchInterval: 15000,
+  });
+
+  useEffect(() => {
+    if (!squadraId) return;
+    try {
+      const salvati = JSON.parse(localStorage.getItem(`richieste_aiuto_chiuse_${squadraId}`) || '[]');
+      setRispostaAiutoChiusa(salvati);
+    } catch {
+      setRispostaAiutoChiusa([]);
+    }
+  }, [squadraId]);
+
+  const richiestaAiutoDaMostrare = richiesteAiuto.find(
+    (r) => r.risolta && !rispostaAiutoChiusa.includes(r.id)
+  );
+
+  const handleChiudiRispostaAiuto = () => {
+    if (!richiestaAiutoDaMostrare) return;
+    const aggiornati = [...rispostaAiutoChiusa, richiestaAiutoDaMostrare.id];
+    setRispostaAiutoChiusa(aggiornati);
+    localStorage.setItem(`richieste_aiuto_chiuse_${squadraId}`, JSON.stringify(aggiornati));
+  };
 
   const DURATA_MAX_LIBERO = 12 * 60 * 60; // 12 ore in secondi
 
@@ -458,6 +491,32 @@ export default function Gioca() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#bfdbf7]/30 to-[#022b3a]/5 p-4">
       <div className="max-w-lg mx-auto">
+        {/* Risposta dell'organizzazione a una Richiesta di Aiuto risolta — sticky: resta visibile mentre si scorre la pagina, importante su mobile */}
+        {richiestaAiutoDaMostrare && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="sticky top-2 z-50 bg-green-50 border border-green-300 rounded-xl p-4 mb-4 flex items-start gap-3 shadow-lg"
+          >
+            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-green-800 mb-1">Risposta dall'organizzazione</p>
+              <p className="text-sm text-green-700">
+                {richiestaAiutoDaMostrare.risposta ||
+                  "La tua richiesta è stata presa in carico da un organizzatore, adesso continua a giocare!"}
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 flex-shrink-0 text-green-700"
+              onClick={handleChiudiRispostaAiuto}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </motion.div>
+        )}
+
         {/* Header con timer */}
         <div className="bg-white rounded-xl shadow-md p-4 mb-6">
           <div className="flex items-center justify-between mb-2">
@@ -518,9 +577,20 @@ export default function Gioca() {
               </Link>
             </CardContent>
           </Card>
-          <div className="text-center">
-            <Button 
-              variant="ghost" 
+          <div className="text-center flex items-center justify-center gap-2">
+            {squadra.evento_id && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowRichiestaAiuto(true)}
+                className="text-gray-400 hover:text-[#1f7a8c]"
+              >
+                <HelpCircle className="w-4 h-4 mr-1" />
+                Richiedi Aiuto
+              </Button>
+            )}
+            <Button
+              variant="ghost"
               size="sm"
               onClick={() => setShowSegnalazione(true)}
               className="text-gray-400 hover:text-[#db222a]"
@@ -553,6 +623,14 @@ export default function Gioca() {
           userEmail={user?.email}
           squadraId={squadraId}
           eventoId={squadra.evento_id}
+        />
+
+        {/* Modal Richiesta Aiuto */}
+        <RichiestaAiutoModal
+          isOpen={showRichiestaAiuto}
+          onClose={() => setShowRichiestaAiuto(false)}
+          squadraId={squadraId}
+          tappaNumero={squadra.tappa_corrente}
         />
       </div>
     </div>
