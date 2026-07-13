@@ -2,6 +2,8 @@ const express = require('express');
 const { AdminLuogo, User, Luogo } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
+const { sendEmail } = require('../services/email');
+const { wrapEmail } = require('../services/emailTemplate');
 
 const router = express.Router();
 
@@ -62,6 +64,24 @@ router.post('/', auth, isAdmin, isSuperAdmin, async (req, res) => {
 
     if (user.role !== 'admin') await user.update({ role: 'admin' });
     const assegnazione = await AdminLuogo.create({ user_id: user.id, luogo_id });
+
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: `Sei stato assegnato come admin di ${luogo.nome} - NAVIGATE`,
+        body: wrapEmail({
+          title: 'Nuova assegnazione admin',
+          contentHtml: `
+            <p>Ciao ${user.full_name},</p>
+            <p>Sei stato assegnato come amministratore della sede <strong>${luogo.nome}</strong> su NAVIGATE.</p>
+            <p>Da ora puoi gestire tappe, eventi e segnalazioni per questa sede dal Pannello Admin.</p>
+          `,
+        }),
+      });
+    } catch (emailErr) {
+      console.error('Errore invio email promozione admin:', emailErr.message);
+    }
+
     res.status(201).json(assegnazione);
   } catch (err) {
     res.status(500).json({ error: err.message });
