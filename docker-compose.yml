@@ -10,5 +10,12 @@ services:
     volumes:
       - navigate_db_data:/var/lib/mysql
 
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: navigate_mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
 volumes:
   navigate_db_data:
