@@ -4,6 +4,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -19,6 +23,7 @@ export default function AssegnaAdminSede() {
   const { user, isLoadingAuth } = useAuth();
   const [selectedUserId, setSelectedUserId] = useState('');
   const [selectedLuogoId, setSelectedLuogoId] = useState('');
+  const [assegnazioneToRemove, setAssegnazioneToRemove] = useState(null);
 
   if (isLoadingAuth) {
     return (
@@ -71,6 +76,7 @@ export default function AssegnaAdminSede() {
     mutationFn: (id) => base44.adminLuoghi.remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-luoghi']);
+      setAssegnazioneToRemove(null);
       toast.success('Assegnazione rimossa');
     },
     onError: (err) => {
@@ -181,7 +187,7 @@ export default function AssegnaAdminSede() {
                       variant="outline"
                       size="icon"
                       className="text-red-500 hover:bg-red-50"
-                      onClick={() => removeMutation.mutate(a.id)}
+                      onClick={() => setAssegnazioneToRemove(a)}
                       disabled={removeMutation.isPending}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -193,6 +199,27 @@ export default function AssegnaAdminSede() {
           </CardContent>
         </Card>
       </div>
+
+      <AlertDialog open={!!assegnazioneToRemove} onOpenChange={() => setAssegnazioneToRemove(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Rimuovere questa assegnazione?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {assegnazioneToRemove?.User?.full_name} non gestirà più la sede {assegnazioneToRemove?.Luogo?.nome}.
+              Il ruolo admin resterà invariato, l'assegnazione può essere ricreata in seguito.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => removeMutation.mutate(assegnazioneToRemove.id)}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Sì, rimuovi assegnazione
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
