@@ -92,11 +92,16 @@ export default function GestioneTappe() {
     }
   });
 
+  // Ordine progressivo per sede, a partire dal massimo già esistente
+  // (altrimenti una tappa nuova resta sempre a ordine: 0, posizione imprevedibile in lista).
+  const prossimoOrdine = (luogoId) =>
+    Math.max(0, ...tappe.filter((t) => t.luogo_id === luogoId).map((t) => t.ordine || 0)) + 1;
+
   const handleSubmit = (data) => {
     if (tappaEdit) {
       updateMutation.mutate({ id: tappaEdit.id, data });
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate({ ...data, ordine: prossimoOrdine(data.luogo_id) });
     }
   };
 
@@ -160,7 +165,18 @@ export default function GestioneTappe() {
         {/* Import CSV */}
         <ImportTappeCSV
           luoghi={luoghiAssegnabili}
-          onImport={(tappe) => bulkCreateMutation.mutateAsync(tappe)}
+          onImport={(tappeDaImportare) => {
+            // Stessa logica di prossimoOrdine, ma incrementata manualmente riga per
+            // riga: più righe possono condividere la stessa sede nello stesso import,
+            // e non sono ancora in `tappe` per essere lette una a una.
+            const prossimoPerSede = {};
+            const conOrdine = tappeDaImportare.map((t) => {
+              if (!(t.luogo_id in prossimoPerSede)) prossimoPerSede[t.luogo_id] = prossimoOrdine(t.luogo_id);
+              const ordine = prossimoPerSede[t.luogo_id]++;
+              return { ...t, ordine };
+            });
+            return bulkCreateMutation.mutateAsync(conOrdine);
+          }}
         />
 
         {/* Stats per luogo */}
