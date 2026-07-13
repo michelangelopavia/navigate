@@ -6,6 +6,10 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const crypto = require('crypto');
 const { User, AdminLuogo } = require('../models');
 const auth = require('../middleware/auth');
+const { sendEmail } = require('../services/email');
+const { wrapEmail } = require('../services/emailTemplate');
+
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 ora
 
 const router = express.Router();
 
@@ -101,6 +105,68 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Credenziali non valide' });
 
     res.json({ token: generateToken(user), user: await safeUser(user) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/auth/forgot-password
+// Risponde sempre con lo stesso messaggio generico, anche se l'email non
+// esiste — evita di rivelare quali indirizzi sono registrati.
+router.post('/forgot-password', async (req, res) => {
+  const GENERIC_MESSAGE = { message: 'Se l\'indirizzo è registrato, riceverai un\'email con le istruzioni per reimpostare la password.' };
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'email obbligatoria' });
+
+    const user = await User.findOne({ where: { email } });
+    if (user && user.password_hash) {
+      const token = crypto.randomBytes(32).toString('hex');
+      await user.update({
+        reset_token: token,
+        reset_token_expires: new Date(Date.now() + RESET_TOKEN_TTL_MS),
+      });
+
+      const resetUrl = `${process.env.FRONTEND_URL}/ResetPassword?token=${token}`;
+      try {
+        await sendEmail({
+          to: user.email,
+          subject: 'Reimposta la tua password - NAVIGATE',
+          body: wrapEmail({
+            title: 'Reimposta la password',
+            contentHtml: `
+              <p>Ciao ${user.full_name},</p>
+              <p>Hai richiesto di reimpostare la password del tuo account NAVIGATE. Clicca sul link qui sotto per sceglierne una nuova:</p>
+              <p><a href="${resetUrl}" style="color: #1f7a8c;">Reimposta password</a></p>
+              <p>Il link è valido per 1 ora. Se non hai richiesto tu il reset, ignora questa email.</p>
+            `,
+          }),
+        });
+      } catch (emailErr) {
+        console.error('Errore invio email reset password:', emailErr.message);
+      }
+    }
+
+    res.json(GENERIC_MESSAGE);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/auth/reset-password
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ error: 'token e password sono obbligatori' });
+
+    const user = await User.findOne({ where: { reset_token: token } });
+    if (!user || !user.reset_token_expires || user.reset_token_expires < new Date())
+      return res.status(400).json({ error: 'Link non valido o scaduto' });
+
+    const password_hash = await bcrypt.hash(password, 10);
+    await user.update({ password_hash, reset_token: null, reset_token_expires: null });
+
+    res.json({ message: 'Password aggiornata con successo' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
