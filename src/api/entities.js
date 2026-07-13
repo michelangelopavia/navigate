@@ -74,6 +74,12 @@ export const auth = {
   register: (data) =>
     client.post('/auth/register', data).then((r) => r.data),
 
+  forgotPassword: (email) =>
+    client.post('/auth/forgot-password', { email }).then((r) => r.data),
+
+  resetPassword: (token, password) =>
+    client.post('/auth/reset-password', { token, password }).then((r) => r.data),
+
   logout: () => {
     localStorage.removeItem('navigate_token');
   },

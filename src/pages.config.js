@@ -1,5 +1,7 @@
 import Home from './pages/Home';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Iscrizione from './pages/Iscrizione';
 import Gioca from './pages/Gioca';
 import AdminDashboard from './pages/AdminDashboard';
@@ -22,6 +24,8 @@ import __Layout from './Layout.jsx';
 export const PAGES = {
     "Home": Home,
     "Login": Login,
+    "ForgotPassword": ForgotPassword,
+    "ResetPassword": ResetPassword,
     "Iscrizione": Iscrizione,
     "Gioca": Gioca,
     "AdminDashboard": AdminDashboard,
