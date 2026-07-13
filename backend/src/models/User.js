@@ -12,6 +12,12 @@ const User = sequelize.define('User', {
   avatar_url:  { type: DataTypes.STRING, allowNull: true },
   reset_token:         { type: DataTypes.STRING, allowNull: true },
   reset_token_expires: { type: DataTypes.DATE, allowNull: true },
+  // Default true: gli account già esistenti al momento della migrazione
+  // non devono essere bloccati. Le nuove registrazioni locali impostano
+  // esplicitamente false in POST /register.
+  email_verified:              { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+  verification_token:          { type: DataTypes.STRING, allowNull: true },
+  verification_token_expires:  { type: DataTypes.DATE, allowNull: true },
 }, {
   tableName: 'users',
   underscored: true,
