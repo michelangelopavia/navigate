@@ -12,6 +12,8 @@ import { motion } from 'framer-motion';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
 import { LOGO_URL } from '@/lib/branding';
+import { toast } from 'sonner';
+import { Mail } from 'lucide-react';
 
 export default function Login() {
   const { isAuthenticated, isLoadingAuth, login } = useAuth();
@@ -23,6 +25,9 @@ export default function Login() {
   const [error,   setError]   = useState('');
   const [showLoginPassword,    setShowLoginPassword]    = useState(false);
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [registeredEmail,   setRegisteredEmail]   = useState(''); // set dopo una registrazione riuscita, mostra lo schermo "controlla la tua email"
+  const [notVerifiedEmail,  setNotVerifiedEmail]  = useState(''); // set se il login fallisce per email non confermata
+  const [resendLoading, setResendLoading] = useState(false);
 
   // Se già autenticato o il token OAuth è appena arrivato, vai alla home
   useEffect(() => {
@@ -42,10 +47,14 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setNotVerifiedEmail('');
     setLoading(true);
     try {
       await login(loginForm.email, loginForm.password);
     } catch (err) {
+      if (err.response?.data?.code === 'EMAIL_NOT_VERIFIED') {
+        setNotVerifiedEmail(loginForm.email);
+      }
       setError(err.response?.data?.error || 'Credenziali non valide');
     } finally {
       setLoading(false);
@@ -57,13 +66,22 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const { token } = await apiAuth.register(registerForm);
-      localStorage.setItem('navigate_token', token);
-      window.location.href = createPageUrl('Home');
+      await apiAuth.register(registerForm);
+      setRegisteredEmail(registerForm.email);
     } catch (err) {
       setError(err.response?.data?.error || 'Errore durante la registrazione');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async (email) => {
+    setResendLoading(true);
+    try {
+      await apiAuth.resendVerification(email);
+      toast.success('Se l\'indirizzo non è ancora confermato, riceverai una nuova email a breve.');
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -130,6 +148,16 @@ export default function Login() {
               {error && (
                 <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                   {error}
+                  {notVerifiedEmail && (
+                    <button
+                      type="button"
+                      onClick={() => handleResendVerification(notVerifiedEmail)}
+                      disabled={resendLoading}
+                      className="block mt-2 font-medium underline hover:no-underline"
+                    >
+                      {resendLoading ? 'Invio in corso...' : 'Reinvia email di verifica'}
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -181,6 +209,22 @@ export default function Login() {
               </TabsContent>
 
               <TabsContent value="register">
+                {registeredEmail ? (
+                  <div className="text-center py-4">
+                    <Mail className="w-10 h-10 text-[#1f7a8c] mx-auto mb-3" />
+                    <p className="text-gray-700 mb-4">
+                      Ti abbiamo inviato un'email di conferma a <strong>{registeredEmail}</strong>. Clicca sul link per attivare l'account.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => handleResendVerification(registeredEmail)}
+                      disabled={resendLoading}
+                      className="text-sm text-[#1f7a8c] hover:text-[#022b3a] underline hover:no-underline"
+                    >
+                      {resendLoading ? 'Invio in corso...' : 'Non hai ricevuto l\'email? Reinvia'}
+                    </button>
+                  </div>
+                ) : (
                 <form onSubmit={handleRegister} className="space-y-4">
                   <div>
                     <Label htmlFor="reg-name">Nome completo</Label>
@@ -230,6 +274,7 @@ export default function Login() {
                     Crea Account
                   </Button>
                 </form>
+                )}
               </TabsContent>
             </Tabs>
 

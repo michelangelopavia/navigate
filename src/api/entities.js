@@ -80,6 +80,12 @@ export const auth = {
   resetPassword: (token, password) =>
     client.post('/auth/reset-password', { token, password }).then((r) => r.data),
 
+  verifyEmail: (token) =>
+    client.get('/auth/verify-email', { params: { token } }).then((r) => r.data),
+
+  resendVerification: (email) =>
+    client.post('/auth/resend-verification', { email }).then((r) => r.data),
+
   logout: () => {
     localStorage.removeItem('navigate_token');
   },

@@ -2,6 +2,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import VerifyEmail from './pages/VerifyEmail';
 import Iscrizione from './pages/Iscrizione';
 import Gioca from './pages/Gioca';
 import AdminDashboard from './pages/AdminDashboard';
@@ -26,6 +27,7 @@ export const PAGES = {
     "Login": Login,
     "ForgotPassword": ForgotPassword,
     "ResetPassword": ResetPassword,
+    "VerifyEmail": VerifyEmail,
     "Iscrizione": Iscrizione,
     "Gioca": Gioca,
     "AdminDashboard": AdminDashboard,
