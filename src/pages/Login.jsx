@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, LogIn, UserPlus, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { createPageUrl } from '@/utils';
+import { Link } from 'react-router-dom';
 import { LOGO_URL } from '@/lib/branding';
 
 export default function Login() {
@@ -163,6 +164,12 @@ export default function Login() {
                         {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
+                    <Link
+                      to={createPageUrl('ForgotPassword')}
+                      className="text-xs text-[#1f7a8c] hover:text-[#022b3a] hover:underline block text-right mt-1"
+                    >
+                      Password dimenticata?
+                    </Link>
                   </div>
                   <Button type="submit" className="w-full bg-[#1f7a8c] hover:bg-[#022b3a]" disabled={loading}>
                     {loading
