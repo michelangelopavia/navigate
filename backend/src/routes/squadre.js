@@ -5,6 +5,7 @@ const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
 const scopeToSedi = require('../middleware/scopeToSedi');
 const { sendEmail } = require('../services/email');
+const { wrapEmail } = require('../services/emailTemplate');
 const { getSedeAdminEmails, getSuperAdminEmails } = require('../services/adminEmails');
 
 const router = express.Router();
@@ -111,16 +112,18 @@ router.post('/', auth, async (req, res) => {
         await sendEmail({
           to,
           subject: `Nuova iscrizione: ${data.nome_squadra}`,
-          body: `
-            <h2>Nuova squadra iscritta ${data.evento_id ? 'all\'evento' : 'in gioco libero'}</h2>
-            <p><strong>Squadra:</strong> ${data.nome_squadra}</p>
-            <p><strong>Referente:</strong> ${data.referente_nome} ${data.referente_cognome}</p>
-            <p><strong>Email:</strong> ${data.referente_email}</p>
-            <p><strong>Telefono:</strong> ${data.referente_telefono || 'N/D'}</p>
-            <p><strong>Numero giocatori:</strong> ${(data.altri_giocatori?.length || 0) + 1}</p>
-            <hr>
-            <p>Data iscrizione: ${new Date().toLocaleString('it-IT')}</p>
-          `,
+          body: wrapEmail({
+            title: `Nuova squadra iscritta ${data.evento_id ? 'all\'evento' : 'in gioco libero'}`,
+            contentHtml: `
+              <p><strong>Squadra:</strong> ${data.nome_squadra}</p>
+              <p><strong>Referente:</strong> ${data.referente_nome} ${data.referente_cognome}</p>
+              <p><strong>Email:</strong> ${data.referente_email}</p>
+              <p><strong>Telefono:</strong> ${data.referente_telefono || 'N/D'}</p>
+              <p><strong>Numero giocatori:</strong> ${(data.altri_giocatori?.length || 0) + 1}</p>
+              <hr>
+              <p>Data iscrizione: ${new Date().toLocaleString('it-IT')}</p>
+            `,
+          }),
         });
       }
     } catch (emailErr) {

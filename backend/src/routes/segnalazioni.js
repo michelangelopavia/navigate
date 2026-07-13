@@ -4,6 +4,7 @@ const { Segnalazione, Squadra, Notifica, Evento } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
 const { sendEmail } = require('../services/email');
+const { wrapEmail } = require('../services/emailTemplate');
 const { getSedeAdminEmails, getSuperAdminEmails } = require('../services/adminEmails');
 const scopeToSedi = require('../middleware/scopeToSedi');
 
@@ -59,14 +60,16 @@ router.post('/', async (req, res) => {
         await sendEmail({
           to,
           subject: '🚨 Segnalazione malfunzionamento - NAVIGATE',
-          body: `
-            <h2>Nuova segnalazione</h2>
-            <p><strong>Messaggio:</strong> ${segnalazione.descrizione}</p>
-            <p><strong>Squadra:</strong> ${squadra?.nome_squadra || 'N/D'}</p>
-            <p><strong>Email utente:</strong> ${segnalazione.user_email || 'Anonimo'}</p>
-            <hr>
-            <p>Data: ${new Date().toLocaleString('it-IT')}</p>
-          `,
+          body: wrapEmail({
+            title: 'Nuova segnalazione',
+            contentHtml: `
+              <p><strong>Messaggio:</strong> ${segnalazione.descrizione}</p>
+              <p><strong>Squadra:</strong> ${squadra?.nome_squadra || 'N/D'}</p>
+              <p><strong>Email utente:</strong> ${segnalazione.user_email || 'Anonimo'}</p>
+              <hr>
+              <p>Data: ${new Date().toLocaleString('it-IT')}</p>
+            `,
+          }),
         });
       }
     } catch (emailErr) {
