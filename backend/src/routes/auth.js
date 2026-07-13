@@ -10,6 +10,7 @@ const { sendEmail } = require('../services/email');
 const { wrapEmail } = require('../services/emailTemplate');
 
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 ora
+const VERIFICATION_TOKEN_TTL_MS = 24 * 60 * 60 * 1000; // 24 ore
 
 const router = express.Router();
 
@@ -45,6 +46,33 @@ const safeUser = async (u) => {
   };
 };
 
+const sendVerificationEmail = async (user) => {
+  const token = crypto.randomBytes(32).toString('hex');
+  await user.update({
+    verification_token: token,
+    verification_token_expires: new Date(Date.now() + VERIFICATION_TOKEN_TTL_MS),
+  });
+
+  const verifyUrl = `${process.env.FRONTEND_URL}/VerifyEmail?token=${token}`;
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: 'Conferma la tua email - NAVIGATE',
+      body: wrapEmail({
+        title: 'Conferma la tua email',
+        contentHtml: `
+          <p>Ciao ${user.full_name},</p>
+          <p>Grazie per esserti registrato su NAVIGATE! Clicca sul link qui sotto per confermare la tua email e attivare l'account:</p>
+          <p><a href="${verifyUrl}" style="color: #1f7a8c;">Conferma email</a></p>
+          <p>Il link è valido per 24 ore.</p>
+        `,
+      }),
+    });
+  } catch (emailErr) {
+    console.error('Errore invio email verifica:', emailErr.message);
+  }
+};
+
 // Google OAuth (solo se configurato)
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(new GoogleStrategy({
@@ -65,6 +93,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
             provider: 'google',
             provider_id: profile.id,
             avatar_url: profile.photos?.[0]?.value || null,
+            email_verified: true, // Google ha già verificato l'email
           });
         }
       }
@@ -86,8 +115,9 @@ router.post('/register', async (req, res) => {
       return res.status(409).json({ error: 'Email già registrata' });
 
     const password_hash = await bcrypt.hash(password, 10);
-    const user = await User.create({ email, password_hash, full_name, provider: 'local' });
-    res.status(201).json({ token: generateToken(user), user: await safeUser(user) });
+    const user = await User.create({ email, password_hash, full_name, provider: 'local', email_verified: false });
+    await sendVerificationEmail(user);
+    res.status(201).json({ message: 'Registrazione completata. Controlla la tua email per confermare l\'account.' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -103,6 +133,9 @@ router.post('/login', async (req, res) => {
 
     if (!await bcrypt.compare(password, user.password_hash))
       return res.status(401).json({ error: 'Credenziali non valide' });
+
+    if (user.provider === 'local' && !user.email_verified)
+      return res.status(403).json({ error: 'Devi prima confermare la tua email', code: 'EMAIL_NOT_VERIFIED' });
 
     res.json({ token: generateToken(user), user: await safeUser(user) });
   } catch (err) {
@@ -167,6 +200,43 @@ router.post('/reset-password', async (req, res) => {
     await user.update({ password_hash, reset_token: null, reset_token_expires: null });
 
     res.json({ message: 'Password aggiornata con successo' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/auth/verify-email — verifica il token e fa login automatico
+router.get('/verify-email', async (req, res) => {
+  try {
+    const { token } = req.query;
+    if (!token) return res.status(400).json({ error: 'token obbligatorio' });
+
+    const user = await User.findOne({ where: { verification_token: token } });
+    if (!user || !user.verification_token_expires || user.verification_token_expires < new Date())
+      return res.status(400).json({ error: 'Link non valido o scaduto' });
+
+    await user.update({ email_verified: true, verification_token: null, verification_token_expires: null });
+
+    res.json({ token: generateToken(user), user: await safeUser(user) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/auth/resend-verification
+// Stessa logica anti-enumerazione di forgot-password: risposta generica sempre.
+router.post('/resend-verification', async (req, res) => {
+  const GENERIC_MESSAGE = { message: 'Se l\'indirizzo è registrato e non ancora confermato, riceverai una nuova email di verifica.' };
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'email obbligatoria' });
+
+    const user = await User.findOne({ where: { email } });
+    if (user && user.provider === 'local' && !user.email_verified) {
+      await sendVerificationEmail(user);
+    }
+
+    res.json(GENERIC_MESSAGE);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
