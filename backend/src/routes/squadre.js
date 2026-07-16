@@ -1,6 +1,6 @@
 const express = require('express');
 const { Op } = require('sequelize');
-const { Squadra, Evento, Tappa } = require('../models');
+const { Squadra, Evento, Tappa, Luogo } = require('../models');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
 const scopeToSedi = require('../middleware/scopeToSedi');
@@ -136,6 +136,46 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+const formatDurata = (secondi) => {
+  const ore = Math.floor(secondi / 3600);
+  const minuti = Math.floor((secondi % 3600) / 60);
+  const sec = secondi % 60;
+  if (ore > 0) return `${ore}h ${String(minuti).padStart(2, '0')}m ${String(sec).padStart(2, '0')}s`;
+  return `${minuti}m ${String(sec).padStart(2, '0')}s`;
+};
+
+// Email di riepilogo fine partita, a giocatore + admin (fallback super_admin se sede orfana).
+// Non deve mai far fallire la richiesta che ha appena completato la partita.
+const sendGameCompletionEmail = async (squadra) => {
+  const luogo = await Luogo.findByPk(squadra.luogo_id);
+  const durataSecondi = squadra.tempo_inizio && squadra.tempo_fine
+    ? Math.floor((new Date(squadra.tempo_fine) - new Date(squadra.tempo_inizio)) / 1000)
+    : null;
+
+  const contentHtml = `
+    <p><strong>Squadra:</strong> ${squadra.nome_squadra}</p>
+    <p><strong>Sede:</strong> ${luogo?.nome || 'N/D'}</p>
+    <p><strong>Punteggio finale:</strong> ${squadra.punteggio} punti</p>
+    <p><strong>Tempo impiegato:</strong> ${durataSecondi !== null ? formatDurata(durataSecondi) : 'N/D'}</p>
+    <p><strong>Tappe saltate:</strong> ${squadra.tappe_saltate?.length || 0}</p>
+    <p><strong>Errori commessi:</strong> ${squadra.errori_per_tappa?.length || 0}</p>
+  `;
+
+  const destinatari = new Set(await getSedeAdminEmails(squadra.luogo_id));
+  if (destinatari.size === 0) {
+    (await getSuperAdminEmails()).forEach((e) => destinatari.add(e));
+  }
+  if (squadra.referente_email) destinatari.add(squadra.referente_email);
+
+  for (const to of destinatari) {
+    await sendEmail({
+      to,
+      subject: `Partita completata: ${squadra.nome_squadra}`,
+      body: wrapEmail({ title: 'Partita completata!', contentHtml }),
+    });
+  }
+};
+
 // PUT /api/squadre/:id — proprietario o admin (di sede: solo squadre della propria sede)
 router.put('/:id', auth, scopeToSedi, async (req, res) => {
   try {
@@ -165,6 +205,8 @@ router.put('/:id', auth, scopeToSedi, async (req, res) => {
       updates.tempo_inizio_tappa_corrente = now;
     }
 
+    const eraCompletata = squadra.completata;
+
     // Imposta tempo_fine quando la partita viene completata (timeout o completamento normale)
     if (updates.completata && !squadra.completata) {
       updates.tempo_fine = now;
@@ -179,6 +221,13 @@ router.put('/:id', auth, scopeToSedi, async (req, res) => {
     }
 
     await squadra.update(updates);
+
+    if (updates.completata && !eraCompletata) {
+      sendGameCompletionEmail(squadra).catch((emailErr) =>
+        console.error('Errore invio email fine partita:', emailErr.message)
+      );
+    }
+
     res.json(squadra);
   } catch (err) {
     res.status(500).json({ error: err.message });
