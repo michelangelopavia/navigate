@@ -33,6 +33,7 @@ import {
 import TappaForm from '@/components/admin/TappaForm';
 import ImportTappeCSV from '@/components/admin/ImportTappeCSV';
 import { useAuth } from '@/lib/AuthContext';
+import { toast } from 'sonner';
 
 export default function GestioneTappe() {
   const queryClient = useQueryClient();
@@ -63,6 +64,10 @@ export default function GestioneTappe() {
     onSuccess: () => {
       queryClient.invalidateQueries(['tappe']);
       setShowForm(false);
+      toast.success('Tappa creata');
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.error || 'Errore nella creazione della tappa');
     }
   });
 
@@ -70,8 +75,12 @@ export default function GestioneTappe() {
     mutationFn: async (tappeArray) => {
       return await base44.entities.Tappa.bulkCreate(tappeArray);
     },
-    onSuccess: () => {
+    onSuccess: (_data, tappeArray) => {
       queryClient.invalidateQueries(['tappe']);
+      toast.success(`${tappeArray.length} tappe importate`);
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.error || 'Errore nell\'importazione delle tappe');
     }
   });
 
@@ -81,6 +90,10 @@ export default function GestioneTappe() {
       queryClient.invalidateQueries(['tappe']);
       setShowForm(false);
       setTappaEdit(null);
+      toast.success('Tappa aggiornata');
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.error || 'Errore nell\'aggiornamento della tappa');
     }
   });
 
@@ -89,6 +102,10 @@ export default function GestioneTappe() {
     onSuccess: () => {
       queryClient.invalidateQueries(['tappe']);
       setTappaDelete(null);
+      toast.success('Tappa eliminata');
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.error || 'Errore nell\'eliminazione della tappa');
     }
   });
 

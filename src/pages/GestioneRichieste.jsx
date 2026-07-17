@@ -14,6 +14,7 @@ import { createPageUrl } from '@/utils';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 export default function GestioneRichieste() {
   const queryClient = useQueryClient();
@@ -34,6 +35,10 @@ export default function GestioneRichieste() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['richieste-aiuto-tutte']);
+      toast.success('Richiesta segnata come risolta');
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.error || 'Errore nell\'aggiornamento della richiesta');
     }
   });
 

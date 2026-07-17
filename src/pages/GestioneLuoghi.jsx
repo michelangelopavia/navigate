@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/AuthContext';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -69,6 +70,10 @@ export default function GestioneLuoghi() {
       queryClient.invalidateQueries(['luoghi']);
       setShowForm(false);
       resetForm();
+      toast.success('Luogo creato');
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.error || 'Errore nella creazione del luogo');
     }
   });
 
@@ -79,6 +84,10 @@ export default function GestioneLuoghi() {
       setShowForm(false);
       setLuogoEdit(null);
       resetForm();
+      toast.success('Luogo aggiornato');
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.error || 'Errore nell\'aggiornamento del luogo');
     }
   });
 
@@ -87,6 +96,10 @@ export default function GestioneLuoghi() {
     onSuccess: () => {
       queryClient.invalidateQueries(['luoghi']);
       setLuogoDelete(null);
+      toast.success('Luogo eliminato');
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.error || 'Errore nell\'eliminazione del luogo');
     }
   });
 
