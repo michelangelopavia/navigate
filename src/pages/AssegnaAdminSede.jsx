@@ -63,8 +63,8 @@ export default function AssegnaAdminSede() {
       setSelectedLuogoId('');
       toast.success(
         wasPromoted
-          ? `${user.full_name} è stato promosso ad admin e assegnato alla sede`
-          : 'Sede assegnata con successo'
+          ? `${user.full_name} è stato promosso ad admin e assegnato al luogo`
+          : 'Luogo assegnato con successo'
       );
     },
     onError: (err) => {
@@ -100,8 +100,8 @@ export default function AssegnaAdminSede() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Assegna Admin↔Sede</h1>
-            <p className="text-gray-500 text-sm">Collega un utente a una sede come admin</p>
+            <h1 className="text-2xl font-bold text-gray-900">Assegna Admin↔Luogo</h1>
+            <p className="text-gray-500 text-sm">Collega un utente a un luogo come admin</p>
           </div>
         </div>
 
@@ -129,10 +129,10 @@ export default function AssegnaAdminSede() {
               </Select>
             </div>
             <div>
-              <Label>Sede</Label>
+              <Label>Luogo</Label>
               <Select value={selectedLuogoId} onValueChange={setSelectedLuogoId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleziona una sede" />
+                  <SelectValue placeholder="Seleziona un luogo" />
                 </SelectTrigger>
                 <SelectContent>
                   {luoghi.map((l) => (
@@ -205,7 +205,7 @@ export default function AssegnaAdminSede() {
           <AlertDialogHeader>
             <AlertDialogTitle>Rimuovere questa assegnazione?</AlertDialogTitle>
             <AlertDialogDescription>
-              {assegnazioneToRemove?.User?.full_name} non gestirà più la sede {assegnazioneToRemove?.Luogo?.nome}.
+              {assegnazioneToRemove?.User?.full_name} non gestirà più il luogo {assegnazioneToRemove?.Luogo?.nome}.
               Il ruolo admin resterà invariato, l'assegnazione può essere ricreata in seguito.
             </AlertDialogDescription>
           </AlertDialogHeader>
