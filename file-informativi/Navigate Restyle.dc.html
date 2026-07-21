@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background: oklch(88% 0.06 235); font-family: 'Space Grotesk', sans-serif; }
+    a { color: oklch(15% 0 0); text-decoration: none; }
+    a:hover { color: oklch(99% 0 0); }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; background: oklch(88% 0.06 235); color: oklch(15% 0 0);">
+
+  <div style="height: 5px; background: linear-gradient(90deg, oklch(70% 0.20 350), oklch(55% 0.20 300), oklch(88% 0.06 235));"></div>
+
+  <!-- HEADER -->
+  
+
+  <!-- HERO -->
+  <header data-screen-label="Header" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; background: oklch(99% 0 0);">
+    <div style="display: flex; align-items: center; gap: 18px;">
+      <svg width="22" height="22" viewBox="0 0 44 44">
+        <circle cx="22" cy="22" r="20" fill="none" stroke="oklch(15% 0 0)" stroke-width="2"></circle>
+        <circle cx="22" cy="22" r="1.5" fill="oklch(62% 0.19 45)"></circle>
+        <polygon points="22,10 26,22 22,34 18,22" fill="oklch(62% 0.19 45)"></polygon>
+        <polygon points="10,22 22,18 34,22 22,26" fill="oklch(15% 0 0)"></polygon>
+      </svg>
+      <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.5px;">NAVIGATE</span>
+      <span style="width: 1px; height: 22px; background: oklch(15% 0 0 / 0.3);"></span>
+      
+    </div>
+    <nav style="display: flex; align-items: center; gap: 32px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">
+      
+    </nav>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <span style="cursor: pointer; font-size: 13px">🌐 IT</span>
+      <div style="display: flex; align-items: center; gap: 10px; background: oklch(15% 0 0); border-radius: 4px; padding: 9px 16px; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform: translate(-2px, -2px); box-shadow: 4px 4px 0 oklch(62% 0.19 45);">
+        <span style="color: oklch(99% 0 0); font-size: 13px;">Accedi</span>
+      </div>
+    </div>
+  </header><section data-screen-label="Hero" style="padding: 40px 48px 60px;">
+    <div style="border: 1.5px solid oklch(62% 0.19 45); border-radius: 4px; padding: 48px; max-width: 800px; margin: 0 auto;">
+
+      <div style="text-align: center;">
+        <svg width="44" height="44" viewBox="0 0 44 44" style="margin-bottom: 12px;">
+          <circle cx="22" cy="22" r="20" fill="none" stroke="oklch(15% 0 0)" stroke-width="2"></circle>
+          <circle cx="22" cy="22" r="1.5" fill="oklch(62% 0.19 45)"></circle>
+          <polygon points="22,10 26,22 22,34 18,22" fill="oklch(62% 0.19 45)"></polygon>
+          <polygon points="10,22 22,18 34,22 22,26" fill="oklch(15% 0 0)"></polygon>
+        </svg>
+        <h1 style="font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: clamp(48px, 6.6vw, 77px); line-height: 1; margin: 0; color: oklch(15% 0 0); text-transform: uppercase;">Navigate</h1>
+        <p style="font-size: 15px; color: oklch(15% 0 0); margin: 8px auto 0; max-width: 340px; line-height: 1.6;">Perdetevi nella città, giocando!</p>
+        <p style="font-size: 12px; color: oklch(15% 0 0 / 0.6); margin: 12px auto 0; display: flex; align-items: center; justify-content: center; gap: 6px;">un progetto di <img src="uploads/Logo-Karascio-black.png" alt="Karasciò" style="height: 14px; width: auto; opacity: 0.6;"></p>
+      </div>
+
+      <div style="margin-top: 40px;">
+        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; margin: 0 0 16px;">Come Funziona</h2>
+        <div style="display: grid; gap: 16px;">
+
+          <div style="background: oklch(99% 0 0); border-radius: 4px; padding: 22px 24px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform: translate(-2px, -2px); box-shadow: 4px 4px 0 oklch(15% 0 0);">
+            <div>
+              <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">1 — Fai Login</div>
+              <div style="width: 40px; height: 1.5px; background: oklch(15% 0 0); margin: 10px 0;"></div>
+              <div style="font-size: 12px; color: oklch(15% 0 0 / 0.6);">Accedi o registrati per iniziare</div>
+            </div>
+            <div style="width: 56px; height: 56px; border-radius: 4px; background: oklch(15% 0 0); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <rect x="5" y="11" width="14" height="10" rx="1.5" stroke="oklch(99% 0 0)" stroke-width="2"></rect>
+                <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="oklch(99% 0 0)" stroke-width="2" stroke-linecap="round"></path>
+                <circle cx="12" cy="16" r="1.5" fill="oklch(99% 0 0)"></circle>
+              </svg>
+            </div>
+          </div>
+
+          <div style="background: oklch(99% 0 0); border-radius: 4px; padding: 22px 24px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform: translate(-2px, -2px); box-shadow: 4px 4px 0 oklch(15% 0 0);">
+            <div>
+              <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">2 — Iscrivi la Squadra</div>
+              <div style="width: 40px; height: 1.5px; background: oklch(15% 0 0); margin: 10px 0;"></div>
+              <div style="font-size: 12px; color: oklch(15% 0 0 / 0.6);">Scegli un luogo o evento</div>
+            </div>
+            <div style="width: 56px; height: 56px; border-radius: 4px; background: oklch(15% 0 0); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <circle cx="9" cy="8" r="3" stroke="oklch(99% 0 0)" stroke-width="2"></circle>
+                <path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="oklch(99% 0 0)" stroke-width="2" stroke-linecap="round"></path>
+                <circle cx="17.5" cy="9" r="2.5" stroke="oklch(99% 0 0)" stroke-width="2"></circle>
+                <path d="M14.5 19c0-2.5 1.5-4.2 3.5-4.5" stroke="oklch(99% 0 0)" stroke-width="2" stroke-linecap="round"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div style="background: oklch(99% 0 0); border-radius: 4px; padding: 22px 24px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform: translate(-2px, -2px); box-shadow: 4px 4px 0 oklch(15% 0 0);">
+            <div>
+              <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">3 — Inizia a Giocare</div>
+              <div style="width: 40px; height: 1.5px; background: oklch(15% 0 0); margin: 10px 0;"></div>
+              <div style="font-size: 12px; color: oklch(15% 0 0 / 0.6);">Risolvi 10 indovinelli</div>
+            </div>
+            <div style="width: 56px; height: 56px; border-radius: 4px; background: oklch(15% 0 0); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <path d="M6 21V4" stroke="oklch(99% 0 0)" stroke-width="2" stroke-linecap="round"></path>
+                <path d="M6 4h11l-3 4 3 4H6" stroke="oklch(99% 0 0)" stroke-width="2" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; margin-top: 40px;">
+        <button style="background: oklch(15% 0 0); color: oklch(99% 0 0); border: none; border-radius: 4px; padding: 14px 28px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform: translate(-2px, -2px); box-shadow: 4px 4px 0 oklch(99% 0 0);">Inizia a giocare</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLASSIFICHE CTA -->
+  <div style="display: flex; justify-content: center; padding: 0 48px 56px;">
+    <button style="display: flex; align-items: center; gap: 10px; background: oklch(62% 0.19 45); border: none; color: oklch(99% 0 0); border-radius: 4px; padding: 13px 26px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform: translate(-2px, -2px); box-shadow: 4px 4px 0 oklch(15% 0 0);">&nbsp;VEDI LE CLASSIFICHE</button>
+  </div>
+
+  <!-- EVENTI -->
+  <section data-screen-label="Eventi in Programma" style="padding: 0 48px 60px;">
+    <div style="border: 1.5px solid oklch(62% 0.19 45); border-radius: 4px; padding: 48px; max-width: 1240px; margin: 0 auto;">
+    <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: clamp(30px, 4vw, 46px); margin: 0 0 28px; color: oklch(15% 0 0); text-transform: uppercase; font-weight: 500">Eventi in Programma</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+
+      <div style="background: oklch(99% 0 0); border-radius: 4px; padding: 26px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px;">
+          <span style="font-weight: 700; font-size: 18px;">Caccia al tesoro di fine estate</span>
+          <span style="background: oklch(62% 0.19 45); color: oklch(99% 0 0); font-weight: 700; font-size: 11px; padding: 5px 12px; border-radius: 4px; white-space: nowrap; text-transform: uppercase;">Competizione</span>
+        </div>
+        <div style="width: 40px; height: 1.5px; background: oklch(15% 0 0); margin-bottom: 14px;"></div>
+        <div style="font-size: 13px; color: oklch(15% 0 0 / 0.6); margin-bottom: 20px;">lunedì 31 agosto 2026 · 09:00</div>
+        <button style="width: 100%; background: oklch(15% 0 0); color: oklch(99% 0 0); border: none; border-radius: 4px; padding: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform: translate(-2px, -2px); box-shadow: 4px 4px 0 oklch(62% 0.19 45);">Scopri di più →</button>
+      </div>
+
+      <div style="background: oklch(99% 0 0); border-radius: 4px; padding: 26px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px;">
+          <span style="font-weight: 700; font-size: 18px;">Caccia al tesoro Kalsa</span>
+          <span style="background: oklch(62% 0.19 45); color: oklch(99% 0 0); font-weight: 700; font-size: 11px; padding: 5px 12px; border-radius: 4px; white-space: nowrap; text-transform: uppercase;">Competizione</span>
+        </div>
+        <div style="width: 40px; height: 1.5px; background: oklch(15% 0 0); margin-bottom: 14px;"></div>
+        <div style="font-size: 13px; color: oklch(15% 0 0 / 0.6); margin-bottom: 20px;">giovedì 31 dicembre 2026 · 01:00</div>
+        <button style="width: 100%; background: oklch(15% 0 0); color: oklch(99% 0 0); border: none; border-radius: 4px; padding: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform: translate(-2px, -2px); box-shadow: 4px 4px 0 oklch(62% 0.19 45);">Scopri di più →</button>
+      </div>
+
+    </div>
+    </div>
+  </section>
+
+  <!-- LUOGHI -->
+  <section data-screen-label="Luoghi Disponibili" style="padding: 0 48px 80px;">
+    <div style="border: 1.5px solid oklch(62% 0.19 45); border-radius: 4px; padding: 48px; max-width: 1240px; margin: 0 auto;">
+    <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: clamp(30px, 4vw, 46px); margin: 0 0 28px; color: oklch(15% 0 0); text-transform: uppercase; font-weight: 500">Luoghi Disponibili</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+
+      <div style="background: oklch(99% 0 0); border-radius: 4px; padding: 26px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+          <span style="font-weight: 700; font-size: 20px;">Capo</span>
+          <span style="background: oklch(62% 0.19 45); color: oklch(99% 0 0); font-weight: 700; font-size: 11px; padding: 5px 12px; border-radius: 4px; text-transform: uppercase;">Palermo</span>
+        </div>
+        <div style="width: 40px; height: 1.5px; background: oklch(15% 0 0); margin-bottom: 18px;"></div>
+        <button style="width: 100%; color: oklch(99% 0 0); border: none; border-radius: 4px; padding: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; background-color: #000000; transition: transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform: translate(-2px, -2px); box-shadow: 4px 4px 0 oklch(62% 0.19 45);">Accedi per giocare</button>
+      </div>
+
+      <div style="background: oklch(99% 0 0); border-radius: 4px; padding: 26px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+          <span style="font-weight: 700; font-size: 20px;">Palermo Kalsa</span>
+          <span style="background: oklch(62% 0.19 45); color: oklch(99% 0 0); font-weight: 700; font-size: 11px; padding: 5px 12px; border-radius: 4px; text-transform: uppercase;">Palermo</span>
+        </div>
+        <div style="width: 40px; height: 1.5px; background: oklch(15% 0 0); margin-bottom: 18px;"></div>
+        <button style="width: 100%; color: oklch(99% 0 0); border: none; border-radius: 4px; padding: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; background-color: #000000; transition: transform 0.15s ease, box-shadow 0.15s ease;" style-hover="transform: translate(-2px, -2px); box-shadow: 4px 4px 0 oklch(62% 0.19 45);">Accedi per giocare</button>
+      </div>
+
+    </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="background: oklch(99% 0 0); padding: 26px 48px; text-align: center;">
+    <span style="font-size: 13px; color: oklch(15% 0 0 / 0.65); display: inline-flex; align-items: center; gap: 6px;">a project by <img src="uploads/Logo-Karascio-black.png" alt="Karasciò" style="height: 16px; width: auto;"></span>
+  </footer>
+
+</div>
+
+</x-dc>
+</body>
+</html>
