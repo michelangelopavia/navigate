@@ -4,7 +4,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
 const passport = require('passport');
-const { sequelize } = require('./src/models');
+const { sequelize, Evento, ImpostazioniSito } = require('./src/models');
+const { renderIndexWithMetaTags } = require('./src/lib/socialMetaTags');
 
 const app = express();
 
@@ -40,9 +41,20 @@ app.use('/api/integrations',    require('./src/routes/integrations'));
 // In produzione serve il frontend buildato
 if (process.env.NODE_ENV === 'production') {
   const distPath = path.join(__dirname, '..', 'dist');
-  app.use(express.static(distPath));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
+  app.use(express.static(distPath, { index: false }));
+  app.get('*', async (req, res) => {
+    try {
+      const html = await renderIndexWithMetaTags({
+        indexPath: path.join(distPath, 'index.html'),
+        req,
+        Evento,
+        ImpostazioniSito,
+      });
+      res.send(html);
+    } catch (err) {
+      console.error('Errore generazione meta tag social:', err);
+      res.sendFile(path.join(distPath, 'index.html'));
+    }
   });
 }
 
