@@ -9,6 +9,10 @@ const { renderIndexWithMetaTags } = require('./src/lib/socialMetaTags');
 
 const app = express();
 
+// cPanel serve l'app dietro un reverse proxy che termina l'HTTPS: senza
+// questa riga, req.protocol risulta sempre "http" anche per richieste https
+app.set('trust proxy', true);
+
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
