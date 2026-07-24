@@ -59,6 +59,10 @@ export default function GestioneLuoghi() {
     queryFn: () => base44.entities.Luogo.list()
   });
 
+  const luoghiVisibili = isSuperAdmin
+    ? luoghi
+    : luoghi.filter((l) => (user?.sedi_ids || []).includes(l.id));
+
   const { data: tappe = [] } = useQuery({
     queryKey: ['tappe'],
     queryFn: () => base44.entities.Tappa.list()
@@ -177,7 +181,7 @@ export default function GestioneLuoghi() {
 
         {/* Lista Luoghi */}
         <div className="space-y-4">
-          {luoghi.map((luogo, index) => {
+          {luoghiVisibili.map((luogo, index) => {
             const count = getTappeCount(luogo.id);
             const isReady = count.facile >= 4 && count.media >= 4 && count.difficile >= 2;
             
@@ -257,11 +261,13 @@ export default function GestioneLuoghi() {
             );
           })}
 
-          {luoghi.length === 0 && (
+          {luoghiVisibili.length === 0 && (
             <Card className="text-center py-12">
               <CardContent>
                 <MapPin className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p className="text-gray-500">Nessun luogo creato</p>
+                <p className="text-gray-500">
+                  {isSuperAdmin ? 'Nessun luogo creato' : 'Nessuna sede assegnata al tuo profilo'}
+                </p>
               </CardContent>
             </Card>
           )}
