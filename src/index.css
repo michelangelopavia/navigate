@@ -124,6 +124,25 @@ button:focus-visible {
     --sidebar-accent-foreground: oklch(99% 0 0);
     --sidebar-border: oklch(62% 0.19 45 / 0.4);
     --sidebar-ring: oklch(62% 0.19 45);
+
+    --glass-bg: oklch(99% 0 0 / 0.22);
+    --glass-border: oklch(99% 0 0 / 0.65);
+    --glass-shadow: oklch(15% 0 0 / 0.12);
+    --glass-shine: oklch(99% 0 0 / 0.95);
+    --glass-shade: oklch(15% 0 0 / 0.06);
+    --glass-dark-bg: oklch(15% 0 0 / 0.9);
+    --glass-dark-border: oklch(99% 0 0 / 0.35);
+    --glass-dark-shadow: oklch(15% 0 0 / 0.3);
+    --glass-dark-shine: oklch(99% 0 0 / 0.35);
+    --glass-dark-shade: oklch(15% 0 0 / 0.2);
+    --panel-bg: oklch(99% 0 0 / 0.82);
+    --header-bg: oklch(99% 0 0 / 0.55);
+    --grid-line: oklch(15% 0 0 / 0.05);
+    --grid-dot: oklch(15% 0 0 / 0.07);
+    --blob-1: oklch(88% 0.06 235 / 0.5);
+    --blob-2: oklch(62% 0.19 45 / 0.14);
+    --glass-accent-bg: oklch(62% 0.19 45 / 0.9);
+    --glass-accent-shadow: oklch(62% 0.19 45 / 0.35);
   }
   .dark {
     --background: oklch(20% 0.02 235);
@@ -156,6 +175,25 @@ button:focus-visible {
     --sidebar-accent-foreground: oklch(15% 0 0);
     --sidebar-border: oklch(68% 0.19 45 / 0.35);
     --sidebar-ring: oklch(68% 0.19 45);
+
+    --glass-bg: oklch(40% 0.02 250 / 0.28);
+    --glass-border: oklch(95% 0 0 / 0.14);
+    --glass-shadow: oklch(0% 0 0 / 0.4);
+    --glass-shine: oklch(95% 0 0 / 0.12);
+    --glass-shade: oklch(0% 0 0 / 0.3);
+    --glass-dark-bg: oklch(10% 0 0 / 0.85);
+    --glass-dark-border: oklch(95% 0 0 / 0.15);
+    --glass-dark-shadow: oklch(0% 0 0 / 0.5);
+    --glass-dark-shine: oklch(95% 0 0 / 0.15);
+    --glass-dark-shade: oklch(0% 0 0 / 0.25);
+    --panel-bg: oklch(26% 0.02 235 / 0.78);
+    --header-bg: oklch(26% 0.02 235 / 0.6);
+    --grid-line: oklch(95% 0 0 / 0.06);
+    --grid-dot: oklch(95% 0 0 / 0.08);
+    --blob-1: oklch(45% 0.06 235 / 0.35);
+    --blob-2: oklch(68% 0.19 45 / 0.18);
+    --glass-accent-bg: oklch(68% 0.19 45 / 0.8);
+    --glass-accent-shadow: oklch(68% 0.19 45 / 0.4);
   }
 }
 
@@ -192,6 +230,115 @@ button:focus-visible {
   .hover-lift-accent:hover {
     box-shadow: 4px 4px 0 var(--accent);
   }
+
+  /* Liquid glass */
+  .glass {
+    position: relative;
+    background: var(--glass-bg);
+    backdrop-filter: blur(28px) saturate(130%);
+    -webkit-backdrop-filter: blur(28px) saturate(130%);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      0 8px 28px var(--glass-shadow),
+      inset 1.5px 1.5px 1px var(--glass-shine),
+      inset -1px -1px 1px var(--glass-shade);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .glass:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 16px 36px var(--glass-shadow),
+      inset 1.5px 1.5px 1px var(--glass-shine),
+      inset -1px -1px 1px var(--glass-shade);
+  }
+  .glass-dark {
+    position: relative;
+    background: var(--glass-dark-bg);
+    border: 1px solid var(--glass-dark-border);
+    box-shadow:
+      0 8px 28px var(--glass-dark-shadow),
+      inset 1.5px 1.5px 1px var(--glass-dark-shine),
+      inset -1px -1px 1px var(--glass-dark-shade);
+    color: oklch(99% 0 0);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .glass-dark:hover {
+    background: var(--glass-dark-bg);
+    color: oklch(99% 0 0);
+    transform: translateY(-3px);
+    box-shadow:
+      0 14px 30px var(--glass-dark-shadow),
+      inset 0 1px 0 var(--glass-dark-shine);
+  }
+  .glass-accent {
+    position: relative;
+    background: var(--glass-accent-bg);
+    border: 1px solid var(--glass-dark-border);
+    box-shadow:
+      0 8px 28px var(--glass-accent-shadow),
+      inset 1.5px 1.5px 1px var(--glass-dark-shine),
+      inset -1px -1px 1px var(--glass-dark-shade);
+    color: var(--accent-foreground);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .glass-accent:hover {
+    background: var(--glass-accent-bg);
+    color: var(--accent-foreground);
+    transform: translateY(-3px);
+    box-shadow:
+      0 14px 30px var(--glass-accent-shadow),
+      inset 0 1px 0 var(--glass-dark-shine);
+  }
+  .glass-hero {
+    border-radius: 1.75rem;
+    box-shadow:
+      0 8px 32px var(--glass-shadow),
+      inset 0 1px 0 var(--glass-shine),
+      inset 0 -1px 8px var(--glass-shade),
+      0 0 0 1.5px var(--border);
+  }
+  .glass-hero:hover {
+    transform: none;
+  }
+  .panel-surface {
+    background: var(--panel-bg);
+    border: 1.5px solid var(--border);
+    box-shadow: 0 4px 24px oklch(15% 0 0 / 0.06);
+  }
+  .btn-glass-accent {
+    background: linear-gradient(155deg, oklch(68% 0.19 45 / 0.9), oklch(58% 0.19 45 / 0.75));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+    color: oklch(99% 0 0);
+    box-shadow: 0 8px 24px oklch(62% 0.19 45 / 0.35), inset 0 1px 0 oklch(99% 0 0 / 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-glass-accent:hover {
+    background: linear-gradient(155deg, oklch(68% 0.19 45 / 0.9), oklch(58% 0.19 45 / 0.75));
+    color: oklch(99% 0 0);
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px oklch(62% 0.19 45 / 0.45), inset 0 1px 0 oklch(99% 0 0 / 0.4);
+  }
+  .header-glass {
+    background: var(--header-bg);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .bg-liquid-page {
+    background-color: var(--background);
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, repeat;
+    background-size: auto, auto, auto, 28px 28px, 140px 140px, 140px 140px;
+    background-image:
+      radial-gradient(circle 420px at 12% 120px, var(--blob-1), transparent 100%),
+      radial-gradient(circle 440px at 88% 160px, var(--blob-2), transparent 100%),
+      radial-gradient(circle 400px at 25% 620px, var(--blob-1), transparent 100%),
+      radial-gradient(var(--grid-dot) 1.5px, transparent 1.5px),
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  }
+
   .custom-scrollbar::-webkit-scrollbar {
     width: 4px;
   }

@@ -97,17 +97,17 @@ export default function Home() {
     base44.auth.redirectToLogin(window.location.href);
   };
 
-  const stepIcon = "w-14 h-14 rounded bg-accent text-accent-foreground flex items-center justify-center flex-shrink-0";
+  const stepIcon = "w-14 h-14 rounded-2xl glass-accent flex items-center justify-center flex-shrink-0";
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-liquid-page text-foreground">
       <MetaTags />
 
       {/* Barra gradiente */}
       <div className="h-[5px] bg-gradient-to-r from-[var(--gradient-start)] via-[var(--gradient-mid)] to-[var(--gradient-end)]" />
 
       {/* Header */}
-      <div className="bg-card sticky top-0 z-50">
+      <div className="header-glass sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center gap-3">
           <div className="flex items-center gap-3">
             <CompassLogo size={22} />
@@ -144,7 +144,7 @@ export default function Home() {
                 </Button>
               </>
             ) : (
-              <Button onClick={handleLogin} size="sm" className="hover-lift-accent">
+              <Button onClick={handleLogin} variant="ghost" size="sm" className="glass-dark rounded-full">
                 <LogIn className="w-4 h-4 mr-2" />
                 {t('login')}
               </Button>
@@ -155,7 +155,7 @@ export default function Home() {
 
       <div className="max-w-4xl mx-auto px-4 py-10">
         {/* Hero */}
-        <section className="border border-border rounded p-6 md:p-12 mb-10">
+        <section className="glass glass-hero p-6 md:p-12 mb-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -186,7 +186,7 @@ export default function Home() {
             <div className="grid gap-4">
               {/* Step 1 */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                <div className="bg-card rounded p-5 grid grid-cols-[1fr_auto] gap-4 items-center card-surface">
+                <div className="glass rounded-[22px] p-5 grid grid-cols-[1fr_auto] gap-4 items-center">
                   {loadingAuth ? (
                     <div className="animate-pulse h-6 bg-muted rounded" />
                   ) : isAuthenticated ? (
@@ -202,7 +202,7 @@ export default function Home() {
                       <h3 className="font-bold text-sm uppercase tracking-wide">{t('step1Login')}</h3>
                       <div className="w-10 h-px bg-foreground my-2" />
                       <p className="text-xs opacity-60 mb-3">{t('step1Desc')}</p>
-                      <Button onClick={handleLogin} size="sm" className="hover-lift-accent">
+                      <Button onClick={handleLogin} variant="ghost" size="sm" className="glass-dark rounded-full">
                         <LogIn className="w-4 h-4 mr-2" />
                         {t('login')}
                       </Button>
@@ -216,7 +216,7 @@ export default function Home() {
 
               {/* Step 2 */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                <div className={`bg-card rounded p-5 grid grid-cols-[1fr_auto] gap-4 items-center card-surface ${!isAuthenticated && !squadraPronta && !squadraInCorso ? 'opacity-50' : ''}`}>
+                <div className={`glass rounded-[22px] p-5 grid grid-cols-[1fr_auto] gap-4 items-center ${!isAuthenticated && !squadraPronta && !squadraInCorso ? 'opacity-50' : ''}`}>
                   {squadraPronta || squadraInCorso ? (
                     <div>
                       <h3 className="font-bold text-sm uppercase tracking-wide">{(squadraPronta || squadraInCorso)?.nome_squadra}</h3>
@@ -226,7 +226,7 @@ export default function Home() {
                         variant="outline"
                         size="icon"
                         onClick={() => setSquadraToDelete((squadraPronta || squadraInCorso).id)}
-                        className="text-destructive hover:text-destructive"
+                        className="rounded-full text-destructive hover:text-destructive"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -238,7 +238,7 @@ export default function Home() {
                       <p className="text-xs opacity-60 mb-3">{t('step2Desc')}</p>
                       {isAuthenticated && (
                         <Link to={createPageUrl('Iscrizione')}>
-                          <Button size="sm" className="hover-lift-accent">
+                          <Button variant="ghost" size="sm" className="glass-dark rounded-full">
                             <UserPlus className="w-4 h-4 mr-2" />
                             {t('register')}
                           </Button>
@@ -254,7 +254,7 @@ export default function Home() {
 
               {/* Step 3 */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                <div className={`bg-card rounded p-5 grid grid-cols-[1fr_auto] gap-4 items-center card-surface ${!squadraPronta && !squadraInCorso ? 'opacity-50' : ''}`}>
+                <div className={`glass rounded-[22px] p-5 grid grid-cols-[1fr_auto] gap-4 items-center ${!squadraPronta && !squadraInCorso ? 'opacity-50' : ''}`}>
                   <div>
                     <h3 className="font-bold text-sm uppercase tracking-wide">
                       {eventoTerminato ? 'Evento terminato' : squadraInCorso ? t('continuePlay') : t('step3Play')}
@@ -265,21 +265,21 @@ export default function Home() {
                     </p>
                     {eventoTerminato ? (
                       <Link to={createPageUrl(`Classifica?evento=${squadraInCorso.evento_id}`)}>
-                        <Button size="sm" className="hover-lift-accent">
+                        <Button variant="ghost" size="sm" className="glass-dark rounded-full">
                           <Play className="w-4 h-4 mr-2" />
                           Vedi Classifica
                         </Button>
                       </Link>
                     ) : squadraInCorso ? (
                       <Link to={createPageUrl(`Gioca?squadra=${squadraInCorso.id}`)}>
-                        <Button size="sm" className="hover-lift-accent">
+                        <Button variant="ghost" size="sm" className="glass-dark rounded-full">
                           <Play className="w-4 h-4 mr-2" />
                           {t('continuePlay')}
                         </Button>
                       </Link>
                     ) : squadraPronta ? (
                       <Link to={createPageUrl(`Gioca?squadra=${squadraPronta.id}`)}>
-                        <Button size="sm" className="hover-lift-accent">
+                        <Button variant="ghost" size="sm" className="glass-dark rounded-full">
                           <Play className="w-4 h-4 mr-2" />
                           {t('start')}
                         </Button>
@@ -296,7 +296,7 @@ export default function Home() {
 
           {/* Inizia a giocare */}
           <div className="flex justify-center mt-10">
-            <Button className="hover-lift-accent uppercase tracking-wide font-bold px-7">
+            <Button variant="ghost" className="glass-dark rounded-full uppercase tracking-wide font-bold px-7">
               {t('step3Play')}
             </Button>
           </div>
@@ -305,7 +305,7 @@ export default function Home() {
         {/* CTA Classifiche */}
         <div className="flex justify-center mb-8">
           <Link to={createPageUrl('Classifiche')}>
-            <Button className="bg-accent text-accent-foreground hover:opacity-90 hover-lift uppercase tracking-wide font-bold">
+            <Button variant="ghost" className="btn-glass-accent rounded-full uppercase tracking-wide font-bold">
               <Trophy className="w-4 h-4 mr-2" />
               {t('viewLeaderboards')}
             </Button>
@@ -314,7 +314,7 @@ export default function Home() {
 
         {/* Eventi */}
         {eventi.length > 0 && (
-          <section className="border border-border rounded p-6 md:p-12 mb-10">
+          <section className="panel-surface rounded-[28px] p-6 md:p-12 mb-10">
             <h2 className="text-2xl md:text-4xl font-medium uppercase mb-7 flex items-center gap-2">
               <Calendar className="w-6 h-6" />
               {t('upcomingEvents')}
@@ -327,7 +327,7 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <div className="bg-card rounded p-6 card-surface">
+                  <div className="glass rounded-[22px] p-6">
                     <div className="flex items-center justify-between gap-4 mb-3">
                       <Link to={createPageUrl(`DettaglioEvento?id=${evento.id}`)}>
                         <span className="font-bold text-lg hover:underline cursor-pointer">{getLocalized(evento, 'nome')}</span>
@@ -342,7 +342,7 @@ export default function Home() {
                       {format(new Date(evento.data_inizio), 'EEEE d MMMM yyyy, HH:mm', { locale: dateLocale })}
                     </div>
                     <Link to={createPageUrl(`DettaglioEvento?id=${evento.id}`)}>
-                      <Button className="w-full hover-lift-accent uppercase tracking-wide font-bold">
+                      <Button variant="ghost" className="glass-dark rounded-full w-full uppercase tracking-wide font-bold">
                         Scopri di più <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
                     </Link>
@@ -355,7 +355,7 @@ export default function Home() {
 
         {/* Luoghi Disponibili */}
         {luoghi.length > 0 && (
-          <section className="border border-border rounded p-6 md:p-12 mb-10">
+          <section className="panel-surface rounded-[28px] p-6 md:p-12 mb-10">
             <h2 className="text-2xl md:text-4xl font-medium uppercase mb-7 flex items-center gap-2">
               <MapPin className="w-6 h-6" />
               {t('availableLocations')} per Giocare in Autonomia
@@ -368,7 +368,7 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <div className="bg-card rounded overflow-hidden card-surface">
+                  <div className="glass rounded-[22px] overflow-hidden">
                     {luogo.immagine_url && (
                       <img src={luogo.immagine_url} alt={getLocalized(luogo, 'nome')} className="w-full h-40 object-cover" />
                     )}
@@ -383,12 +383,12 @@ export default function Home() {
                       )}
                       {isAuthenticated ? (
                         <Link to={createPageUrl(`Iscrizione?luogo=${luogo.id}`)}>
-                          <Button className="w-full hover-lift-accent uppercase tracking-wide font-bold">
+                          <Button variant="ghost" className="glass-dark rounded-full w-full uppercase tracking-wide font-bold">
                             {t('playHere')} <ArrowRight className="w-4 h-4 ml-2" />
                           </Button>
                         </Link>
                       ) : (
-                        <Button onClick={handleLogin} className="w-full hover-lift-accent uppercase tracking-wide font-bold">
+                        <Button onClick={handleLogin} variant="ghost" className="glass-dark rounded-full w-full uppercase tracking-wide font-bold">
                           {t('loginToPlay')}
                         </Button>
                       )}
@@ -402,7 +402,7 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-card py-6 text-center">
+      <footer className="glass py-6 text-center rounded-none border-x-0 border-b-0">
         <a
           href="https://karascio.it"
           target="_blank"
