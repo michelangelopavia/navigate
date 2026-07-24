@@ -49,6 +49,13 @@ export default function Statistiche() {
   const eventiFiltrabili = eventi.filter((e) => luogoIdsInScope.has(e.luogo_id));
   const eventoSelezionato = eventoId === 'tutte' ? null : eventiFiltrabili.find((e) => e.id === eventoId);
 
+  // Con un evento filtrato, il backend restituisce comunque una card per ogni sede
+  // (anche quelle senza nessuna squadra in quell'evento) — le nascondiamo qui per
+  // non suggerire che l'evento abbia coinvolto sedi con cui non c'entra nulla.
+  const statisticheVisibili = eventoSelezionato
+    ? statistiche.filter((luogo) => luogo.tappe.some((t) => t.giocata > 0))
+    : statistiche;
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
@@ -59,7 +66,9 @@ export default function Statistiche() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Statistiche per Tappa</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {eventoSelezionato ? `Statistiche — ${eventoSelezionato.nome}` : 'Statistiche per Tappa'}
+            </h1>
             <p className="text-gray-500 text-sm">Quali tappe sono più difficili, saltate o richiedono aiuto</p>
           </div>
         </div>
@@ -83,16 +92,18 @@ export default function Statistiche() {
           <div className="flex justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
           </div>
-        ) : statistiche.length === 0 ? (
+        ) : statisticheVisibili.length === 0 ? (
           <Card className="text-center py-12">
             <CardContent>
               <BarChart3 className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-              <p className="text-gray-500">Nessun luogo da mostrare</p>
+              <p className="text-gray-500">
+                {eventoSelezionato ? 'Nessuna sede ha ancora squadre in questo evento' : 'Nessun luogo da mostrare'}
+              </p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-6">
-            {statistiche.map((luogo) => {
+            {statisticheVisibili.map((luogo) => {
               const tappeOrdinate = [...luogo.tappe].sort(
                 (a, b) => (b.pct_sbagliata ?? -1) - (a.pct_sbagliata ?? -1)
               );
