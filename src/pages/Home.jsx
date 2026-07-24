@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Users, Trophy, ArrowRight, LogIn, UserPlus, Play, Settings, User, LogOut, Trash2 } from 'lucide-react';
+import { MapPin, Calendar, Trophy, ArrowRight, LogIn, UserPlus, Play, Settings, User, LogOut, Trash2, Moon, Sun } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,14 +21,16 @@ import { format } from 'date-fns';
 import { it, enUS } from 'date-fns/locale';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/components/LanguageContext';
+import { useTheme } from '@/components/ThemeContext';
 import LanguageSelector from '@/components/LanguageSelector';
 import MetaTags from '@/components/MetaTags';
-import { LOGO_URL } from '@/lib/branding';
+import CompassLogo from '@/components/CompassLogo';
 import { useAuth } from '@/lib/AuthContext';
 
 export default function Home() {
   const { logout } = useAuth();
   const { t, getLocalized, language } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   const dateLocale = language === 'en' ? enUS : it;
   const queryClient = useQueryClient();
 
@@ -95,50 +97,54 @@ export default function Home() {
     base44.auth.redirectToLogin(window.location.href);
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#bfdbf7]/30 via-white to-[#022b3a]/5">
-      <MetaTags />
-      {/* Header */}
-      <div className="bg-white border-b border-[#022b3a]/10 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            {LOGO_URL && (
-              <img
-                src={LOGO_URL}
-                alt="NAVIGATE"
-                className="w-10 h-10 rounded-lg object-contain" />
-            )}
+  const stepIcon = "w-14 h-14 rounded-2xl glass-accent flex items-center justify-center flex-shrink-0";
 
-            <div>
-              <span className="font-bold text-[#022b3a] text-lg">NAVIGATE</span>
-              <p className="text-xs text-gray-500">Perdetevi nella città, giocando!</p>
-            </div>
+  return (
+    <div className="min-h-screen bg-liquid-page text-foreground">
+      <MetaTags />
+
+      {/* Barra gradiente */}
+      <div className="h-[5px] bg-gradient-to-r from-[var(--gradient-start)] via-[var(--gradient-mid)] to-[var(--gradient-end)]" />
+
+      {/* Header */}
+      <div className="header-glass sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center gap-3">
+          <div className="flex items-center gap-3">
+            <CompassLogo size={22} />
+            <span className="font-bold text-sm tracking-wide uppercase hidden sm:inline">NAVIGATE</span>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded hover:opacity-70 transition-opacity"
+              aria-label={theme === 'dark' ? 'Attiva modalità chiara' : 'Attiva modalità scura'}
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
             <LanguageSelector />
             {loadingAuth ? (
-              <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+              <div className="w-8 h-8 rounded bg-muted animate-pulse" />
             ) : isAuthenticated ? (
               <>
                 <Link to={createPageUrl('Profilo')}>
-                  <Button variant="ghost" size="sm" className="text-[#022b3a]">
-                    <User className="w-4 h-4 mr-2" />
-                    {user?.full_name?.split(' ')[0] || t('profile')}
+                  <Button variant="ghost" size="sm">
+                    <User className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">{user?.full_name?.split(' ')[0] || t('profile')}</span>
                   </Button>
                 </Link>
                 {(user?.role === 'admin' || user?.role === 'super_admin') && (
                   <Link to={createPageUrl('AdminDashboard')}>
-                    <Button variant="ghost" size="sm" className="text-[#022b3a]">
+                    <Button variant="ghost" size="sm">
                       <Settings className="w-4 h-4" />
                     </Button>
                   </Link>
                 )}
-                <Button variant="ghost" size="sm" onClick={logout} className="text-[#db222a]">
+                <Button variant="ghost" size="sm" onClick={logout} className="text-destructive hover:text-destructive">
                   <LogOut className="w-4 h-4" />
                 </Button>
               </>
             ) : (
-              <Button onClick={handleLogin} size="sm" className="bg-[#1f7a8c] hover:bg-[#022b3a]">
+              <Button onClick={handleLogin} variant="ghost" size="sm" className="glass-dark rounded-full">
                 <LogIn className="w-4 h-4 mr-2" />
                 {t('login')}
               </Button>
@@ -147,160 +153,160 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#022b3a] to-[#1f7a8c] opacity-95" />
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: 'url(https://images.pexels.com/photos/14436275/pexels-photo-14436275.jpeg?_gl=1*1rd059z*_ga*MjAxNjI4OTg0NS4xNzY0OTU0MjAz*_ga_8JE65Q40S6*czE3NjQ5NTQyMDIkbzEkZzAkdDE3NjQ5NTQyMDIkajYwJGwwJGgw)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }} />
-
-
-        <div className="relative max-w-4xl mx-auto px-4 pt-12 pb-16 text-center text-white">
+      <div className="max-w-4xl mx-auto px-4 py-10">
+        {/* Hero */}
+        <section className="glass glass-hero p-6 md:p-12 mb-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}>
-
-            <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight">
-              NAVIGATE
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <CompassLogo size={44} className="mx-auto mb-3" />
+            <h1 className="font-medium uppercase tracking-tight leading-none text-[clamp(3rem,6.6vw,4.8rem)]">
+              Navigate
             </h1>
-            <p className="text-xl md:text-2xl opacity-90 mb-12">
+            <p className="text-sm mt-2 max-w-xs mx-auto opacity-80">
               Perdetevi nella città, giocando!
             </p>
-            <div className="text-xs opacity-80 flex items-center justify-center gap-2">
+            <div className="text-xs opacity-60 flex items-center justify-center gap-2 mt-3">
               <span>un progetto di</span>
-              <a href="https://karascio.it" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+              <a href="https://karascio.it" target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity">
                 <strong>Karasciò</strong>
               </a>
             </div>
           </motion.div>
-        </div>
-      </div>
 
-      {/* Come Funziona */}
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <h2 className="text-2xl font-bold text-[#022b3a] mb-8 text-center">
-          {t('howItWorks')}
-        </h2>
-        
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          {/* Step 1 */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card className={`h-full ${isAuthenticated ? 'border-green-300 bg-green-50' : 'border-[#1f7a8c]'}`}>
-              <CardContent className="p-6 text-center">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold ${isAuthenticated ? 'bg-green-100 text-green-600' : 'bg-[#bfdbf7]/50 text-[#1f7a8c]'}`}>
-                  {isAuthenticated ? '✓' : '1'}
+          {/* Come Funziona */}
+          <div className="mt-10">
+            <h2 className="text-xl font-medium uppercase mb-4">
+              {t('howItWorks')}
+            </h2>
+
+            <div className="grid gap-4">
+              {/* Step 1 */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <div className="glass rounded-[22px] p-5 grid grid-cols-[1fr_auto] gap-4 items-center">
+                  {loadingAuth ? (
+                    <div className="animate-pulse h-6 bg-muted rounded" />
+                  ) : isAuthenticated ? (
+                    <div>
+                      <h3 className="font-bold text-sm uppercase tracking-wide">
+                        Ciao {user?.full_name?.split(' ')[0] || 'Giocatore'}!
+                      </h3>
+                      <div className="w-10 h-px bg-foreground my-2" />
+                      <p className="text-xs opacity-60">Sei connesso</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <h3 className="font-bold text-sm uppercase tracking-wide">{t('step1Login')}</h3>
+                      <div className="w-10 h-px bg-foreground my-2" />
+                      <p className="text-xs opacity-60 mb-3">{t('step1Desc')}</p>
+                      <Button onClick={handleLogin} variant="ghost" size="sm" className="glass-dark rounded-full">
+                        <LogIn className="w-4 h-4 mr-2" />
+                        {t('login')}
+                      </Button>
+                    </div>
+                  )}
+                  <div className={stepIcon}>
+                    {isAuthenticated ? <span className="text-xl font-bold">✓</span> : <User className="w-6 h-6" />}
+                  </div>
                 </div>
-                {loadingAuth ? (
-                  <div className="animate-pulse"><div className="h-6 bg-gray-200 rounded mb-2"></div></div>
-                ) : isAuthenticated ? (
-                  <>
-                    <h3 className="font-bold text-lg mb-2 text-green-700">
-                      Ciao {user?.full_name?.split(' ')[0] || 'Giocatore'}!
+              </motion.div>
+
+              {/* Step 2 */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                <div className={`glass rounded-[22px] p-5 grid grid-cols-[1fr_auto] gap-4 items-center ${!isAuthenticated && !squadraPronta && !squadraInCorso ? 'opacity-50' : ''}`}>
+                  {squadraPronta || squadraInCorso ? (
+                    <div>
+                      <h3 className="font-bold text-sm uppercase tracking-wide">{(squadraPronta || squadraInCorso)?.nome_squadra}</h3>
+                      <div className="w-10 h-px bg-foreground my-2" />
+                      <p className="text-xs opacity-60 mb-2">Squadra iscritta</p>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setSquadraToDelete((squadraPronta || squadraInCorso).id)}
+                        className="rounded-full text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <h3 className="font-bold text-sm uppercase tracking-wide">{t('step2Register')}</h3>
+                      <div className="w-10 h-px bg-foreground my-2" />
+                      <p className="text-xs opacity-60 mb-3">{t('step2Desc')}</p>
+                      {isAuthenticated && (
+                        <Link to={createPageUrl('Iscrizione')}>
+                          <Button variant="ghost" size="sm" className="glass-dark rounded-full">
+                            <UserPlus className="w-4 h-4 mr-2" />
+                            {t('register')}
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                  <div className={stepIcon}>
+                    {squadraPronta || squadraInCorso ? <span className="text-xl font-bold">✓</span> : <UserPlus className="w-6 h-6" />}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Step 3 */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                <div className={`glass rounded-[22px] p-5 grid grid-cols-[1fr_auto] gap-4 items-center ${!squadraPronta && !squadraInCorso ? 'opacity-50' : ''}`}>
+                  <div>
+                    <h3 className="font-bold text-sm uppercase tracking-wide">
+                      {eventoTerminato ? 'Evento terminato' : squadraInCorso ? t('continuePlay') : t('step3Play')}
                     </h3>
-                    <p className="text-green-600 text-sm">Sei connesso</p>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="font-bold text-lg mb-2 text-[#022b3a]">{t('step1Login')}</h3>
-                    <p className="text-gray-500 text-sm mb-4">{t('step1Desc')}</p>
-                    <Button onClick={handleLogin} className="w-full bg-[#1f7a8c] hover:bg-[#022b3a]">
-                      <LogIn className="w-4 h-4 mr-2" />
-                      {t('login')}
-                    </Button>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Step 2 */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className={`h-full ${squadraPronta || squadraInCorso ? 'border-green-300 bg-green-50' : isAuthenticated ? 'border-[#1f7a8c]' : 'border-gray-200 opacity-60'}`}>
-              <CardContent className="p-6 text-center">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold ${squadraPronta || squadraInCorso ? 'bg-green-100 text-green-600' : isAuthenticated ? 'bg-[#bfdbf7]/50 text-[#1f7a8c]' : 'bg-gray-100 text-gray-400'}`}>
-                  {squadraPronta || squadraInCorso ? '✓' : '2'}
-                </div>
-                {squadraPronta || squadraInCorso ? (
-                  <>
-                    <h3 className="font-bold text-lg text-green-700 mb-1">{(squadraPronta || squadraInCorso)?.nome_squadra}</h3>
-                    <p className="text-green-600 text-sm mb-3">Squadra iscritta</p>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setSquadraToDelete((squadraPronta || squadraInCorso).id)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="font-bold text-lg mb-2 text-[#022b3a]">{t('step2Register')}</h3>
-                    <p className="text-gray-500 text-sm mb-4">{t('step2Desc')}</p>
-                    {isAuthenticated && (
-                      <Link to={createPageUrl('Iscrizione')}>
-                        <Button className="w-full bg-[#1f7a8c] hover:bg-[#022b3a]">
-                          <UserPlus className="w-4 h-4 mr-2" />
-                          {t('register')}
+                    <div className="w-10 h-px bg-foreground my-2" />
+                    <p className="text-xs opacity-60 mb-3">
+                      {eventoTerminato ? 'Consulta la classifica finale' : squadraInCorso ? `${t('stage')} ${squadraInCorso.tappa_corrente + 1}/10` : t('step3Desc')}
+                    </p>
+                    {eventoTerminato ? (
+                      <Link to={createPageUrl(`Classifica?evento=${squadraInCorso.evento_id}`)}>
+                        <Button variant="ghost" size="sm" className="glass-dark rounded-full">
+                          <Play className="w-4 h-4 mr-2" />
+                          Vedi Classifica
                         </Button>
                       </Link>
-                    )}
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Step 3 */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <Card className={`h-full ${squadraInCorso ? 'border-[#FFD800] bg-[#FFD800]/10' : squadraPronta ? 'border-[#1f7a8c]' : 'border-gray-200 opacity-60'}`}>
-              <CardContent className="p-6 text-center">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold ${squadraInCorso ? 'bg-[#FFD800] text-[#022b3a]' : squadraPronta ? 'bg-[#bfdbf7]/50 text-[#1f7a8c]' : 'bg-gray-100 text-gray-400'}`}>
-                  3
+                    ) : squadraInCorso ? (
+                      <Link to={createPageUrl(`Gioca?squadra=${squadraInCorso.id}`)}>
+                        <Button variant="ghost" size="sm" className="glass-dark rounded-full">
+                          <Play className="w-4 h-4 mr-2" />
+                          {t('continuePlay')}
+                        </Button>
+                      </Link>
+                    ) : squadraPronta ? (
+                      <Link to={createPageUrl(`Gioca?squadra=${squadraPronta.id}`)}>
+                        <Button variant="ghost" size="sm" className="glass-dark rounded-full">
+                          <Play className="w-4 h-4 mr-2" />
+                          {t('start')}
+                        </Button>
+                      </Link>
+                    ) : null}
+                  </div>
+                  <div className={stepIcon}>
+                    <Play className="w-6 h-6" />
+                  </div>
                 </div>
-                <h3 className="font-bold text-lg mb-2 text-[#022b3a]">
-                  {eventoTerminato ? 'Evento terminato' : squadraInCorso ? t('continuePlay') : t('step3Play')}
-                </h3>
-                <p className="text-gray-500 text-sm mb-4">
-                  {eventoTerminato ? 'Consulta la classifica finale' : squadraInCorso ? `${t('stage')} ${squadraInCorso.tappa_corrente + 1}/10` : t('step3Desc')}
-                </p>
-                {eventoTerminato ? (
-                  <Link to={createPageUrl(`Classifica?evento=${squadraInCorso.evento_id}`)}>
-                    <Button className="w-full bg-[#1f7a8c] hover:bg-[#022b3a]">
-                      <Play className="w-4 h-4 mr-2" />
-                      Vedi Classifica
-                    </Button>
-                  </Link>
-                ) : squadraInCorso ? (
-                  <Link to={createPageUrl(`Gioca?squadra=${squadraInCorso.id}`)}>
-                    <Button className="w-full bg-[#FFD800] hover:bg-[#FFD800]/80 text-[#022b3a]">
-                      <Play className="w-4 h-4 mr-2" />
-                      {t('continuePlay')}
-                    </Button>
-                  </Link>
-                ) : squadraPronta ? (
-                  <Link to={createPageUrl(`Gioca?squadra=${squadraPronta.id}`)}>
-                    <Button className="w-full bg-green-500 hover:bg-green-600">
-                      <Play className="w-4 h-4 mr-2" />
-                      {t('start')}
-                    </Button>
-                  </Link>
-                ) : null}
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
+              </motion.div>
+            </div>
+          </div>
 
-        {/* Link Classifiche */}
-        <div className="text-center mb-12">
+          {/* Inizia a giocare */}
+          <div className="flex justify-center mt-10">
+            <Button variant="ghost" className="glass-dark rounded-full uppercase tracking-wide font-bold px-7">
+              {t('step3Play')}
+            </Button>
+          </div>
+        </section>
+
+        {/* CTA Classifiche */}
+        <div className="flex justify-center mb-8">
           <Link to={createPageUrl('Classifiche')}>
-            <Button variant="outline" className="border-[#FFD800] text-[#022b3a] hover:bg-[#FFD800]/20">
-              <Trophy className="w-4 h-4 mr-2 text-[#FFD800]" />
+            <Button variant="ghost" className="btn-glass-accent rounded-full uppercase tracking-wide font-bold">
+              <Trophy className="w-4 h-4 mr-2" />
               {t('viewLeaderboards')}
             </Button>
           </Link>
@@ -308,111 +314,104 @@ export default function Home() {
 
         {/* Eventi */}
         {eventi.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-[#022b3a] mb-6 flex items-center gap-2">
-              <Calendar className="w-6 h-6 text-[#1f7a8c]" />
+          <section className="panel-surface rounded-[28px] p-6 md:p-12 mb-10">
+            <h2 className="text-2xl md:text-4xl font-medium uppercase mb-7 flex items-center gap-2">
+              <Calendar className="w-6 h-6" />
               {t('upcomingEvents')}
             </h2>
-            <div className="grid gap-6">
+            <div className="grid gap-5" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
               {eventi.map((evento, index) => (
                 <motion.div
                   key={evento.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}>
-                  <Card className="overflow-hidden hover:shadow-lg transition-shadow border-2 border-[#022b3a]/20">
-                    <CardHeader className="bg-gradient-to-r from-[#022b3a] to-[#1f7a8c] text-white">
-                      <div className="flex items-center justify-between">
-                        <Link to={createPageUrl(`DettaglioEvento?id=${evento.id}`)}>
-                          <CardTitle className="text-xl hover:underline cursor-pointer">{getLocalized(evento, 'nome')}</CardTitle>
-                        </Link>
-                        <Badge className="bg-[#FFD800] text-[#022b3a]">
-                          <Trophy className="w-3 h-3 mr-1" />
-                          {t('competition')}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="p-6">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <Calendar className="w-5 h-5" />
-                          <span className="font-bold">
-                            {format(new Date(evento.data_inizio), 'EEEE d MMMM yyyy, HH:mm', { locale: dateLocale })}
-                          </span>
-                        </div>
-                        <Link to={createPageUrl(`DettaglioEvento?id=${evento.id}`)}>
-                          <Button className="bg-[#022b3a] hover:bg-[#1f7a8c] w-full md:w-auto">
-                            Scopri di più <ArrowRight className="w-4 h-4 ml-2" />
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <div className="glass rounded-[22px] p-6">
+                    <div className="flex items-center justify-between gap-4 mb-3">
+                      <Link to={createPageUrl(`DettaglioEvento?id=${evento.id}`)}>
+                        <span className="font-bold text-lg hover:underline cursor-pointer">{getLocalized(evento, 'nome')}</span>
+                      </Link>
+                      <Badge className="bg-accent text-accent-foreground uppercase whitespace-nowrap">
+                        <Trophy className="w-3 h-3 mr-1" />
+                        {t('competition')}
+                      </Badge>
+                    </div>
+                    <div className="w-10 h-px bg-foreground mb-3" />
+                    <div className="text-sm opacity-60 mb-5">
+                      {format(new Date(evento.data_inizio), 'EEEE d MMMM yyyy, HH:mm', { locale: dateLocale })}
+                    </div>
+                    <Link to={createPageUrl(`DettaglioEvento?id=${evento.id}`)}>
+                      <Button variant="ghost" className="glass-dark rounded-full w-full uppercase tracking-wide font-bold">
+                        Scopri di più <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
+                  </div>
                 </motion.div>
               ))}
             </div>
-          </div>
+          </section>
         )}
 
         {/* Luoghi Disponibili */}
         {luoghi.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-bold text-[#022b3a] mb-6 flex items-center gap-2">
-              <MapPin className="w-6 h-6 text-[#1f7a8c]" />
+          <section className="panel-surface rounded-[28px] p-6 md:p-12 mb-10">
+            <h2 className="text-2xl md:text-4xl font-medium uppercase mb-7 flex items-center gap-2">
+              <MapPin className="w-6 h-6" />
               {t('availableLocations')} per Giocare in Autonomia
             </h2>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid gap-5" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
               {luoghi.map((luogo, index) => (
                 <motion.div
                   key={luogo.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}>
-                  <Card className="overflow-hidden hover:shadow-lg transition-shadow border-2 border-[#1f7a8c]/30">
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <div className="glass rounded-[22px] overflow-hidden">
                     {luogo.immagine_url && (
                       <img src={luogo.immagine_url} alt={getLocalized(luogo, 'nome')} className="w-full h-40 object-cover" />
                     )}
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-xl font-bold text-[#022b3a]">{getLocalized(luogo, 'nome')}</h3>
-                        <Badge className="bg-[#bfdbf7]/50 text-[#1f7a8c]">{luogo.citta}</Badge>
+                    <div className="p-5">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-xl font-bold">{getLocalized(luogo, 'nome')}</h3>
+                        <Badge className="bg-accent text-accent-foreground uppercase">{luogo.citta}</Badge>
                       </div>
+                      <div className="w-10 h-px bg-foreground mb-4" />
                       {(luogo.descrizione || luogo.descrizione_en) && (
-                        <p className="text-gray-500 text-sm mb-4">{getLocalized(luogo, 'descrizione')}</p>
+                        <p className="text-sm opacity-60 mb-4">{getLocalized(luogo, 'descrizione')}</p>
                       )}
                       {isAuthenticated ? (
                         <Link to={createPageUrl(`Iscrizione?luogo=${luogo.id}`)}>
-                          <Button className="w-full bg-[#1f7a8c] hover:bg-[#022b3a]">
+                          <Button variant="ghost" className="glass-dark rounded-full w-full uppercase tracking-wide font-bold">
                             {t('playHere')} <ArrowRight className="w-4 h-4 ml-2" />
                           </Button>
                         </Link>
                       ) : (
-                        <Button onClick={handleLogin} className="w-full bg-[#1f7a8c] hover:bg-[#022b3a]">
+                        <Button onClick={handleLogin} variant="ghost" className="glass-dark rounded-full w-full uppercase tracking-wide font-bold">
                           {t('loginToPlay')}
                         </Button>
                       )}
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>
-          </div>
+          </section>
         )}
-
-        {/* Footer */}
-        <div className="mt-16 py-6 border-t border-gray-200">
-          <div className="flex justify-between items-center text-gray-500 text-sm">
-            <a
-              href="https://karascio.it"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#1f7a8c] transition-colors"
-            >
-              a project by <strong>Karasciò</strong>
-            </a>
-          </div>
-        </div>
       </div>
+
+      {/* Footer */}
+      <footer className="glass py-6 text-center rounded-none border-x-0 border-b-0">
+        <a
+          href="https://karascio.it"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm opacity-65 hover:opacity-100 transition-opacity"
+        >
+          a project by <strong>Karasciò</strong>
+        </a>
+      </footer>
 
       <AlertDialog open={!!squadraToDelete} onOpenChange={() => setSquadraToDelete(null)}>
         <AlertDialogContent>
@@ -429,7 +428,7 @@ export default function Home() {
                 deleteSquadraMutation.mutate(squadraToDelete);
                 setSquadraToDelete(null);
               }}
-              className="bg-red-500 hover:bg-red-600"
+              className="bg-destructive hover:opacity-90"
             >
               Sì, elimina iscrizione
             </AlertDialogAction>
