@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Lightbulb, Send, Loader2, SkipForward, Clock, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageContext";
@@ -100,12 +98,12 @@ export default function TappaCard({
     onUsaAiuto();
   };
 
-  const getDifficoltaColor = (diff) => {
-    switch(diff) {
-      case 'facile': return 'bg-green-100 text-green-700 border-green-300';
-      case 'media': return 'bg-yellow-100 text-yellow-700 border-yellow-300';
-      case 'difficile': return 'bg-red-100 text-red-700 border-red-300';
-      default: return 'bg-gray-100 text-gray-700';
+  const getDifficoltaClass = (diff) => {
+    switch (diff) {
+      case 'facile': return 'glass-success';
+      case 'media': return 'glass-warning';
+      case 'difficile': return 'glass-danger';
+      default: return 'glass-muted';
     }
   };
 
@@ -115,18 +113,18 @@ export default function TappaCard({
       animate={{ opacity: 1, y: 0 }}
       className={errore ? 'animate-shake' : ''}
     >
-      <Card className="overflow-hidden shadow-lg border-2 border-[#022b3a]/20">
+      <div className="glass rounded-[28px] overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#022b3a] to-[#1f7a8c] p-4 text-white">
+        <div className="glass-dark p-4">
           <div className="flex items-center justify-between">
             <span className="text-lg font-bold">{t('stage')} {numeroTappa}/10</span>
             <div className="flex items-center gap-2">
-              <Badge className={getDifficoltaColor(tappa.difficolta)}>
+              <span className={`text-xs font-medium uppercase px-3 py-1 rounded-full ${getDifficoltaClass(tappa.difficolta)}`}>
                 {tappa.difficolta}
-              </Badge>
-              <Badge className={`${aiutoUsato ? 'bg-yellow-500' : 'bg-white text-[#022b3a]'}`}>
+              </span>
+              <span className={`text-xs font-bold px-3 py-1 rounded-full ${aiutoUsato ? 'glass-warning' : 'glass'}`}>
                 {aiutoUsato ? '5 pt' : '10 pt'}
-              </Badge>
+              </span>
             </div>
           </div>
         </div>
@@ -140,10 +138,10 @@ export default function TappaCard({
           />
         )}
 
-        <CardContent className="p-6 space-y-4">
+        <div className="p-6 space-y-4">
           {/* Indovinello */}
-          <div className="bg-[#bfdbf7]/30 p-4 rounded-lg border border-[#022b3a]/10">
-            <p className="text-lg text-gray-800 font-medium leading-relaxed">
+          <div className="border border-border rounded-2xl p-4">
+            <p className="text-lg font-medium leading-relaxed">
               {getLocalized(tappa, 'indovinello') || tappa.indovinello || 'Indovinello non disponibile'}
             </p>
           </div>
@@ -153,13 +151,13 @@ export default function TappaCard({
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              className="bg-[#FFD800]/20 p-4 rounded-lg border border-[#FFD800]"
+              className="glass-warning rounded-2xl p-4"
             >
               <div className="flex items-start gap-2">
-                <Lightbulb className="w-5 h-5 text-[#FFD800] flex-shrink-0 mt-0.5" />
+                <Lightbulb className="w-5 h-5 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-gray-700 mb-1">{t('hint')}:</p>
-                  <p className="text-gray-700">{getLocalized(tappa, 'suggerimento')}</p>
+                  <p className="text-sm font-semibold mb-1">{t('hint')}:</p>
+                  <p>{getLocalized(tappa, 'suggerimento')}</p>
                 </div>
               </div>
             </motion.div>
@@ -171,12 +169,12 @@ export default function TappaCard({
               value={risposta}
               onChange={(e) => setRisposta(e.target.value)}
               placeholder={t('yourAnswer')}
-              className={`text-lg py-6 ${errore ? 'border-red-500 bg-red-50' : 'border-[#1f7a8c]'}`}
+              className={`text-lg py-6 rounded-xl ${errore ? 'border-destructive' : ''}`}
               disabled={isLoading || isVerifying}
             />
 
             {tentativi > 0 && (
-              <p className="text-sm text-red-500 flex items-center gap-1">
+              <p className="text-sm text-destructive flex items-center gap-1">
                 <AlertCircle className="w-4 h-4" />
                 {t('wrong')}. {language === 'it' ? 'Tentativi' : 'Attempts'}: {tentativi}
               </p>
@@ -184,7 +182,8 @@ export default function TappaCard({
 
             <Button
               type="submit"
-              className="w-full bg-[#1f7a8c] hover:bg-[#022b3a] text-lg py-6"
+              variant="ghost"
+              className="w-full glass-dark rounded-full text-lg py-6"
               disabled={isLoading || isVerifying || !risposta.trim()}
             >
               {isLoading || isVerifying ? (
@@ -205,21 +204,21 @@ export default function TappaCard({
               <Button
                 variant="outline"
                 onClick={handleUsaAiuto}
-                className="flex-1 border-[#FFD800] text-[#022b3a] hover:bg-[#FFD800]/20"
+                className="flex-1 rounded-full border-accent"
               >
-                <Lightbulb className="w-4 h-4 mr-2 text-[#FFD800]" />
+                <Lightbulb className="w-4 h-4 mr-2" />
                 {t('useHint')} (-5 pt)
               </Button>
             )}
 
             {/* Bottone Salta */}
             <Button
-              variant="outline"
+              variant="ghost"
               onClick={onSalta}
               disabled={!puoSaltare || isLoading}
-              className={`flex-1 ${puoSaltare
-                ? 'border-[#db222a] text-[#db222a] hover:bg-[#db222a]/10'
-                : 'border-gray-300 text-gray-400'}`}
+              className={`flex-1 rounded-full ${puoSaltare
+                ? 'glass-danger'
+                : 'border border-border opacity-50'}`}
             >
               <SkipForward className="w-4 h-4 mr-2" />
               {puoSaltare ? (
@@ -232,8 +231,8 @@ export default function TappaCard({
               )}
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 }
