@@ -97,7 +97,7 @@ export default function Home() {
     base44.auth.redirectToLogin(window.location.href);
   };
 
-  const stepIcon = "w-14 h-14 rounded-2xl glass-accent flex items-center justify-center flex-shrink-0";
+  const stepIcon = `w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${isAuthenticated ? 'glass-accent' : 'glass-muted'}`;
 
   return (
     <div className="min-h-screen bg-liquid-page text-foreground">
@@ -191,16 +191,14 @@ export default function Home() {
                     <div className="animate-pulse h-6 bg-muted rounded" />
                   ) : isAuthenticated ? (
                     <div>
-                      <h3 className="font-bold text-sm uppercase tracking-wide">
-                        Ciao {user?.full_name?.split(' ')[0] || 'Giocatore'}!
+                      <h3 className="text-[18px] font-bold uppercase mb-2">
+                        1 — Ciao {user?.full_name?.split(' ')[0] || 'Giocatore'}!
                       </h3>
-                      <div className="w-10 h-px bg-foreground my-2" />
                       <p className="text-xs opacity-60">Sei connesso</p>
                     </div>
                   ) : (
                     <div>
-                      <h3 className="font-bold text-sm uppercase tracking-wide">{t('step1Login')}</h3>
-                      <div className="w-10 h-px bg-foreground my-2" />
+                      <h3 className="text-[18px] font-bold uppercase mb-2">1 — {t('step1Login')}</h3>
                       <p className="text-xs opacity-60 mb-3">{t('step1Desc')}</p>
                       <Button onClick={handleLogin} variant="ghost" size="sm" className="glass-dark rounded-full">
                         <LogIn className="w-4 h-4 mr-2" />
@@ -219,8 +217,7 @@ export default function Home() {
                 <div className={`glass rounded-[22px] p-5 grid grid-cols-[1fr_auto] gap-4 items-center ${!isAuthenticated && !squadraPronta && !squadraInCorso ? 'opacity-50' : ''}`}>
                   {squadraPronta || squadraInCorso ? (
                     <div>
-                      <h3 className="font-bold text-sm uppercase tracking-wide">{(squadraPronta || squadraInCorso)?.nome_squadra}</h3>
-                      <div className="w-10 h-px bg-foreground my-2" />
+                      <h3 className="text-[18px] font-bold uppercase mb-2">2 — {(squadraPronta || squadraInCorso)?.nome_squadra}</h3>
                       <p className="text-xs opacity-60 mb-2">Squadra iscritta</p>
                       <Button
                         variant="outline"
@@ -233,8 +230,7 @@ export default function Home() {
                     </div>
                   ) : (
                     <div>
-                      <h3 className="font-bold text-sm uppercase tracking-wide">{t('step2Register')}</h3>
-                      <div className="w-10 h-px bg-foreground my-2" />
+                      <h3 className="text-[18px] font-bold uppercase mb-2">2 — {t('step2Register')}</h3>
                       <p className="text-xs opacity-60 mb-3">{t('step2Desc')}</p>
                       {isAuthenticated && (
                         <Link to={createPageUrl('Iscrizione')}>
@@ -256,10 +252,9 @@ export default function Home() {
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                 <div className={`glass rounded-[22px] p-5 grid grid-cols-[1fr_auto] gap-4 items-center ${!squadraPronta && !squadraInCorso ? 'opacity-50' : ''}`}>
                   <div>
-                    <h3 className="font-bold text-sm uppercase tracking-wide">
-                      {eventoTerminato ? 'Evento terminato' : squadraInCorso ? t('continuePlay') : t('step3Play')}
+                    <h3 className="text-[18px] font-bold uppercase mb-2">
+                      3 — {eventoTerminato ? 'Evento terminato' : squadraInCorso ? t('continuePlay') : t('step3Play')}
                     </h3>
-                    <div className="w-10 h-px bg-foreground my-2" />
                     <p className="text-xs opacity-60 mb-3">
                       {eventoTerminato ? 'Consulta la classifica finale' : squadraInCorso ? `${t('stage')} ${squadraInCorso.tappa_corrente + 1}/10` : t('step3Desc')}
                     </p>
