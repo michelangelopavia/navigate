@@ -145,6 +145,12 @@ button:focus-visible {
     --glass-accent-shadow: oklch(62% 0.19 45 / 0.35);
     --glass-muted-bg: oklch(38% 0.01 250 / 0.7);
     --glass-muted-shadow: oklch(15% 0 0 / 0.15);
+    --glass-success-bg: oklch(72% 0.15 150 / 0.55);
+    --glass-success-shadow: oklch(50% 0.15 150 / 0.2);
+    --glass-warning-bg: oklch(82% 0.15 85 / 0.55);
+    --glass-warning-shadow: oklch(60% 0.15 85 / 0.2);
+    --glass-danger-bg: oklch(62% 0.19 25 / 0.5);
+    --glass-danger-shadow: oklch(50% 0.19 25 / 0.25);
   }
   .dark {
     --background: oklch(20% 0.02 235);
@@ -198,6 +204,12 @@ button:focus-visible {
     --glass-muted-shadow: oklch(0% 0 0 / 0.3);
     --glass-accent-bg: oklch(68% 0.19 45 / 0.8);
     --glass-accent-shadow: oklch(68% 0.19 45 / 0.4);
+    --glass-success-bg: oklch(55% 0.13 150 / 0.55);
+    --glass-success-shadow: oklch(30% 0.13 150 / 0.3);
+    --glass-warning-bg: oklch(60% 0.14 85 / 0.55);
+    --glass-warning-shadow: oklch(35% 0.14 85 / 0.3);
+    --glass-danger-bg: oklch(55% 0.19 25 / 0.55);
+    --glass-danger-shadow: oklch(35% 0.19 25 / 0.35);
   }
 }
 
@@ -311,6 +323,39 @@ button:focus-visible {
     box-shadow:
       0 14px 30px var(--glass-muted-shadow),
       inset 0 1px 0 var(--glass-dark-shine);
+  }
+  .glass-success {
+    position: relative;
+    background: var(--glass-success-bg);
+    backdrop-filter: blur(18px) saturate(130%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      0 8px 22px var(--glass-success-shadow),
+      inset 1.5px 1.5px 1px var(--glass-shine),
+      inset -1px -1px 1px var(--glass-shade);
+  }
+  .glass-warning {
+    position: relative;
+    background: var(--glass-warning-bg);
+    backdrop-filter: blur(18px) saturate(130%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      0 8px 22px var(--glass-warning-shadow),
+      inset 1.5px 1.5px 1px var(--glass-shine),
+      inset -1px -1px 1px var(--glass-shade);
+  }
+  .glass-danger {
+    position: relative;
+    background: var(--glass-danger-bg);
+    backdrop-filter: blur(18px) saturate(130%);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      0 8px 22px var(--glass-danger-shadow),
+      inset 1.5px 1.5px 1px var(--glass-shine),
+      inset -1px -1px 1px var(--glass-shade);
   }
   .glass-hero {
     border-radius: 1.75rem;

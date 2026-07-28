@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Play, Clock, MapPin, AlertCircle, AlertTriangle, HelpCircle, CheckCircle, X } from 'lucide-react';
+import { Loader2, Play, Clock, MapPin, AlertCircle, AlertTriangle, HelpCircle, CheckCircle, X, Moon, Sun } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/components/ThemeContext';
 
 import TappaCard from '@/components/game/TappaCard';
 import ProgressBar from '@/components/game/ProgressBar';
@@ -15,6 +15,21 @@ import RegoleModal from '@/components/game/RegoleModal';
 import CompletamentoCard from '@/components/game/CompletamentoCard';
 import SegnalazioneModal from '@/components/SegnalazioneModal';
 import RichiestaAiutoModal from '@/components/RichiestaAiutoModal';
+
+function ThemeToggleFloating() {
+  const { theme, toggleTheme } = useTheme();
+  return (
+    <div className="fixed top-3 right-4 z-50">
+      <button
+        onClick={toggleTheme}
+        className="w-11 h-11 rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-2xl flex items-center justify-center"
+        aria-label={theme === 'dark' ? 'Attiva modalità chiara' : 'Attiva modalità scura'}
+      >
+        {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+      </button>
+    </div>
+  );
+}
 
 export default function Gioca() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -168,13 +183,13 @@ export default function Gioca() {
       setAiutoUsatoTappaCorrente(squadra.aiuti_usati?.includes(squadra.tappa_corrente) || false);
       const tempoInizioTappaSalvato = new Date(squadra.tempo_inizio_tappa_corrente).getTime();
       setTempoInizioTappa(tempoInizioTappaSalvato);
-      
+
       // Timer per tempo effettivo tappa
       tempoTappaRef.current = setInterval(() => {
         setTempoEffettivoTappa(Math.floor((Date.now() - tempoInizioTappaSalvato) / 1000));
       }, 1000);
     }
-    
+
     return () => {
       if (tempoTappaRef.current) clearInterval(tempoTappaRef.current);
     };
@@ -237,7 +252,7 @@ export default function Gioca() {
       // Qui calcoliamo solo il punteggio della tappa appena completata
       const puntiTappaCorrente = squadra.tappe_saltate?.includes(squadra.tappa_corrente) ? 0 :
                                   squadra.aiuti_usati?.includes(squadra.tappa_corrente) ? 5 : 10;
-      
+
       const punteggioFinale = (squadra.punteggio || 0) + puntiTappaCorrente;
 
       const updates = {
@@ -289,19 +304,19 @@ export default function Gioca() {
   const handleRispostaCorretta = async () => {
     // Ferma il timer della tappa
     if (tempoTappaRef.current) clearInterval(tempoTappaRef.current);
-    
+
     // Calcola e salva il tempo SUBITO (prima di aprire l'approfondimento)
     const tempoTappa = Math.floor((Date.now() - tempoInizioTappa) / 1000);
-    
+
     // Salva SOLO il tempo (il punteggio verrà calcolato in completaTappaMutation)
     await base44.entities.Squadra.update(squadraId, {
       tempi_tappe: [...(squadra.tempi_tappe || []), tempoTappa]
     });
-    
+
     // Invalida query per aggiornare UI
     await queryClient.invalidateQueries(['squadra', squadraId]);
     await queryClient.refetchQueries(['squadra', squadraId]);
-    
+
     const tappa = getTappaCorrente();
     setTappaCompletata(tappa);
     setShowApprofondimento(true);
@@ -319,20 +334,20 @@ export default function Gioca() {
   const handleSalta = async () => {
     // Ferma il timer della tappa
     if (tempoTappaRef.current) clearInterval(tempoTappaRef.current);
-    
+
     // Calcola e salva il tempo SUBITO
     const tempoTappa = Math.floor((Date.now() - tempoInizioTappa) / 1000);
-    
+
     // Salva tempo e marca come saltata (il punteggio verrà calcolato in completaTappaMutation)
     await base44.entities.Squadra.update(squadraId, {
       tempi_tappe: [...(squadra.tempi_tappe || []), tempoTappa],
       tappe_saltate: [...(squadra.tappe_saltate || []), squadra.tappa_corrente]
     });
-    
+
     // Invalida query
     await queryClient.invalidateQueries(['squadra', squadraId]);
     await queryClient.refetchQueries(['squadra', squadraId]);
-    
+
     const tappa = getTappaCorrente();
     setTappaCompletata(tappa);
     setShowApprofondimento(true);
@@ -340,23 +355,23 @@ export default function Gioca() {
 
   if (loadingSquadra) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#bfdbf7]/30 to-[#022b3a]/5">
-        <Loader2 className="w-10 h-10 animate-spin text-[#1f7a8c]" />
+      <div className="min-h-screen bg-liquid-page flex items-center justify-center">
+        <ThemeToggleFloating />
+        <Loader2 className="w-10 h-10 animate-spin text-accent" />
       </div>
     );
   }
 
   if (!squadra) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <Card className="max-w-md w-full text-center p-8">
-          <CardContent>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Squadra non trovata</h2>
-            <Link to={createPageUrl('Home')}>
-              <Button className="bg-[#1f7a8c]">Torna alla Home</Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-liquid-page flex items-center justify-center p-4">
+        <ThemeToggleFloating />
+        <div className="glass rounded-[28px] max-w-md w-full text-center p-8">
+          <h2 className="text-xl font-bold mb-4">Squadra non trovata</h2>
+          <Link to={createPageUrl('Home')}>
+            <Button variant="ghost" className="glass-dark rounded-full">Torna alla Home</Button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -368,7 +383,8 @@ export default function Gioca() {
       : null;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#e1e5f2]/50 to-[#bfdbf7]/30 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-liquid-page text-foreground flex items-center justify-center p-4">
+        <ThemeToggleFloating />
         <CompletamentoCard squadra={squadra} tempoTotale={tempoTotale} />
       </div>
     );
@@ -379,32 +395,31 @@ export default function Gioca() {
     const now = new Date();
     const inizio = new Date(evento.data_inizio);
     const fine = new Date(evento.data_fine);
-    
+
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#bfdbf7]/30 to-[#022b3a]/10 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full text-center">
-          <CardContent className="p-8">
-            <AlertCircle className="w-16 h-16 mx-auto mb-4 text-[#1f7a8c]" />
-            {now < inizio ? (
-              <>
-                <h2 className="text-xl font-bold text-gray-800 mb-2">Evento non ancora iniziato</h2>
-                <p className="text-gray-600 mb-4">
-                  L'evento inizierà il {inizio.toLocaleDateString('it-IT')} alle {inizio.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
-                </p>
-              </>
-            ) : (
-              <>
-                <h2 className="text-xl font-bold text-gray-800 mb-2">Evento terminato</h2>
-                <p className="text-gray-600 mb-4">
-                  L'evento è terminato il {fine.toLocaleDateString('it-IT')} alle {fine.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
-                </p>
-              </>
-            )}
-            <Link to={createPageUrl('Home')}>
-              <Button className="bg-[#1f7a8c]">Torna alla Home</Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-liquid-page text-foreground flex items-center justify-center p-4">
+        <ThemeToggleFloating />
+        <div className="glass rounded-[28px] max-w-md w-full text-center p-8">
+          <AlertCircle className="w-16 h-16 mx-auto mb-4 text-accent" />
+          {now < inizio ? (
+            <>
+              <h2 className="text-xl font-bold mb-2">Evento non ancora iniziato</h2>
+              <p className="opacity-70 mb-4">
+                L'evento inizierà il {inizio.toLocaleDateString('it-IT')} alle {inizio.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-xl font-bold mb-2">Evento terminato</h2>
+              <p className="opacity-70 mb-4">
+                L'evento è terminato il {fine.toLocaleDateString('it-IT')} alle {fine.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+              </p>
+            </>
+          )}
+          <Link to={createPageUrl('Home')}>
+            <Button variant="ghost" className="glass-dark rounded-full">Torna alla Home</Button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -412,30 +427,32 @@ export default function Gioca() {
   // Non ancora iniziato
   if (!squadra.tempo_inizio) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#bfdbf7]/30 to-[#022b3a]/5 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-liquid-page text-foreground flex items-center justify-center p-4">
+        <ThemeToggleFloating />
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="max-w-md w-full"
         >
-          <Card className="overflow-hidden shadow-xl border-2 border-[#1f7a8c]">
-            <div className="bg-gradient-to-r from-[#022b3a] to-[#1f7a8c] p-8 text-center text-white">
+          <div className="glass rounded-[28px] overflow-hidden">
+            <div className="glass-dark p-8 text-center">
               <MapPin className="w-16 h-16 mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-2">Pronto a Partire?</h1>
               <p className="text-lg opacity-90">{squadra.nome_squadra}</p>
             </div>
-            <CardContent className="p-6 space-y-6">
+            <div className="p-6 space-y-6">
               <div className="text-center">
-                <p className="text-sm text-gray-500 mb-2">
+                <p className="text-sm opacity-60 mb-2">
                   {luogo?.nome} {luogo?.citta && `- ${luogo.citta}`}
                 </p>
-                <p className="text-gray-600 mb-4">
+                <p className="opacity-70 mb-4">
                   Una volta iniziato, il cronometro partirà. Buona fortuna!
                 </p>
               </div>
-              <Button 
+              <Button
                 onClick={() => setShowRegole(true)}
-                className="w-full bg-[#1f7a8c] hover:bg-[#022b3a] text-lg py-6"
+                variant="ghost"
+                className="w-full glass-dark rounded-full text-lg py-6"
                 disabled={iniziaGiocoMutation.isPending}
               >
                 {iniziaGiocoMutation.isPending ? (
@@ -447,11 +464,11 @@ export default function Gioca() {
                   </>
                 )}
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
 
-        <RegoleModal 
+        <RegoleModal
           isOpen={showRegole}
           onClose={() => setShowRegole(false)}
           onStart={() => iniziaGiocoMutation.mutate()}
@@ -466,42 +483,42 @@ export default function Gioca() {
   // Tempo scaduto per gioco libero
   if (isTempoScadutoLibero() && !squadra.completata) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#bfdbf7]/30 to-[#022b3a]/5 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full text-center">
-          <CardContent className="p-8">
-            <Clock className="w-16 h-16 mx-auto mb-4 text-[#db222a]" />
-            <h2 className="text-xl font-bold text-gray-800 mb-2">Tempo Scaduto!</h2>
-            <p className="text-gray-600 mb-4">
-              Le 12 ore a disposizione sono terminate. Hai completato {squadra.tappa_corrente}/10 tappe con {squadra.punteggio || 0} punti.
-            </p>
-            <Link to={createPageUrl('Classifiche')}>
-              <Button className="w-full bg-[#1f7a8c] hover:bg-[#022b3a] mb-3">
-                Vedi Classifiche
-              </Button>
-            </Link>
-            <Link to={createPageUrl('Home')}>
-              <Button variant="outline" className="w-full">Torna alla Home</Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-liquid-page text-foreground flex items-center justify-center p-4">
+        <ThemeToggleFloating />
+        <div className="glass rounded-[28px] max-w-md w-full text-center p-8">
+          <Clock className="w-16 h-16 mx-auto mb-4 text-destructive" />
+          <h2 className="text-xl font-bold mb-2">Tempo Scaduto!</h2>
+          <p className="opacity-70 mb-4">
+            Le 12 ore a disposizione sono terminate. Hai completato {squadra.tappa_corrente}/10 tappe con {squadra.punteggio || 0} punti.
+          </p>
+          <Link to={createPageUrl('Classifiche')}>
+            <Button variant="ghost" className="w-full glass-dark rounded-full mb-3">
+              Vedi Classifiche
+            </Button>
+          </Link>
+          <Link to={createPageUrl('Home')}>
+            <Button variant="ghost" className="w-full glass rounded-full">Torna alla Home</Button>
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#bfdbf7]/30 to-[#022b3a]/5 p-4">
+    <div className="min-h-screen bg-liquid-page text-foreground p-4 pt-10">
+      <ThemeToggleFloating />
       <div className="max-w-lg mx-auto">
         {/* Risposta dell'organizzazione a una Richiesta di Aiuto risolta — sticky: resta visibile mentre si scorre la pagina, importante su mobile */}
         {richiestaAiutoDaMostrare && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="sticky top-2 z-50 bg-green-50 border border-green-300 rounded-xl p-4 mb-4 flex items-start gap-3 shadow-lg"
+            className="sticky top-2 z-50 glass-success rounded-2xl p-4 mb-4 flex items-start gap-3"
           >
-            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-sm font-semibold text-green-800 mb-1">Risposta dall'organizzazione</p>
-              <p className="text-sm text-green-700">
+              <p className="text-sm font-semibold mb-1">Risposta dall'organizzazione</p>
+              <p className="text-sm">
                 {richiestaAiutoDaMostrare.risposta ||
                   "La tua richiesta è stata presa in carico da un organizzatore, adesso continua a giocare!"}
               </p>
@@ -509,7 +526,7 @@ export default function Gioca() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 flex-shrink-0 text-green-700"
+              className="h-6 w-6 flex-shrink-0"
               onClick={handleChiudiRispostaAiuto}
             >
               <X className="w-4 h-4" />
@@ -518,29 +535,29 @@ export default function Gioca() {
         )}
 
         {/* Header con timer */}
-        <div className="bg-white rounded-xl shadow-md p-4 mb-6">
+        <div className="glass rounded-[22px] p-4 mb-6">
           <div className="flex items-center justify-between mb-2">
             <div>
-              <p className="text-sm text-gray-500">Squadra</p>
-              <p className="font-bold text-[#022b3a]">{squadra.nome_squadra}</p>
+              <p className="text-sm opacity-60">Squadra</p>
+              <p className="font-bold">{squadra.nome_squadra}</p>
             </div>
-            <div className="flex items-center gap-2 bg-[#bfdbf7]/50 px-4 py-2 rounded-lg">
-              <Clock className="w-5 h-5 text-[#1f7a8c]" />
-              <span className="font-mono font-bold text-lg text-[#022b3a]">
+            <div className="flex items-center gap-2 glass-accent px-4 py-2 rounded-full">
+              <Clock className="w-5 h-5" />
+              <span className="font-mono font-bold text-lg">
                 {formatTempo(tempoCorrente)}
               </span>
             </div>
           </div>
           {/* Indicatore tempo rimanente per gioco libero */}
           {!evento && tempoRimanenteLibero > 0 && tempoRimanenteLibero < 60 * 60 && (
-            <div className="bg-[#db222a]/10 text-[#db222a] text-xs px-3 py-1 rounded-full text-center">
+            <div className="glass-danger text-xs px-3 py-1 rounded-full text-center">
               ⏱ Tempo rimanente: {formatTempo(tempoRimanenteLibero)}
             </div>
           )}
         </div>
 
         {/* Progress Bar */}
-        <ProgressBar 
+        <ProgressBar
           tappaCorrente={squadra.tappa_corrente}
           aiutiUsati={squadra.aiuti_usati || []}
           tappeSaltate={squadra.tappe_saltate || []}
@@ -564,26 +581,24 @@ export default function Gioca() {
 
         {/* Info uscita e segnalazione */}
         <div className="mt-6 space-y-3">
-          <Card className="bg-blue-50 border-blue-200">
-            <CardContent className="p-3 text-center">
-              <p className="text-sm text-blue-800">
-                💡 <strong>Puoi uscire e riprendere il gioco quando vuoi</strong> entro le {!evento ? '12 ore' : 'finestra dell\'evento'}. 
-                Il tuo progresso viene salvato automaticamente.
-              </p>
-              <Link to={createPageUrl('Home')}>
-                <Button variant="outline" size="sm" className="mt-2">
-                  Torna alla Home
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+          <div className="glass rounded-[22px] p-3 text-center">
+            <p className="text-sm opacity-80">
+              💡 <strong>Puoi uscire e riprendere il gioco quando vuoi</strong> entro le {!evento ? '12 ore' : 'finestra dell\'evento'}.
+              Il tuo progresso viene salvato automaticamente.
+            </p>
+            <Link to={createPageUrl('Home')}>
+              <Button variant="ghost" size="sm" className="mt-2 glass-dark rounded-full">
+                Torna alla Home
+              </Button>
+            </Link>
+          </div>
           <div className="text-center flex items-center justify-center gap-2">
             {squadra.evento_id && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowRichiestaAiuto(true)}
-                className="text-gray-400 hover:text-[#1f7a8c]"
+                className="opacity-60 hover:opacity-100"
               >
                 <HelpCircle className="w-4 h-4 mr-1" />
                 Richiedi Aiuto
@@ -593,7 +608,7 @@ export default function Gioca() {
               variant="ghost"
               size="sm"
               onClick={() => setShowSegnalazione(true)}
-              className="text-gray-400 hover:text-[#db222a]"
+              className="opacity-60 hover:opacity-100"
             >
               <AlertTriangle className="w-4 h-4 mr-1" />
               Segnala un problema

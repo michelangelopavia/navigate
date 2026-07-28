@@ -18,9 +18,9 @@ export default function SegnalazioneModal({ isOpen, onClose, userEmail, squadraI
 
   const handleInvia = async () => {
     if (!messaggio.trim()) return;
-    
+
     setIsLoading(true);
-    
+
     // Crea segnalazione
     await base44.entities.Segnalazione.create({
       descrizione: messaggio.trim(),
@@ -42,27 +42,27 @@ export default function SegnalazioneModal({ isOpen, onClose, userEmail, squadraI
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="panel-surface border-none rounded-[28px] sm:rounded-[28px] max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-[#db222a]">
+          <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="w-5 h-5" />
             Segnala un problema
           </DialogTitle>
         </DialogHeader>
-        
+
         {inviata ? (
           <div className="text-center py-8">
-            <CheckCircle className="w-16 h-16 mx-auto mb-4 text-green-500" />
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Segnalazione inviata!</h3>
-            <p className="text-gray-600">Grazie per la tua segnalazione. Risolveremo il problema il prima possibile.</p>
-            <Button onClick={handleClose} className="mt-4 bg-[#1f7a8c]">
+            <CheckCircle className="w-16 h-16 mx-auto mb-4 text-accent" />
+            <h3 className="text-lg font-bold mb-2">Segnalazione inviata!</h3>
+            <p className="opacity-70">Grazie per la tua segnalazione. Risolveremo il problema il prima possibile.</p>
+            <Button onClick={handleClose} variant="ghost" className="mt-4 glass-dark rounded-full">
               Chiudi
             </Button>
           </div>
         ) : (
           <>
             <div className="py-4">
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm opacity-70 mb-4">
                 Hai riscontrato un problema tecnico? Descrivilo qui sotto e lo risolveremo il prima possibile.
               </p>
               <Textarea
@@ -70,18 +70,19 @@ export default function SegnalazioneModal({ isOpen, onClose, userEmail, squadraI
                 onChange={(e) => setMessaggio(e.target.value)}
                 placeholder="Descrivi il problema riscontrato..."
                 rows={4}
-                className="border-[#1f7a8c]"
+                className="rounded-xl"
               />
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={handleClose}>
+              <Button variant="ghost" onClick={handleClose} className="glass rounded-full">
                 Annulla
               </Button>
-              <Button 
+              <Button
                 onClick={handleInvia}
                 disabled={isLoading || !messaggio.trim()}
-                className="bg-[#db222a] hover:bg-[#aa0000]"
+                variant="ghost"
+                className="glass-danger rounded-full"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
