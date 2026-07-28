@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
-  User, ArrowLeft, Trophy, Clock, MapPin, Calendar,
-  Play, CheckCircle, LogOut, Trash2, Users
+  User, Trophy, Clock, MapPin, Calendar,
+  Play, CheckCircle, Trash2, Users
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -23,10 +21,9 @@ import { createPageUrl } from '@/utils';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/lib/AuthContext';
+import Header from '@/components/Header';
 
 export default function Profilo() {
-  const { logout } = useAuth();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [squadraToDelete, setSquadraToDelete] = useState(null);
@@ -98,8 +95,8 @@ export default function Profilo() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-[#1f7a8c] border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-liquid-page text-foreground flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-accent border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -108,58 +105,46 @@ export default function Profilo() {
   const squadreInCorso = mieSquadre.filter(s => !s.completata);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#bfdbf7]/30 via-white to-[#022b3a]/5 p-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Link to={createPageUrl('Home')}>
-            <Button variant="ghost">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Home
-            </Button>
-          </Link>
-          <Button variant="ghost" onClick={logout} className="text-red-600 hover:bg-red-50">
-            <LogOut className="w-4 h-4 mr-2" />
-            Esci
-          </Button>
-        </div>
+    <div className="min-h-screen bg-liquid-page text-foreground">
+      <Header />
+      <div className="max-w-2xl mx-auto py-6 px-4">
 
         {/* Profilo Card */}
-        <Card className="mb-6 overflow-hidden">
-          <div className="bg-gradient-to-r from-[#022b3a] to-[#1f7a8c] p-6 text-white">
+        <div className="mb-6 glass rounded-[28px] border-2 border-accent overflow-hidden">
+          <div className="p-6">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center glass-accent flex-shrink-0">
                 <User className="w-8 h-8" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold">{user?.full_name || 'Giocatore'}</h1>
-                <p className="opacity-90">{user?.email}</p>
+                <p className="opacity-70">{user?.email}</p>
               </div>
             </div>
           </div>
-          <CardContent className="p-4">
+          <div className="px-4 pb-4">
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
-                <p className="text-2xl font-bold text-[#1f7a8c]">{mieSquadre.length}</p>
-                <p className="text-sm text-gray-500">Giocate</p>
+                <p className="text-2xl font-bold">{mieSquadre.length}</p>
+                <p className="text-sm opacity-60">Giocate</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-green-600">{squadreCompletate.length}</p>
-                <p className="text-sm text-gray-500">Completate</p>
+                <p className="text-2xl font-bold">{squadreCompletate.length}</p>
+                <p className="text-sm opacity-60">Completate</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-blue-600">{squadreInCorso.length}</p>
-                <p className="text-sm text-gray-500">In corso</p>
+                <p className="text-2xl font-bold">{squadreInCorso.length}</p>
+                <p className="text-sm opacity-60">In corso</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Squadre in corso */}
         {squadreInCorso.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <Play className="w-5 h-5 text-blue-500" />
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Play className="w-5 h-5" />
               Giocate in Corso
             </h2>
             <div className="space-y-3">
@@ -170,49 +155,50 @@ export default function Profilo() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <Card className="border-blue-200 bg-blue-50">
-                   <CardContent className="p-4">
-                     <div className="flex items-center justify-between gap-3">
-                       <div className="flex-1">
-                         <h3 className="font-bold text-gray-800 mb-1">{squadra.nome_squadra}</h3>
-                         <div className="flex items-center gap-2 text-sm text-gray-500">
-                           <MapPin className="w-4 h-4" />
-                           {squadra.evento_id
-                             ? getEventoNome(squadra.evento_id) || 'Evento'
-                             : getLuogoNome(squadra.luogo_id)}
-                         </div>
-                         <div className="flex items-center gap-2 mt-1">
-                           <Badge className="bg-blue-100 text-blue-700">
-                             Tappa {squadra.tappa_corrente}/{10}
-                           </Badge>
-                           {!squadra.tempo_inizio && (
-                             <Badge variant="outline">Non iniziato</Badge>
-                           )}
-                         </div>
-                         <div className="flex items-center gap-2 text-sm text-gray-400 mt-1">
-                           <Users className="w-4 h-4" />
-                           {(squadra.altri_giocatori?.length || 0) + 1} giocatori
-                         </div>
-                       </div>
-                       <div className="flex items-center gap-2 flex-shrink-0">
-                         <Button
-                           variant="outline"
-                           size="icon"
-                           onClick={() => setSquadraToDelete(squadra.id)}
-                           className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                         >
-                           <Trash2 className="w-4 h-4" />
-                         </Button>
-                         <Link to={createPageUrl(`Gioca?squadra=${squadra.id}`)}>
-                           <Button className="bg-blue-500 hover:bg-blue-600">
-                             <Play className="w-4 h-4 mr-1" />
-                             {squadra.tempo_inizio ? 'Continua' : 'Inizia'}
-                           </Button>
-                         </Link>
-                       </div>
-                     </div>
-                   </CardContent>
-                  </Card>
+                  <div className="glass rounded-[22px] p-4">
+                    <div className="flex items-center gap-2">
+                      <Play className="w-5 h-5 flex-shrink-0" />
+                      <h3 className="font-bold whitespace-nowrap">{squadra.nome_squadra}</h3>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm opacity-70 mt-1">
+                      <MapPin className="w-4 h-4" />
+                      {squadra.evento_id
+                        ? getEventoNome(squadra.evento_id) || 'Evento'
+                        : getLuogoNome(squadra.luogo_id)}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm opacity-60 mt-1">
+                      <Users className="w-4 h-4" />
+                      {(squadra.altri_giocatori?.length || 0) + 1} giocatori
+                    </div>
+                    <div className="flex items-center justify-between gap-2 mt-3 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {!squadra.tempo_inizio && (
+                          <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass-muted">
+                            Non iniziato
+                          </span>
+                        )}
+                        <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass-accent">
+                          Tappa {squadra.tappa_corrente}/{10}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setSquadraToDelete(squadra.id)}
+                          className="glass rounded-full text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                        <Link to={createPageUrl(`Gioca?squadra=${squadra.id}`)}>
+                          <Button variant="ghost" className="glass-dark rounded-full">
+                            <Play className="w-4 h-4 mr-1" />
+                            {squadra.tempo_inizio ? 'Continua' : 'Inizia'}
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -221,18 +207,16 @@ export default function Profilo() {
 
         {/* Storico completate */}
         <div>
-          <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-yellow-500" />
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Trophy className="w-5 h-5" />
             Giocate Completate
           </h2>
-          
+
           {squadreCompletate.length === 0 ? (
-            <Card className="text-center py-8">
-              <CardContent>
-                <Trophy className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                <p className="text-gray-500">Nessuna giocata completata ancora</p>
-              </CardContent>
-            </Card>
+            <div className="glass rounded-[22px] p-8 text-center">
+              <Trophy className="w-12 h-12 mx-auto mb-2 opacity-40" />
+              <p className="opacity-60">Nessuna giocata completata ancora</p>
+            </div>
           ) : (
             <div className="space-y-3">
               {squadreCompletate.map((squadra, index) => {
@@ -244,43 +228,41 @@ export default function Profilo() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className="border-green-200">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <CheckCircle className="w-5 h-5 text-green-500" />
-                              <h3 className="font-bold text-gray-800">{squadra.nome_squadra}</h3>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                              <MapPin className="w-4 h-4" />
-                              {squadra.evento_id 
-                                ? getEventoNome(squadra.evento_id) || 'Evento'
-                                : getLuogoNome(squadra.luogo_id)}
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-400 mt-1">
-                              <Calendar className="w-4 h-4" />
-                              {(squadra.tempo_fine || squadra.createdAt || squadra.created_at)
-                                ? format(new Date(squadra.tempo_fine || squadra.createdAt || squadra.created_at), 'dd MMM yyyy', { locale: it })
-                                : '—'}
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-400 mt-1">
-                              <Users className="w-4 h-4" />
-                              {(squadra.altri_giocatori?.length || 0) + 1} giocatori
-                            </div>
+                    <div className="glass rounded-[22px] p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="w-5 h-5" />
+                            <h3 className="font-bold">{squadra.nome_squadra}</h3>
                           </div>
-                          <div className="text-right">
-                            <div className="flex items-center gap-1 text-[#1f7a8c]">
-                              <Clock className="w-4 h-4" />
-                              <span className="font-bold">{formatTempo(tempoTotale)}</span>
-                            </div>
-                            <Badge className="bg-green-100 text-green-700 mt-1">
-                              10/10 tappe
-                            </Badge>
+                          <div className="flex items-center gap-2 text-sm opacity-70 mt-1">
+                            <MapPin className="w-4 h-4" />
+                            {squadra.evento_id
+                              ? getEventoNome(squadra.evento_id) || 'Evento'
+                              : getLuogoNome(squadra.luogo_id)}
+                          </div>
+                          <div className="flex items-center gap-2 text-sm opacity-60 mt-1">
+                            <Calendar className="w-4 h-4" />
+                            {(squadra.tempo_fine || squadra.createdAt || squadra.created_at)
+                              ? format(new Date(squadra.tempo_fine || squadra.createdAt || squadra.created_at), 'dd MMM yyyy', { locale: it })
+                              : '—'}
+                          </div>
+                          <div className="flex items-center gap-2 text-sm opacity-60 mt-1">
+                            <Users className="w-4 h-4" />
+                            {(squadra.altri_giocatori?.length || 0) + 1} giocatori
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
+                        <div className="text-right flex-shrink-0">
+                          <div className="flex items-center justify-end gap-1">
+                            <Clock className="w-4 h-4" />
+                            <span className="font-bold">{formatTempo(tempoTotale)}</span>
+                          </div>
+                          <span className="inline-block text-xs font-medium uppercase px-3 py-1 rounded-full glass-success mt-2">
+                            10/10 tappe
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </motion.div>
                 );
               })}
@@ -291,7 +273,7 @@ export default function Profilo() {
         {/* Nuova giocata */}
         <div className="mt-8 text-center">
           <Link to={createPageUrl('Iscrizione')}>
-            <Button className="bg-[#1f7a8c] hover:bg-[#022b3a]">
+            <Button variant="ghost" className="glass-dark rounded-full">
               <Play className="w-4 h-4 mr-2" />
               Inizia una nuova caccia al tesoro
             </Button>
@@ -300,7 +282,7 @@ export default function Profilo() {
       </div>
 
       <AlertDialog open={!!squadraToDelete} onOpenChange={() => setSquadraToDelete(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="panel-surface border-none rounded-[28px] sm:rounded-[28px]">
           <AlertDialogHeader>
             <AlertDialogTitle>Eliminare questa iscrizione?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -308,13 +290,13 @@ export default function Profilo() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogCancel className="glass rounded-full">Annulla</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 deleteSquadraMutation.mutate(squadraToDelete);
                 setSquadraToDelete(null);
               }}
-              className="bg-red-500 hover:bg-red-600"
+              className="glass-danger rounded-full"
             >
               Sì, elimina iscrizione
             </AlertDialogAction>

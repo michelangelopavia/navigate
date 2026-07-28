@@ -338,7 +338,7 @@ export default function Home() {
       </footer>
 
       <AlertDialog open={!!squadraToDelete} onOpenChange={() => setSquadraToDelete(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="panel-surface border-none rounded-[28px] sm:rounded-[28px]">
           <AlertDialogHeader>
             <AlertDialogTitle>Eliminare questa iscrizione?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -346,13 +346,13 @@ export default function Home() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogCancel className="glass rounded-full">Annulla</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 deleteSquadraMutation.mutate(squadraToDelete);
                 setSquadraToDelete(null);
               }}
-              className="bg-destructive hover:opacity-90"
+              className="glass-danger rounded-full"
             >
               Sì, elimina iscrizione
             </AlertDialogAction>
