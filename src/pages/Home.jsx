@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, Trophy, ArrowRight, LogIn, UserPlus, Play, Settings, User, LogOut, Trash2, Moon, Sun } from 'lucide-react';
+import { MapPin, Calendar, Trophy, ArrowRight, LogIn, UserPlus, Play, User, Trash2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,41 +21,18 @@ import { format } from 'date-fns';
 import { it, enUS } from 'date-fns/locale';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/components/LanguageContext';
-import { useTheme } from '@/components/ThemeContext';
-import LanguageSelector from '@/components/LanguageSelector';
 import MetaTags from '@/components/MetaTags';
+import Header from '@/components/Header';
 import CompassLogo from '@/components/CompassLogo';
 import { useAuth } from '@/lib/AuthContext';
 
 export default function Home() {
-  const { logout } = useAuth();
+  const { user, isAuthenticated, isLoadingAuth: loadingAuth } = useAuth();
   const { t, getLocalized, language } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
   const dateLocale = language === 'en' ? enUS : it;
   const queryClient = useQueryClient();
 
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loadingAuth, setLoadingAuth] = useState(true);
   const [squadraToDelete, setSquadraToDelete] = useState(null);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const authenticated = await base44.auth.isAuthenticated();
-        setIsAuthenticated(authenticated);
-        if (authenticated) {
-          const userData = await base44.auth.me();
-          setUser(userData);
-        }
-      } catch (e) {
-        setIsAuthenticated(false);
-      } finally {
-        setLoadingAuth(false);
-      }
-    };
-    checkAuth();
-  }, []);
 
   const { data: luoghi = [] } = useQuery({
     queryKey: ['luoghi-attivi'],
@@ -103,55 +80,7 @@ export default function Home() {
     <div className="min-h-screen bg-liquid-page text-foreground">
       <MetaTags />
 
-      {/* Barra gradiente */}
-      <div className="h-[5px] bg-gradient-to-r from-[var(--gradient-start)] via-[var(--gradient-mid)] to-[var(--gradient-end)]" />
-
-      {/* Header */}
-      <div className="header-glass sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center gap-3">
-          <div className="flex items-center gap-3">
-            <CompassLogo size={22} />
-            <span className="font-bold text-sm tracking-wide uppercase hidden sm:inline">NAVIGATE</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded hover:opacity-70 transition-opacity"
-              aria-label={theme === 'dark' ? 'Attiva modalità chiara' : 'Attiva modalità scura'}
-            >
-              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-            <LanguageSelector />
-            {loadingAuth ? (
-              <div className="w-8 h-8 rounded bg-muted animate-pulse" />
-            ) : isAuthenticated ? (
-              <>
-                <Link to={createPageUrl('Profilo')}>
-                  <Button variant="ghost" size="sm">
-                    <User className="w-4 h-4 sm:mr-2" />
-                    <span className="hidden sm:inline">{user?.full_name?.split(' ')[0] || t('profile')}</span>
-                  </Button>
-                </Link>
-                {(user?.role === 'admin' || user?.role === 'super_admin') && (
-                  <Link to={createPageUrl('AdminDashboard')}>
-                    <Button variant="ghost" size="sm">
-                      <Settings className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                )}
-                <Button variant="ghost" size="sm" onClick={logout} className="text-destructive hover:text-destructive">
-                  <LogOut className="w-4 h-4" />
-                </Button>
-              </>
-            ) : (
-              <Button onClick={handleLogin} variant="ghost" size="sm" className="glass-dark rounded-full">
-                <LogIn className="w-4 h-4 mr-2" />
-                {t('login')}
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
+      <Header />
 
       <div className="max-w-4xl mx-auto px-4 py-10">
         {/* Hero */}

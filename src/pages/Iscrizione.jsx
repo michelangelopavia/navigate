@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, CheckCircle, Calendar, MapPin, Clock, Trophy } from 'lucide-react';
+import { CheckCircle, Calendar, MapPin, Clock, Trophy } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { motion } from 'framer-motion';
 import RegistrazioneForm from '@/components/registration/RegistrazioneForm';
+import Header from '@/components/Header';
 
 export default function Iscrizione() {
   const [searchParams, setSearchParams] = useState(() => new URLSearchParams(window.location.search));
@@ -128,8 +128,11 @@ export default function Iscrizione() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-[#1f7a8c] border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-liquid-page text-foreground flex flex-col">
+        <Header />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-4 border-accent border-t-transparent rounded-full" />
+        </div>
       </div>);
 
   }
@@ -141,106 +144,98 @@ export default function Iscrizione() {
 
   if (iscritto && squadraCreata) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="max-w-md w-full">
+      <div className="min-h-screen bg-liquid-page text-foreground flex flex-col">
+        <Header />
+        <div className="flex-1 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="max-w-md w-full">
 
-          <Card className="text-center overflow-hidden">
-            <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-8 text-white">
-              <CheckCircle className="w-20 h-20 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold">Iscrizione Completata!</h1>
-            </div>
-            <CardContent className="p-6 space-y-4">
-              <div>
-                <p className="text-gray-500">Squadra</p>
-                <p className="text-xl font-bold text-gray-800">{squadraCreata.nome_squadra}</p>
+            <div className="glass rounded-[28px] p-6 md:p-8 text-center">
+              <CheckCircle className="w-16 h-16 mx-auto mb-4 text-accent" />
+              <h1 className="text-2xl font-bold uppercase tracking-wide mb-6">Iscrizione Completata!</h1>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <p className="text-sm opacity-60">Squadra</p>
+                  <p className="text-xl font-bold">{squadraCreata.nome_squadra}</p>
+                </div>
+                <div>
+                  <p className="text-sm opacity-60">{eventoId ? 'Evento' : 'Luogo'}</p>
+                  <p className="font-semibold">{evento?.nome || luogo?.nome}</p>
+                  {evento &&
+                  <p className="text-sm opacity-60">
+                      {format(new Date(evento.data_inizio), 'EEEE d MMMM yyyy, HH:mm', { locale: it })}
+                    </p>
+                  }
+                </div>
               </div>
-              <div>
-                <p className="text-gray-500">{eventoId ? 'Evento' : 'Luogo'}</p>
-                <p className="font-semibold text-gray-800">{evento?.nome || luogo?.nome}</p>
-                {evento &&
-                <p className="text-sm text-gray-500">
-                    {format(new Date(evento.data_inizio), 'EEEE d MMMM yyyy, HH:mm', { locale: it })}
-                  </p>
-                }
-              </div>
-              
-              <div className="flex flex-col gap-4 pt-2">
+
+              <div className="flex flex-col gap-4">
                 {eventoId && !isEventoInFinestra() ?
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <Clock className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-                    <p className="text-blue-800 font-medium">
+                <div className="glass-muted rounded-2xl p-4">
+                    <Clock className="w-6 h-6 mx-auto mb-2" />
+                    <p className="font-medium">
                       Potrai giocare durante la finestra dell'evento
                     </p>
                   </div> :
 
                 <Link to={createPageUrl(`Gioca?squadra=${squadraCreata.id}`)}>
-                    <Button className="w-full bg-[#FFD800] hover:bg-[#FFD800]/80 text-[#022b3a] text-lg py-6 font-bold">
+                    <Button variant="ghost" className="w-full glass-dark rounded-full text-lg py-6 font-bold">
                       Inizia a Giocare Ora
                     </Button>
                   </Link>
                 }
 
                 <Link to={createPageUrl('Home')}>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="ghost" className="w-full glass rounded-full">
                     Torna alla Home
                   </Button>
                 </Link>
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+            </div>
+          </motion.div>
+        </div>
       </div>);
 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 p-4">
-      <div className="max-w-2xl mx-auto">
-        <Link to={createPageUrl('Home')}>
-          <Button variant="ghost" className="mb-4">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Torna alla Home
-          </Button>
-        </Link>
-
+    <div className="min-h-screen bg-liquid-page text-foreground">
+      <Header />
+      <div className="max-w-2xl mx-auto py-6 px-4">
         {/* Info Luogo/Evento */}
-        <Card className={`mb-6 ${eventoId ? 'bg-gradient-to-r from-blue-100 to-indigo-100 border-blue-200' : 'bg-gradient-to-r from-[#bfdbf7]/50 to-[#bfdbf7]/30 border-[#1f7a8c]/30'}`}>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              {eventoId ?
-              <>
-                  <Trophy className="w-8 h-8 text-blue-600" />
-                  <div>
-                    <h2 className="font-bold text-blue-800">{evento?.nome}</h2>
-                    <p className="text-sm text-blue-600">
-                      {evento && format(new Date(evento.data_inizio), 'EEEE d MMMM yyyy, HH:mm', { locale: it })}
-                    </p>
-                  </div>
-                </> :
+        <div className={`mb-6 glass rounded-[22px] p-4 ${eventoId ? 'glass-accent' : ''}`}>
+          <div className="flex items-center gap-3">
+            {eventoId ?
+            <>
+                <Trophy className="w-8 h-8 flex-shrink-0" />
+                <div>
+                  <h2 className="font-bold">{evento?.nome}</h2>
+                  <p className="text-sm opacity-80">
+                    {evento && format(new Date(evento.data_inizio), 'EEEE d MMMM yyyy, HH:mm', { locale: it })}
+                  </p>
+                </div>
+              </> :
 
-              <>
-                  <MapPin className="w-8 h-8 text-[#1f7a8c]" />
-                  <div>
-                    <h2 className="font-bold text-[#022b3a]">{luogo?.nome}</h2>
-                    <p className="text-sm text-[#1f7a8c]">{luogo?.citta} - Gioco Libero</p>
-                  </div>
-                </>
-              }
-            </div>
-          </CardContent>
-        </Card>
+            <>
+                <MapPin className="w-8 h-8 flex-shrink-0" />
+                <div>
+                  <h2 className="font-bold">{luogo?.nome}</h2>
+                  <p className="text-sm opacity-70">{luogo?.citta} - Gioco Libero</p>
+                </div>
+              </>
+            }
+          </div>
+        </div>
 
         {!tappeOk &&
-        <Card className="mb-6 border-red-200 bg-red-50">
-            <CardContent className="p-4 text-center">
-              <p className="text-red-700">
-                Questo luogo non ha ancora abbastanza tappe configurate. Torna più tardi!
-              </p>
-            </CardContent>
-          </Card>
+        <div className="mb-6 glass rounded-[22px] p-4 text-center">
+            <p className="text-destructive">
+              Questo luogo non ha ancora abbastanza tappe configurate. Torna più tardi!
+            </p>
+          </div>
         }
 
         <RegistrazioneForm
@@ -286,43 +281,37 @@ function SelezioneLuogoEvento({ user, onSelect }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#bfdbf7]/30 via-white to-[#022b3a]/5 p-4">
-      <div className="max-w-2xl mx-auto">
-        <Link to={createPageUrl('Home')}>
-          <Button variant="ghost" className="mb-4">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Torna alla Home
-          </Button>
-        </Link>
-
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Scegli dove giocare</h1>
+    <div className="min-h-screen bg-liquid-page text-foreground">
+      <Header />
+      <div className="max-w-2xl mx-auto py-6 px-4">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold uppercase tracking-wide">Scegli dove giocare</h1>
+        </div>
 
         {/* Eventi */}
         {eventi.length > 0 &&
         <div>
-            <h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-blue-500" />
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Trophy className="w-5 h-5" />
               Eventi con Classifica
             </h2>
             <div className="space-y-3">
               {eventi.map((evento) =>
-            <Card
+            <div
               key={evento.id}
-              className="hover:shadow-md transition-shadow cursor-pointer border-blue-200"
+              className="glass rounded-[22px] p-4 flex items-center justify-between cursor-pointer"
               onClick={() => handleSelectEvento(evento.id)}>
 
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div>
-                      <h3 className="font-bold text-gray-800">{evento.nome}</h3>
-                      <p className="text-sm text-gray-500">
-                        {format(new Date(evento.data_inizio), 'dd MMM yyyy, HH:mm', { locale: it })}
-                      </p>
-                    </div>
-                    <Button size="sm" className="bg-blue-500 hover:bg-blue-600">
-                      Partecipa
-                    </Button>
-                  </CardContent>
-                </Card>
+                  <div>
+                    <h3 className="font-bold">{evento.nome}</h3>
+                    <p className="text-sm opacity-60">
+                      {format(new Date(evento.data_inizio), 'dd MMM yyyy, HH:mm', { locale: it })}
+                    </p>
+                  </div>
+                  <Button size="sm" variant="ghost" className="glass-dark rounded-full">
+                    Partecipa
+                  </Button>
+                </div>
             )}
             </div>
             </div>
@@ -331,27 +320,25 @@ function SelezioneLuogoEvento({ user, onSelect }) {
             {/* Luoghi */}
             {luoghi.length > 0 &&
         <div className="mb-8 mt-8">
-            <h2 className="text-gray-700 mb-4 text-lg font-semibold flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-[#1f7a8c]" />
+            <h2 className="mb-4 text-lg font-semibold flex items-center gap-2">
+              <MapPin className="w-5 h-5" />
               Gioco Libero - Scegli un Luogo
             </h2>
             <div className="space-y-3">
               {luoghi.map((luogo) =>
-            <Card
+            <div
               key={luogo.id}
-              className="hover:shadow-md transition-shadow cursor-pointer border-[#1f7a8c]/30"
+              className="glass rounded-[22px] p-4 flex items-center justify-between cursor-pointer"
               onClick={() => handleSelectLuogo(luogo.id)}>
 
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div>
-                      <h3 className="font-bold text-gray-800">{luogo.nome}</h3>
-                      <p className="text-sm text-gray-500">{luogo.citta}</p>
-                    </div>
-                    <Button size="sm" className="bg-[#1f7a8c] hover:bg-[#022b3a]">
-                      Seleziona
-                    </Button>
-                  </CardContent>
-                </Card>
+                  <div>
+                    <h3 className="font-bold">{luogo.nome}</h3>
+                    <p className="text-sm opacity-60">{luogo.citta}</p>
+                  </div>
+                  <Button size="sm" variant="ghost" className="glass-dark rounded-full">
+                    Seleziona
+                  </Button>
+                </div>
             )}
             </div>
             </div>

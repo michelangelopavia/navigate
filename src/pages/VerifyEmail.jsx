@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth as apiAuth } from '@/api/entities';
 import { useAuth } from '@/lib/AuthContext';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { createPageUrl } from '@/utils';
@@ -38,32 +37,30 @@ export default function VerifyEmail() {
   }, [token]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="max-w-md w-full shadow-xl border-2 border-[#1f7a8c]/20">
-        <CardContent className="p-6 text-center">
-          {status === 'loading' && (
-            <>
-              <Loader2 className="w-10 h-10 text-[#1f7a8c] mx-auto mb-3 animate-spin" />
-              <p className="text-gray-700">Verifica in corso...</p>
-            </>
-          )}
-          {status === 'success' && (
-            <>
-              <CheckCircle2 className="w-10 h-10 text-green-600 mx-auto mb-3" />
-              <p className="text-gray-700">Email confermata! Ti stiamo reindirizzando...</p>
-            </>
-          )}
-          {status === 'error' && (
-            <>
-              <XCircle className="w-10 h-10 text-red-500 mx-auto mb-3" />
-              <p className="text-gray-700 mb-4">{error}</p>
-              <Button onClick={() => navigate(createPageUrl('Login'))} className="bg-[#1f7a8c] hover:bg-[#022b3a]">
-                Torna al login
-              </Button>
-            </>
-          )}
-        </CardContent>
-      </Card>
+    <div className="min-h-screen bg-liquid-page text-foreground flex items-center justify-center p-4">
+      <div className="glass rounded-[28px] p-6 max-w-md w-full text-center">
+        {status === 'loading' && (
+          <>
+            <Loader2 className="w-10 h-10 mx-auto mb-3 animate-spin opacity-70" />
+            <p className="opacity-80">Verifica in corso...</p>
+          </>
+        )}
+        {status === 'success' && (
+          <>
+            <CheckCircle2 className="w-10 h-10 mx-auto mb-3 text-accent" />
+            <p className="opacity-80">Email confermata! Ti stiamo reindirizzando...</p>
+          </>
+        )}
+        {status === 'error' && (
+          <>
+            <XCircle className="w-10 h-10 mx-auto mb-3 text-destructive" />
+            <p className="opacity-80 mb-4">{error}</p>
+            <Button onClick={() => navigate(createPageUrl('Login'))} variant="ghost" className="glass-dark rounded-full">
+              Torna al login
+            </Button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
