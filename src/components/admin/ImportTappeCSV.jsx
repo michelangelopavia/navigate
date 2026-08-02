@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, Download, AlertCircle, CheckCircle } from 'lucide-react';
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function ImportTappeCSV({ luoghi, onImport }) {
   const [file, setFile] = useState(null);
@@ -165,89 +163,85 @@ export default function ImportTappeCSV({ luoghi, onImport }) {
   };
 
   return (
-    <Card className="mb-6 border-purple-200 bg-purple-50/30">
-      <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Upload className="w-5 h-5 text-purple-600" />
-          Importa Tappe da TSV/CSV
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={downloadTemplate}
-            className="flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            Scarica Template TSV
-          </Button>
-
-          <label htmlFor="csv-upload" className="cursor-pointer">
-            <Button variant="outline" className="flex items-center gap-2" asChild>
-              <span>
-                <Upload className="w-4 h-4" />
-                {file ? file.name : 'Carica TSV/CSV'}
-              </span>
-            </Button>
-            <input
-              id="csv-upload"
-              type="file"
-              accept=".csv,.tsv,.txt"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </label>
+    <div className="glass rounded-2xl p-4 mb-6 space-y-4">
+      <h2 className="text-lg font-bold flex items-center gap-2">
+        <div className="p-1.5 rounded-lg glass-accent">
+          <Upload className="w-4 h-4" />
         </div>
+        Importa Tappe da TSV/CSV
+      </h2>
 
-        {errors.length > 0 && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              <div className="font-medium mb-1">Errori trovati:</div>
-              <ul className="list-disc list-inside text-sm space-y-1">
-                {errors.map((err, i) => (
-                  <li key={i}>{err}</li>
-                ))}
-              </ul>
-            </AlertDescription>
-          </Alert>
-        )}
+      <div className="flex flex-wrap gap-3">
+        <Button
+          variant="ghost"
+          onClick={downloadTemplate}
+          className="glass rounded-full flex items-center gap-2"
+        >
+          <Download className="w-4 h-4" />
+          Scarica Template TSV
+        </Button>
 
-        {preview.length > 0 && errors.length === 0 && (
-          <>
-            <Alert>
-              <CheckCircle className="h-4 w-4" />
-              <AlertDescription>
-                <div className="font-medium">
-                  {preview.length} tappe pronte per l'importazione
-                </div>
-              </AlertDescription>
-            </Alert>
+        <label htmlFor="csv-upload" className="cursor-pointer">
+          <Button variant="ghost" className="glass rounded-full flex items-center gap-2" asChild>
+            <span>
+              <Upload className="w-4 h-4" />
+              {file ? file.name : 'Carica TSV/CSV'}
+            </span>
+          </Button>
+          <input
+            id="csv-upload"
+            type="file"
+            accept=".csv,.tsv,.txt"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </label>
+      </div>
 
-            <div className="max-h-64 overflow-y-auto border rounded-lg p-4 bg-white">
-              <div className="space-y-2">
-                {preview.map((tappa, i) => (
-                  <div key={i} className="text-sm border-b pb-2 last:border-0">
-                    <div className="font-medium">{tappa.titolo}</div>
-                    <div className="text-gray-500 text-xs">
-                      {tappa.difficolta} • {tappa._luogo_nome}
-                    </div>
+      {errors.length > 0 && (
+        <div className="glass-danger rounded-xl p-4">
+          <div className="flex items-center gap-2 font-medium mb-1">
+            <AlertCircle className="w-4 h-4" />
+            Errori trovati:
+          </div>
+          <ul className="list-disc list-inside text-sm space-y-1">
+            {errors.map((err, i) => (
+              <li key={i}>{err}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {preview.length > 0 && errors.length === 0 && (
+        <>
+          <div className="glass-success rounded-xl p-4 flex items-center gap-2 font-medium">
+            <CheckCircle className="w-4 h-4" />
+            {preview.length} tappe pronte per l'importazione
+          </div>
+
+          <div className="max-h-64 overflow-y-auto custom-scrollbar glass rounded-xl p-4">
+            <div className="space-y-2">
+              {preview.map((tappa, i) => (
+                <div key={i} className="text-sm border-b border-border pb-2 last:border-0">
+                  <div className="font-medium">{tappa.titolo}</div>
+                  <div className="opacity-70 text-xs">
+                    {tappa.difficolta} • {tappa._luogo_nome}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
+          </div>
 
-            <Button
-              onClick={handleImport}
-              disabled={isProcessing}
-              className="w-full bg-purple-600 hover:bg-purple-700"
-            >
-              {isProcessing ? 'Importazione in corso...' : `Importa ${preview.length} Tappe`}
-            </Button>
-          </>
-        )}
-      </CardContent>
-    </Card>
+          <Button
+            onClick={handleImport}
+            disabled={isProcessing}
+            variant="ghost"
+            className="w-full btn-glass-accent rounded-full"
+          >
+            {isProcessing ? 'Importazione in corso...' : `Importa ${preview.length} Tappe`}
+          </Button>
+        </>
+      )}
+    </div>
   );
 }
