@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trophy, Medal, Clock, MapPin, Users, FileText, Star } from 'lucide-react';
+import { Trophy, Medal, Clock, Users, FileText, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import DettaglioSquadraModal from './DettaglioSquadraModal';
 
@@ -69,103 +67,98 @@ export default function ClassificaEvento({ squadre, evento }) {
     }
   };
 
-  const getPosizioneStyle = (posizione) => {
+  const getPosizioneBorder = (posizione) => {
     switch(posizione) {
-      case 0: return 'bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-300';
-      case 1: return 'bg-gradient-to-r from-gray-50 to-slate-100 border-gray-300';
-      case 2: return 'bg-gradient-to-r from-orange-50 to-amber-50 border-amber-300';
-      default: return 'bg-white border-gray-200';
+      case 0: return 'border-2 border-accent';
+      case 1: case 2: return 'border-2 border-border';
+      default: return '';
     }
   };
 
   return (
-    <Card className="shadow-lg overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-orange-500 to-amber-500 text-white">
-        <CardTitle className="flex items-center gap-2">
-          <Trophy className="w-6 h-6" />
+    <div className="glass rounded-2xl overflow-hidden">
+      <div className="p-5 border-b border-border">
+        <h2 className="flex items-center gap-2 font-bold text-lg">
+          <Trophy className="w-6 h-6 text-accent" />
           Classifica {evento?.nome || ''}
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent className="p-0">
-        {squadreOrdinate.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
-            <Users className="w-12 h-12 mx-auto mb-2 opacity-30" />
-            <p>Nessuna squadra iscritta</p>
-          </div>
-        ) : (
-          <div className="divide-y">
-            {squadreOrdinate.map((squadra, index) => (
-              <motion.div
-                key={squadra.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className={`p-4 border-l-4 ${getPosizioneStyle(index)}`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0">
-                    {getMedaglia(index)}
-                  </div>
-                  
-                  <div className="flex-1">
-                    <h3 className="font-bold text-gray-900">{squadra.nome_squadra}</h3>
-                    <p className="text-sm text-gray-500">
-                      {squadra.referente_nome} {squadra.referente_cognome}
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSelectedSquadra(squadra)}
-                      className="text-[#1f7a8c] hover:bg-[#bfdbf7]/30"
-                    >
-                      <FileText className="w-4 h-4 mr-1" />
-                      Dettagli
-                    </Button>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-sm">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-[#FFD800]" />
-                      <span className="font-bold text-[#053c5e]">{squadra.punteggio}</span>
-                    </div>
-                    
-                    {squadra.completata && squadra.tempoTotale && (
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4 text-blue-500" />
-                        <span className="font-medium">{formatTempo(squadra.tempoTotale)}</span>
-                      </div>
-                    )}
-                    
-                    {squadra.completata ? (
-                      <Badge className="bg-green-100 text-green-800">
-                        Completato
-                      </Badge>
-                    ) : squadra.tempo_inizio ? (
-                      <Badge className="bg-blue-100 text-blue-800">
-                        In gioco
-                      </Badge>
-                    ) : (
-                      <Badge className="bg-gray-100 text-gray-800">
-                        Non iniziato
-                      </Badge>
-                    )}
-                  </div>
+        </h2>
+      </div>
+
+      {squadreOrdinate.length === 0 ? (
+        <div className="p-8 text-center opacity-60">
+          <Users className="w-12 h-12 mx-auto mb-2 opacity-30" />
+          <p>Nessuna squadra iscritta</p>
+        </div>
+      ) : (
+        <div className="p-3 space-y-2">
+          {squadreOrdinate.map((squadra, index) => (
+            <motion.div
+              key={squadra.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className={`glass rounded-xl p-4 ${getPosizioneBorder(index)}`}
+            >
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex-shrink-0">
+                  {getMedaglia(index)}
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </CardContent>
+
+                <div className="flex-1 min-w-[150px]">
+                  <h3 className="font-bold">{squadra.nome_squadra}</h3>
+                  <p className="text-sm opacity-70">
+                    {squadra.referente_nome} {squadra.referente_cognome}
+                  </p>
+                </div>
+
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setSelectedSquadra(squadra)}
+                  className="glass rounded-full"
+                >
+                  <FileText className="w-4 h-4 mr-1" />
+                  Dettagli
+                </Button>
+
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="flex items-center gap-1">
+                    <Star className="w-4 h-4 text-accent" />
+                    <span className="font-bold">{squadra.punteggio}</span>
+                  </div>
+
+                  {squadra.completata && squadra.tempoTotale && (
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      <span className="font-medium">{formatTempo(squadra.tempoTotale)}</span>
+                    </div>
+                  )}
+
+                  {squadra.completata ? (
+                    <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass-success">
+                      Completato
+                    </span>
+                  ) : squadra.tempo_inizio ? (
+                    <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass-warning">
+                      In gioco
+                    </span>
+                  ) : (
+                    <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass-muted">
+                      Non iniziato
+                    </span>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       <DettaglioSquadraModal
         isOpen={!!selectedSquadra}
         onClose={() => setSelectedSquadra(null)}
         squadra={selectedSquadra}
       />
-    </Card>
+    </div>
   );
 }
