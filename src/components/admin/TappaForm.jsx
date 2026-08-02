@@ -82,10 +82,11 @@ export default function TappaForm({ isOpen, onClose, onSubmit, tappa, luoghi = [
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="panel-surface border-none rounded-[28px] sm:rounded-[28px] max-w-2xl mx-auto max-h-[90vh] overflow-hidden p-0">
+        <div className="max-h-[90vh] overflow-y-auto custom-scrollbar p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-orange-500" />
+            <MapPin className="w-5 h-5 text-accent" />
             {tappa ? 'Modifica Tappa' : 'Nuova Tappa'}
           </DialogTitle>
         </DialogHeader>
@@ -149,10 +150,10 @@ export default function TappaForm({ isOpen, onClose, onSubmit, tappa, luoghi = [
           </div>
 
           {/* Toggle English */}
-          <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
+          <div className="glass rounded-xl flex items-center justify-between p-3">
             <div className="flex items-center gap-2">
-              <Globe className="w-4 h-4 text-blue-600" />
-              <Label className="text-blue-800">Mostra campi inglese</Label>
+              <Globe className="w-4 h-4 text-accent" />
+              <Label>Mostra campi inglese</Label>
             </div>
             <Switch checked={showEnglish} onCheckedChange={setShowEnglish} />
           </div>
@@ -226,7 +227,7 @@ export default function TappaForm({ isOpen, onClose, onSubmit, tappa, luoghi = [
 
           <div>
             <Label htmlFor="suggerimento" className="flex items-center gap-2">
-              <Lightbulb className="w-4 h-4 text-[#1f7a8c]" />
+              <Lightbulb className="w-4 h-4 text-accent" />
               Suggerimento (Aiuto)
             </Label>
             <Textarea
@@ -302,12 +303,13 @@ export default function TappaForm({ isOpen, onClose, onSubmit, tappa, luoghi = [
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="ghost" className="glass rounded-full" onClick={onClose}>
               Annulla
             </Button>
-            <Button 
-              type="submit" 
-              className="bg-orange-500 hover:bg-orange-600"
+            <Button
+              type="submit"
+              variant="ghost"
+              className="btn-glass-accent rounded-full"
               disabled={isLoading || !formData.luogo_id}
             >
               {isLoading ? (
@@ -321,6 +323,7 @@ export default function TappaForm({ isOpen, onClose, onSubmit, tappa, luoghi = [
             </Button>
           </DialogFooter>
         </form>
+        </div>
       </DialogContent>
     </Dialog>
   );

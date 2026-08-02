@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { 
+import {
   MapPin, Plus, ArrowLeft, Edit, Trash2,
   Save, Loader2, Globe
 } from 'lucide-react';
@@ -34,6 +32,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import Header from '@/components/Header';
 
 export default function GestioneLuoghi() {
   const queryClient = useQueryClient();
@@ -153,25 +152,27 @@ export default function GestioneLuoghi() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-liquid-page">
+      <Header />
+      <div className="max-w-4xl mx-auto p-4 md:p-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-4">
             <Link to={createPageUrl('AdminDashboard')}>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="glass rounded-full">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Gestione Luoghi</h1>
-              <p className="text-gray-500 text-sm">Crea e gestisci i luoghi di gioco</p>
+              <h1 className="text-2xl font-bold">Gestione Luoghi</h1>
+              <p className="opacity-70 text-sm">Crea e gestisci i luoghi di gioco</p>
             </div>
           </div>
           {isSuperAdmin && (
             <Button
               onClick={() => { setLuogoEdit(null); resetForm(); setShowForm(true); }}
-              className="bg-orange-500 hover:bg-orange-600"
+              variant="ghost"
+              className="btn-glass-accent rounded-full"
             >
               <Plus className="w-4 h-4 mr-2" />
               Nuovo Luogo
@@ -192,93 +193,91 @@ export default function GestioneLuoghi() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="hover:shadow-md transition-shadow overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="flex flex-col md:flex-row">
-                      {luogo.immagine_url && (
-                        <img 
-                          src={luogo.immagine_url} 
-                          alt={luogo.nome}
-                          className="w-full md:w-48 h-32 object-cover"
-                        />
-                      )}
-                      <div className="flex-1 p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <MapPin className="w-5 h-5 text-orange-500" />
-                          <h3 className="font-bold text-gray-800 text-lg">{luogo.nome}</h3>
-                          <Badge variant="outline">{luogo.citta}</Badge>
-                          {luogo.attivo ? (
-                            <Badge className="bg-green-100 text-green-700">Attivo</Badge>
-                          ) : (
-                            <Badge className="bg-gray-100 text-gray-600">Inattivo</Badge>
-                          )}
-                        </div>
-                        {luogo.descrizione && (
-                          <p className="text-sm text-gray-500 mb-3">{luogo.descrizione}</p>
+                <div className="glass rounded-2xl overflow-hidden">
+                  <div className="flex flex-col md:flex-row">
+                    {luogo.immagine_url && (
+                      <img
+                        src={luogo.immagine_url}
+                        alt={luogo.nome}
+                        className="w-full md:w-48 h-32 object-cover"
+                      />
+                    )}
+                    <div className="flex-1 p-4">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <MapPin className="w-5 h-5 text-accent" />
+                        <h3 className="font-bold text-lg">{luogo.nome}</h3>
+                        <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass">{luogo.citta}</span>
+                        {luogo.attivo ? (
+                          <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass-success">Attivo</span>
+                        ) : (
+                          <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass-muted">Inattivo</span>
                         )}
-                        <div className="flex flex-wrap gap-2">
-                          <Badge className={count.facile >= 4 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                            {count.facile}/4 facili
-                          </Badge>
-                          <Badge className={count.media >= 4 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                            {count.media}/4 medie
-                          </Badge>
-                          <Badge className={count.difficile >= 2 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                            {count.difficile}/2 difficili
-                          </Badge>
-                          {isReady && (
-                            <Badge className="bg-blue-100 text-blue-800">✓ Pronto</Badge>
-                          )}
-                        </div>
                       </div>
-                      {(puoModificare(luogo.id) || isSuperAdmin) && (
-                        <div className="flex md:flex-col gap-2 p-4 border-t md:border-t-0 md:border-l">
-                          {puoModificare(luogo.id) && (
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => openEdit(luogo)}
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                          )}
-                          {isSuperAdmin && (
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="text-red-500 hover:bg-red-50"
-                              onClick={() => setLuogoDelete(luogo)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          )}
-                        </div>
+                      {luogo.descrizione && (
+                        <p className="text-sm opacity-70 mb-3">{luogo.descrizione}</p>
                       )}
+                      <div className="flex flex-wrap gap-2">
+                        <span className={`text-xs font-medium uppercase px-3 py-1 rounded-full ${count.facile >= 4 ? 'glass-success' : 'glass-danger'}`}>
+                          {count.facile}/4 facili
+                        </span>
+                        <span className={`text-xs font-medium uppercase px-3 py-1 rounded-full ${count.media >= 4 ? 'glass-success' : 'glass-danger'}`}>
+                          {count.media}/4 medie
+                        </span>
+                        <span className={`text-xs font-medium uppercase px-3 py-1 rounded-full ${count.difficile >= 2 ? 'glass-success' : 'glass-danger'}`}>
+                          {count.difficile}/2 difficili
+                        </span>
+                        {isReady && (
+                          <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass-accent">✓ Pronto</span>
+                        )}
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
+                    {(puoModificare(luogo.id) || isSuperAdmin) && (
+                      <div className="flex md:flex-col gap-2 p-4 border-t md:border-t-0 md:border-l border-border">
+                        {puoModificare(luogo.id) && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="glass rounded-full"
+                            onClick={() => openEdit(luogo)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        )}
+                        {isSuperAdmin && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="glass-danger rounded-full"
+                            onClick={() => setLuogoDelete(luogo)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </motion.div>
             );
           })}
 
           {luoghiVisibili.length === 0 && (
-            <Card className="text-center py-12">
-              <CardContent>
-                <MapPin className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p className="text-gray-500">
-                  {isSuperAdmin ? 'Nessun luogo creato' : 'Nessuna sede assegnata al tuo profilo'}
-                </p>
-              </CardContent>
-            </Card>
+            <div className="glass rounded-2xl text-center py-12">
+              <MapPin className="w-12 h-12 mx-auto mb-4 opacity-30" />
+              <p className="opacity-70">
+                {isSuperAdmin ? 'Nessun luogo creato' : 'Nessuna sede assegnata al tuo profilo'}
+              </p>
+            </div>
           )}
         </div>
 
         {/* Form Modal */}
         <Dialog open={showForm} onOpenChange={setShowForm}>
-          <DialogContent>
+          <DialogContent className="panel-surface border-none rounded-[28px] sm:rounded-[28px] max-h-[90vh] overflow-hidden p-0">
+            <div className="max-h-[90vh] overflow-y-auto custom-scrollbar p-6">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-orange-500" />
+                <MapPin className="w-5 h-5 text-accent" />
                 {luogoEdit ? 'Modifica Luogo' : 'Nuovo Luogo'}
               </DialogTitle>
             </DialogHeader>
@@ -313,10 +312,10 @@ export default function GestioneLuoghi() {
               </div>
 
               {/* Toggle English */}
-              <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
+              <div className="glass rounded-xl flex items-center justify-between p-3">
                 <div className="flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-blue-600" />
-                  <Label className="text-blue-800">Mostra campi inglese</Label>
+                  <Globe className="w-4 h-4 text-accent" />
+                  <Label>Mostra campi inglese</Label>
                 </div>
                 <Switch checked={showEnglish} onCheckedChange={setShowEnglish} />
               </div>
@@ -358,12 +357,13 @@ export default function GestioneLuoghi() {
                 />
               </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                <Button type="button" variant="ghost" className="glass rounded-full" onClick={() => setShowForm(false)}>
                   Annulla
                 </Button>
-                <Button 
-                  type="submit" 
-                  className="bg-orange-500 hover:bg-orange-600"
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  className="btn-glass-accent rounded-full"
                   disabled={createMutation.isPending || updateMutation.isPending}
                 >
                   {(createMutation.isPending || updateMutation.isPending) ? (
@@ -377,12 +377,13 @@ export default function GestioneLuoghi() {
                 </Button>
               </DialogFooter>
             </form>
+            </div>
           </DialogContent>
         </Dialog>
 
         {/* Delete Dialog */}
         <AlertDialog open={!!luogoDelete} onOpenChange={() => setLuogoDelete(null)}>
-          <AlertDialogContent>
+          <AlertDialogContent className="panel-surface border-none rounded-[28px] sm:rounded-[28px]">
             <AlertDialogHeader>
               <AlertDialogTitle>Eliminare questo luogo?</AlertDialogTitle>
               <AlertDialogDescription>
@@ -390,10 +391,10 @@ export default function GestioneLuoghi() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Annulla</AlertDialogCancel>
+              <AlertDialogCancel className="glass rounded-full">Annulla</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => deleteMutation.mutate(luogoDelete.id)}
-                className="bg-red-500 hover:bg-red-600"
+                className="glass-danger rounded-full"
               >
                 Elimina
               </AlertDialogAction>

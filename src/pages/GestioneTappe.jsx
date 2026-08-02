@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { 
+import {
   MapPin, Plus, Search, Edit, Trash2, ArrowLeft,
   Filter
 } from 'lucide-react';
@@ -34,6 +32,7 @@ import TappaForm from '@/components/admin/TappaForm';
 import ImportTappeCSV from '@/components/admin/ImportTappeCSV';
 import { useAuth } from '@/lib/AuthContext';
 import { toast } from 'sonner';
+import Header from '@/components/Header';
 
 export default function GestioneTappe() {
   const queryClient = useQueryClient();
@@ -130,12 +129,12 @@ export default function GestioneTappe() {
     return matchSearch && matchLivello && matchLuogo;
   });
 
-  const getDifficoltaColor = (diff) => {
+  const getDifficoltaVariante = (diff) => {
     switch(diff) {
-      case 'facile': return 'bg-green-100 text-green-800 border-green-300';
-      case 'media': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'difficile': return 'bg-red-100 text-red-800 border-red-300';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'facile': return 'glass-success';
+      case 'media': return 'glass-warning';
+      case 'difficile': return 'glass-danger';
+      default: return 'glass-muted';
     }
   };
 
@@ -153,25 +152,27 @@ export default function GestioneTappe() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-liquid-page">
+      <Header />
+      <div className="max-w-5xl mx-auto p-4 md:p-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-4">
             <Link to={createPageUrl('AdminDashboard')}>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="glass rounded-full">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Gestione Tappe</h1>
-              <p className="text-gray-500 text-sm">Crea e modifica gli indovinelli</p>
+              <h1 className="text-2xl font-bold">Gestione Tappe</h1>
+              <p className="opacity-70 text-sm">Crea e modifica gli indovinelli</p>
             </div>
           </div>
           {(isSuperAdmin || luoghiAssegnabili.length > 0) && (
             <Button
               onClick={() => { setTappaEdit(null); setShowForm(true); }}
-              className="bg-orange-500 hover:bg-orange-600"
+              variant="ghost"
+              className="btn-glass-accent rounded-full"
             >
               <Plus className="w-4 h-4 mr-2" />
               Nuova Tappa
@@ -197,65 +198,61 @@ export default function GestioneTappe() {
         />
 
         {/* Stats per luogo */}
-        <Card className="mb-6">
-          <CardContent className="p-4">
-            <div className="flex flex-wrap items-center gap-4">
-              <Select value={filtroLuogo} onValueChange={setFiltroLuogo}>
-                <SelectTrigger className="w-64">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  <SelectValue placeholder="Seleziona luogo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="tutti">Tutti i luoghi</SelectItem>
-                  {luoghi.map(l => (
-                    <SelectItem key={l.id} value={l.id}>{l.nome} ({l.citta})</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              
-              <div className="flex gap-2 flex-wrap">
-                <Badge className={`${conteggi.facile >= 4 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                  {conteggi.facile}/4 facili (min)
-                </Badge>
-                <Badge className={`${conteggi.media >= 4 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                  {conteggi.media}/4 medie (min)
-                </Badge>
-                <Badge className={`${conteggi.difficile >= 2 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                  {conteggi.difficile}/2 difficili (min)
-                </Badge>
-              </div>
+        <div className="glass rounded-2xl p-4 mb-6">
+          <div className="flex flex-wrap items-center gap-4">
+            <Select value={filtroLuogo} onValueChange={setFiltroLuogo}>
+              <SelectTrigger className="w-64">
+                <MapPin className="w-4 h-4 mr-2" />
+                <SelectValue placeholder="Seleziona luogo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="tutti">Tutti i luoghi</SelectItem>
+                {luoghi.map(l => (
+                  <SelectItem key={l.id} value={l.id}>{l.nome} ({l.citta})</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className="flex gap-2 flex-wrap">
+              <span className={`text-xs font-medium uppercase px-3 py-1 rounded-full ${conteggi.facile >= 4 ? 'glass-success' : 'glass-danger'}`}>
+                {conteggi.facile}/4 facili (min)
+              </span>
+              <span className={`text-xs font-medium uppercase px-3 py-1 rounded-full ${conteggi.media >= 4 ? 'glass-success' : 'glass-danger'}`}>
+                {conteggi.media}/4 medie (min)
+              </span>
+              <span className={`text-xs font-medium uppercase px-3 py-1 rounded-full ${conteggi.difficile >= 2 ? 'glass-success' : 'glass-danger'}`}>
+                {conteggi.difficile}/2 difficili (min)
+              </span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Filtri */}
-        <Card className="mb-6">
-          <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <Input
-                  placeholder="Cerca tappe..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Select value={filtroLivello} onValueChange={setFiltroLivello}>
-                <SelectTrigger className="w-full md:w-48">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue placeholder="Filtra per livello" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="tutti">Tutti i livelli</SelectItem>
-                  <SelectItem value="facile">🟢 Facile</SelectItem>
-                  <SelectItem value="media">🟡 Media</SelectItem>
-                  <SelectItem value="difficile">🔴 Difficile</SelectItem>
-                </SelectContent>
-              </Select>
+        <div className="glass rounded-2xl p-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-50" />
+              <Input
+                placeholder="Cerca tappe..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-10"
+              />
             </div>
-          </CardContent>
-        </Card>
+            <Select value={filtroLivello} onValueChange={setFiltroLivello}>
+              <SelectTrigger className="w-full md:w-48">
+                <Filter className="w-4 h-4 mr-2" />
+                <SelectValue placeholder="Filtra per livello" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="tutti">Tutti i livelli</SelectItem>
+                <SelectItem value="facile">🟢 Facile</SelectItem>
+                <SelectItem value="media">🟡 Media</SelectItem>
+                <SelectItem value="difficile">🔴 Difficile</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         {/* Lista Tappe */}
         <div className="space-y-4">
@@ -268,58 +265,55 @@ export default function GestioneTappe() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ delay: index * 0.03 }}
               >
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex flex-col md:flex-row md:items-center gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2 flex-wrap">
-                          <MapPin className="w-4 h-4 text-orange-500" />
-                          <h3 className="font-bold text-gray-800">{tappa.titolo}</h3>
-                          <Badge className={getDifficoltaColor(tappa.difficolta)}>
-                            {tappa.difficolta}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            {getLuogoNome(tappa.luogo_id)}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-gray-600 line-clamp-2">{tappa.indovinello}</p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          Risposta: <span className="font-medium">{tappa.risposta_corretta}</span>
-                        </p>
+                <div className="glass rounded-2xl p-4">
+                  <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <MapPin className="w-4 h-4 text-accent" />
+                        <h3 className="font-bold">{tappa.titolo}</h3>
+                        <span className={`text-xs font-medium uppercase px-3 py-1 rounded-full ${getDifficoltaVariante(tappa.difficolta)}`}>
+                          {tappa.difficolta}
+                        </span>
+                        <span className="text-xs font-medium px-3 py-1 rounded-full glass-muted">
+                          {getLuogoNome(tappa.luogo_id)}
+                        </span>
                       </div>
-                      {puoModificare(tappa.luogo_id) && (
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => { setTappaEdit(tappa); setShowForm(true); }}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="text-red-500 hover:bg-red-50"
-                            onClick={() => setTappaDelete(tappa)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      )}
+                      <p className="text-sm opacity-70 line-clamp-2">{tappa.indovinello}</p>
+                      <p className="text-xs opacity-60 mt-1">
+                        Risposta: <span className="font-medium">{tappa.risposta_corretta}</span>
+                      </p>
                     </div>
-                  </CardContent>
-                </Card>
+                    {puoModificare(tappa.luogo_id) && (
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="glass rounded-full"
+                          onClick={() => { setTappaEdit(tappa); setShowForm(true); }}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="glass-danger rounded-full"
+                          onClick={() => setTappaDelete(tappa)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>
 
           {tappeFiltrate.length === 0 && (
-            <Card className="text-center py-12">
-              <CardContent>
-                <MapPin className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p className="text-gray-500">Nessuna tappa trovata</p>
-              </CardContent>
-            </Card>
+            <div className="glass rounded-2xl text-center py-12">
+              <MapPin className="w-12 h-12 mx-auto mb-4 opacity-30" />
+              <p className="opacity-70">Nessuna tappa trovata</p>
+            </div>
           )}
         </div>
 
@@ -335,7 +329,7 @@ export default function GestioneTappe() {
 
         {/* Delete Dialog */}
         <AlertDialog open={!!tappaDelete} onOpenChange={() => setTappaDelete(null)}>
-          <AlertDialogContent>
+          <AlertDialogContent className="panel-surface border-none rounded-[28px] sm:rounded-[28px]">
             <AlertDialogHeader>
               <AlertDialogTitle>Eliminare questa tappa?</AlertDialogTitle>
               <AlertDialogDescription>
@@ -343,10 +337,10 @@ export default function GestioneTappe() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Annulla</AlertDialogCancel>
+              <AlertDialogCancel className="glass rounded-full">Annulla</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => deleteMutation.mutate(tappaDelete.id)}
-                className="bg-red-500 hover:bg-red-600"
+                className="glass-danger rounded-full"
               >
                 Elimina
               </AlertDialogAction>
