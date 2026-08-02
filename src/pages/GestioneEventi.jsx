@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -43,8 +41,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { toast } from 'sonner';
 import { useAuth } from '@/lib/AuthContext';
+import Header from '@/components/Header';
 
 export default function GestioneEventi() {
   const queryClient = useQueryClient();
@@ -235,25 +235,27 @@ export default function GestioneEventi() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-liquid-page">
+      <Header />
+      <div className="max-w-4xl mx-auto p-4 md:p-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-4">
             <Link to={createPageUrl('AdminDashboard')}>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="glass rounded-full">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Gestione Eventi</h1>
-              <p className="text-gray-500 text-sm">Crea e gestisci le competizioni</p>
+              <h1 className="text-2xl font-bold">Gestione Eventi</h1>
+              <p className="opacity-70 text-sm">Crea e gestisci le competizioni</p>
             </div>
           </div>
           {(isSuperAdmin || luoghiAssegnabili.length > 0) && (
             <Button
               onClick={() => { setEventoEdit(null); resetForm(); setShowForm(true); }}
-              className="bg-orange-500 hover:bg-orange-600"
+              variant="ghost"
+              className="btn-glass-accent rounded-full"
             >
               <Plus className="w-4 h-4 mr-2" />
               Nuovo Evento
@@ -270,114 +272,112 @@ export default function GestioneEventi() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Card className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex flex-col md:flex-row md:items-start gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <Calendar className="w-5 h-5 text-blue-500" />
-                        <h3 className="font-bold text-gray-800 text-lg">{evento.nome}</h3>
-                        {evento.concluso ? (
-                          <Badge className="bg-gray-100 text-gray-600">Concluso</Badge>
-                        ) : evento.attivo ? (
-                          <Badge className="bg-green-100 text-green-700">Attivo</Badge>
-                        ) : (
-                          <Badge className="bg-yellow-100 text-yellow-700">Bozza</Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                        <MapPin className="w-4 h-4" />
-                        {getLuogoNome(evento.luogo_id)}
-                      </div>
-                      <p className="text-sm text-gray-600 mb-2">
-                        <strong>Inizio:</strong> {evento.data_inizio ? format(new Date(evento.data_inizio), 'dd MMM yyyy, HH:mm', { locale: it }) : 'N/D'}
-                        <br />
-                        <strong>Fine:</strong> {evento.data_fine ? format(new Date(evento.data_fine), 'dd MMM yyyy, HH:mm', { locale: it }) : 'N/D'}
-                      </p>
-                      {evento.descrizione && (
-                                                    <div 
-                                                      className="text-sm text-gray-500 prose prose-sm max-w-none"
-                                                      dangerouslySetInnerHTML={{ __html: evento.descrizione }}
-                                                    />
-                                                  )}
-                      <div className="flex items-center gap-2 mt-2">
-                        <Users className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-500">
-                          {getSquadreEvento(evento.id)} squadre iscritte
-                        </span>
-                      </div>
-                      {evento.email_gestori && evento.email_gestori.length > 0 && (
-                        <div className="flex items-start gap-2 mt-2">
-                          <Mail className="w-4 h-4 text-gray-400 mt-0.5" />
-                          <div className="flex flex-wrap gap-1">
-                            {evento.email_gestori.map((email, idx) => (
-                              <Badge key={idx} variant="outline" className="text-xs">
-                                {email}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
+              <div className="glass rounded-2xl p-4">
+                <div className="flex flex-col md:flex-row md:items-start gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <Calendar className="w-5 h-5 text-accent" />
+                      <h3 className="font-bold text-lg">{evento.nome}</h3>
+                      {evento.concluso ? (
+                        <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass-muted">Concluso</span>
+                      ) : evento.attivo ? (
+                        <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass-success">Attivo</span>
+                      ) : (
+                        <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass-warning">Bozza</span>
                       )}
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <div className="flex gap-2 flex-wrap">
-                        <Link to={createPageUrl(`Classifica?evento=${evento.id}`)}>
-                          <Button variant="outline" size="sm">
-                            Classifica
-                          </Button>
-                        </Link>
-                        <ShareButton eventoId={evento.id} />
-                        {getSquadreEvento(evento.id) > 0 && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openIscrittiModal(evento)}
-                            className="border-blue-300 text-blue-600 hover:bg-blue-50"
-                          >
-                            <Users className="w-4 h-4 mr-1" />
-                            Iscritti
-                          </Button>
-                        )}
-                      </div>
-                      {puoModificare(evento.luogo_id) && (
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => openEdit(evento)}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="text-red-500 hover:bg-red-50"
-                            onClick={() => setEventoDelete(evento)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      )}
+                    <div className="flex items-center gap-2 text-sm opacity-70 mb-2">
+                      <MapPin className="w-4 h-4" />
+                      {getLuogoNome(evento.luogo_id)}
                     </div>
+                    <p className="text-sm opacity-70 mb-2">
+                      <strong>Inizio:</strong> {evento.data_inizio ? format(new Date(evento.data_inizio), 'dd MMM yyyy, HH:mm', { locale: it }) : 'N/D'}
+                      <br />
+                      <strong>Fine:</strong> {evento.data_fine ? format(new Date(evento.data_fine), 'dd MMM yyyy, HH:mm', { locale: it }) : 'N/D'}
+                    </p>
+                    {evento.descrizione && (
+                      <div
+                        className="text-sm opacity-70 prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ __html: evento.descrizione }}
+                      />
+                    )}
+                    <div className="flex items-center gap-2 mt-2">
+                      <Users className="w-4 h-4 opacity-60" />
+                      <span className="text-sm opacity-70">
+                        {getSquadreEvento(evento.id)} squadre iscritte
+                      </span>
+                    </div>
+                    {evento.email_gestori && evento.email_gestori.length > 0 && (
+                      <div className="flex items-start gap-2 mt-2">
+                        <Mail className="w-4 h-4 opacity-60 mt-0.5" />
+                        <div className="flex flex-wrap gap-1">
+                          {evento.email_gestori.map((email, idx) => (
+                            <span key={idx} className="text-xs px-3 py-1 rounded-full glass">
+                              {email}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex gap-2 flex-wrap">
+                      <Link to={createPageUrl(`Classifica?evento=${evento.id}`)}>
+                        <Button variant="ghost" size="sm" className="glass rounded-full">
+                          Classifica
+                        </Button>
+                      </Link>
+                      <ShareButton eventoId={evento.id} variant="ghost" className="glass rounded-full" />
+                      {getSquadreEvento(evento.id) > 0 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openIscrittiModal(evento)}
+                          className="glass rounded-full"
+                        >
+                          <Users className="w-4 h-4 mr-1" />
+                          Iscritti
+                        </Button>
+                      )}
+                    </div>
+                    {puoModificare(evento.luogo_id) && (
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="glass rounded-full"
+                          onClick={() => openEdit(evento)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="glass-danger rounded-full"
+                          onClick={() => setEventoDelete(evento)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </motion.div>
           ))}
 
           {eventi.length === 0 && (
-            <Card className="text-center py-12">
-              <CardContent>
-                <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p className="text-gray-500">Nessun evento creato</p>
-              </CardContent>
-            </Card>
+            <div className="glass rounded-2xl text-center py-12">
+              <Calendar className="w-12 h-12 mx-auto mb-4 opacity-30" />
+              <p className="opacity-70">Nessun evento creato</p>
+            </div>
           )}
         </div>
 
         {/* Form Modal */}
         <Dialog open={showForm} onOpenChange={setShowForm}>
-          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent className="panel-surface border-none rounded-[28px] sm:rounded-[28px] max-w-lg mx-auto max-h-[90vh] overflow-hidden p-0">
+            <div className="max-h-[90vh] overflow-y-auto custom-scrollbar p-6">
             <DialogHeader>
               <DialogTitle>
                 {eventoEdit ? 'Modifica Evento' : 'Nuovo Evento'}
@@ -395,7 +395,7 @@ export default function GestioneEventi() {
                 />
                 {showEnglish && (
                   <div className="mt-2">
-                    <Label className="text-blue-600 text-sm">🇬🇧 Name (English)</Label>
+                    <Label className="text-sm opacity-80">🇬🇧 Name (English)</Label>
                     <Input
                       value={formData.nome_en}
                       onChange={(e) => setFormData({ ...formData, nome_en: e.target.value })}
@@ -446,10 +446,10 @@ export default function GestioneEventi() {
               </div>
 
               {/* Toggle English */}
-              <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
+              <div className="glass rounded-xl flex items-center justify-between p-3">
                 <div className="flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-blue-600" />
-                  <Label className="text-blue-800">Mostra campi inglese</Label>
+                  <Globe className="w-4 h-4 text-accent" />
+                  <Label>Mostra campi inglese</Label>
                 </div>
                 <Switch checked={showEnglish} onCheckedChange={setShowEnglish} />
               </div>
@@ -473,7 +473,7 @@ export default function GestioneEventi() {
                 />
                 {showEnglish && (
                   <div className="mt-3">
-                    <Label className="text-blue-600 text-sm">🇬🇧 Description (English)</Label>
+                    <Label className="text-sm opacity-80">🇬🇧 Description (English)</Label>
                     <ReactQuill
                       theme="snow"
                       value={formData.descrizione_en}
@@ -510,9 +510,14 @@ export default function GestioneEventi() {
               </div>
 
               {/* Social & SEO */}
-              <div className="space-y-4 bg-purple-50 p-4 rounded-lg border border-purple-200">
-                <h4 className="font-semibold text-purple-800">Immagine di Copertina & Social</h4>
-                
+              <div className="glass rounded-xl space-y-4 p-4">
+                <h4 className="font-semibold flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg glass-accent">
+                    <Globe className="w-4 h-4" />
+                  </div>
+                  Immagine di Copertina & Social
+                </h4>
+
                 <div>
                   <Label htmlFor="og_image_url">Immagine di Copertina (URL)</Label>
                   <Input
@@ -521,9 +526,9 @@ export default function GestioneEventi() {
                     onChange={(e) => setFormData({ ...formData, og_image_url: e.target.value })}
                     placeholder="https://esempio.com/immagine.jpg"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Usata per condivisione social e promozione</p>
+                  <p className="text-xs opacity-70 mt-1">Usata per condivisione social e promozione</p>
                   {formData.og_image_url && (
-                    <img src={formData.og_image_url} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded border" />
+                    <img src={formData.og_image_url} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded-xl border border-border" />
                   )}
                 </div>
 
@@ -535,7 +540,7 @@ export default function GestioneEventi() {
                     onChange={(e) => setFormData({ ...formData, og_title: e.target.value })}
                     placeholder="Es. Caccia al Tesoro nella Kalsa"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Titolo mostrato quando si condivide il link</p>
+                  <p className="text-xs opacity-70 mt-1">Titolo mostrato quando si condivide il link</p>
                 </div>
 
                 <div>
@@ -547,7 +552,7 @@ export default function GestioneEventi() {
                     placeholder="Descrizione breve per social (max 200 caratteri)"
                     rows={2}
                   />
-                  <p className="text-xs text-gray-500 mt-1">Descrizione breve mostrata nelle anteprime social</p>
+                  <p className="text-xs opacity-70 mt-1">Descrizione breve mostrata nelle anteprime social</p>
                 </div>
               </div>
 
@@ -575,7 +580,8 @@ export default function GestioneEventi() {
                   />
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
+                    className="glass rounded-full"
                     onClick={() => {
                       if (emailInput && !formData.email_gestori.includes(emailInput)) {
                         setFormData({ ...formData, email_gestori: [...formData.email_gestori, emailInput] });
@@ -589,7 +595,7 @@ export default function GestioneEventi() {
                 {formData.email_gestori.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
                     {formData.email_gestori.map((email, idx) => (
-                      <Badge key={idx} variant="outline" className="gap-1">
+                      <span key={idx} className="glass rounded-full pl-3 pr-1 py-1 text-xs flex items-center gap-1">
                         {email}
                         <button
                           type="button"
@@ -599,23 +605,24 @@ export default function GestioneEventi() {
                               email_gestori: formData.email_gestori.filter((_, i) => i !== idx)
                             });
                           }}
-                          className="ml-1 hover:text-red-500"
+                          className="p-1 rounded-full hover:opacity-70"
                         >
                           <X className="w-3 h-3" />
                         </button>
-                      </Badge>
+                      </span>
                     ))}
                   </div>
                 )}
               </div>
 
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                <Button type="button" variant="ghost" className="glass rounded-full" onClick={() => setShowForm(false)}>
                   Annulla
                 </Button>
-                <Button 
-                  type="submit" 
-                  className="bg-orange-500 hover:bg-orange-600"
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  className="btn-glass-accent rounded-full"
                   disabled={createMutation.isPending || updateMutation.isPending || !formData.luogo_id}
                 >
                   {(createMutation.isPending || updateMutation.isPending) ? (
@@ -629,28 +636,30 @@ export default function GestioneEventi() {
                 </Button>
               </DialogFooter>
             </form>
+            </div>
           </DialogContent>
         </Dialog>
 
         {/* Iscritti Modal */}
         <Dialog open={showIscrittiModal} onOpenChange={setShowIscrittiModal}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
+          <DialogContent className="panel-surface border-none rounded-[28px] sm:rounded-[28px] max-w-2xl mx-auto max-h-[90vh] overflow-hidden p-0">
+            <div className="max-h-[90vh] overflow-y-auto custom-scrollbar p-6">
+            <DialogHeader className="mb-2">
+              <DialogTitle className="pr-6">
                 <Users className="w-5 h-5 inline mr-2" />
                 Squadre Iscritte - {eventoIscritti?.nome}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <div className="bg-blue-50 p-3 rounded-lg">
-                <p className="text-sm text-blue-800">
+              <div className="glass rounded-xl p-3">
+                <p className="text-sm">
                   <strong>{getSquadreIscritte(eventoIscritti?.id).length}</strong> squadre iscritte
                 </p>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => copiaEmailIscritti(eventoIscritti?.id)}
-                  className="mt-2"
+                  className="glass rounded-full mt-2"
                 >
                   {copiedEmails ? (
                     <>
@@ -668,63 +677,62 @@ export default function GestioneEventi() {
 
               <div className="space-y-3">
                 {getSquadreIscritte(eventoIscritti?.id).map((squadra, idx) => (
-                  <Card key={squadra.id}>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-bold text-gray-800">{squadra.nome_squadra}</h4>
-                        <Badge>{squadra.altri_giocatori?.length + 1 || 1} giocatori</Badge>
-                      </div>
-                      <div className="text-sm space-y-1">
-                        <p>
-                          <strong>Referente:</strong> {squadra.referente_nome} {squadra.referente_cognome}
+                  <div key={squadra.id} className="glass rounded-xl p-4">
+                    <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+                      <h4 className="font-bold">{squadra.nome_squadra}</h4>
+                      <span className="text-xs font-medium px-3 py-1 rounded-full glass-accent whitespace-nowrap">{squadra.altri_giocatori?.length + 1 || 1} giocatori</span>
+                    </div>
+                    <div className="text-sm space-y-1">
+                      <p>
+                        <strong>Referente:</strong> {squadra.referente_nome} {squadra.referente_cognome}
+                      </p>
+                      <p className="flex items-center gap-2">
+                        <Mail className="w-4 h-4 opacity-60" />
+                        <span className="opacity-80">{squadra.referente_email}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => {
+                            navigator.clipboard.writeText(squadra.referente_email);
+                          }}
+                        >
+                          <Copy className="w-3 h-3" />
+                        </Button>
+                      </p>
+                      {squadra.referente_telefono && (
+                        <p className="opacity-70">
+                          <strong>Tel:</strong> {squadra.referente_telefono}
                         </p>
-                        <p className="flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-gray-400" />
-                          <span className="text-blue-600">{squadra.referente_email}</span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={() => {
-                              navigator.clipboard.writeText(squadra.referente_email);
-                            }}
-                          >
-                            <Copy className="w-3 h-3" />
-                          </Button>
-                        </p>
-                        {squadra.referente_telefono && (
-                          <p className="text-gray-600">
-                            <strong>Tel:</strong> {squadra.referente_telefono}
-                          </p>
-                        )}
-                        {squadra.altri_giocatori && squadra.altri_giocatori.length > 0 && (
-                          <div className="mt-2 pt-2 border-t">
-                            <p className="text-xs text-gray-500 mb-1">Altri giocatori:</p>
-                            <div className="flex flex-wrap gap-1">
-                              {squadra.altri_giocatori.map((g, i) => (
-                                <Badge key={i} variant="outline" className="text-xs">
-                                  {g.nome} {g.cognome} ({g.eta} anni)
-                                </Badge>
-                              ))}
-                            </div>
+                      )}
+                      {squadra.altri_giocatori && squadra.altri_giocatori.length > 0 && (
+                        <div className="mt-2 pt-2 border-t border-border">
+                          <p className="text-xs opacity-70 mb-1">Altri giocatori:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {squadra.altri_giocatori.map((g, i) => (
+                              <span key={i} className="text-xs px-3 py-1 rounded-full glass-muted">
+                                {g.nome} {g.cognome} ({g.eta} anni)
+                              </span>
+                            ))}
                           </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
 
               {getSquadreIscritte(eventoIscritti?.id).length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 opacity-70">
                   Nessuna squadra iscritta
                 </div>
               )}
             </div>
 
-            <DialogFooter>
-              <Button 
-                variant="outline" 
+            <DialogFooter className="mt-4">
+              <Button
+                variant="ghost"
+                className="glass rounded-full"
                 onClick={() => {
                   setShowIscrittiModal(false);
                   setEventoIscritti(null);
@@ -733,12 +741,13 @@ export default function GestioneEventi() {
                 Chiudi
               </Button>
             </DialogFooter>
+            </div>
           </DialogContent>
         </Dialog>
 
         {/* Delete Dialog */}
         <AlertDialog open={!!eventoDelete} onOpenChange={() => setEventoDelete(null)}>
-          <AlertDialogContent>
+          <AlertDialogContent className="panel-surface border-none rounded-[28px] sm:rounded-[28px]">
             <AlertDialogHeader>
               <AlertDialogTitle>Eliminare questo evento?</AlertDialogTitle>
               <AlertDialogDescription>
@@ -746,10 +755,10 @@ export default function GestioneEventi() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Annulla</AlertDialogCancel>
+              <AlertDialogCancel className="glass rounded-full">Annulla</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => deleteMutation.mutate(eventoDelete.id)}
-                className="bg-red-500 hover:bg-red-600"
+                className="glass-danger rounded-full"
               >
                 Elimina
               </AlertDialogAction>
