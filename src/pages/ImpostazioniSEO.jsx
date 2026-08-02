@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +9,7 @@ import { ArrowLeft, Save, Globe, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
+import Header from '@/components/Header';
 
 export default function ImpostazioniSEO() {
   const queryClient = useQueryClient();
@@ -63,38 +63,38 @@ export default function ImpostazioniSEO() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-accent" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-liquid-page">
+      <Header />
+      <div className="max-w-3xl mx-auto p-4 md:p-6">
         <div className="flex items-center gap-4 mb-6">
           <Link to={createPageUrl('AdminDashboard')}>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="glass rounded-full">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Impostazioni SEO e Social</h1>
-            <p className="text-gray-500 text-sm">Gestisci i meta tag di default per il sito</p>
+            <h1 className="text-2xl font-bold">Impostazioni SEO e Social</h1>
+            <p className="opacity-70 text-sm">Gestisci i meta tag di default per il sito</p>
           </div>
         </div>
 
-        <Card>
-          <CardHeader className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
-            <CardTitle className="flex items-center gap-2">
-              <Globe className="w-6 h-6" />
-              Meta Tag di Default
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-800">
-                  <strong>ℹ️ Info:</strong> Questi sono i valori predefiniti usati quando si condivide il sito sui social 
+        <div className="glass rounded-2xl p-6">
+          <h2 className="text-lg font-bold flex items-center gap-2 mb-6">
+            <div className="p-1.5 rounded-lg glass-accent">
+              <Globe className="w-4 h-4" />
+            </div>
+            Meta Tag di Default
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="glass rounded-xl p-4">
+                <p className="text-sm">
+                  <strong>ℹ️ Info:</strong> Questi sono i valori predefiniti usati quando si condivide il sito sui social
                   (per pagine senza meta tag specifici come eventi).
                 </p>
               </div>
@@ -128,12 +128,12 @@ export default function ImpostazioniSEO() {
                   onChange={(e) => setFormData({ ...formData, og_image_url: e.target.value })}
                   placeholder="https://esempio.com/immagine-default.jpg"
                 />
-                <p className="text-xs text-gray-500 mt-1">Immagine mostrata nelle anteprime social</p>
+                <p className="text-xs opacity-70 mt-1">Immagine mostrata nelle anteprime social</p>
                 {formData.og_image_url && (
                   <img
                     src={formData.og_image_url}
                     alt="Preview"
-                    className="mt-2 w-48 h-48 object-cover rounded border"
+                    className="mt-2 w-48 h-48 object-cover rounded-xl border border-border"
                   />
                 )}
               </div>
@@ -148,9 +148,10 @@ export default function ImpostazioniSEO() {
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full bg-purple-500 hover:bg-purple-600"
+              <Button
+                type="submit"
+                variant="ghost"
+                className="w-full btn-glass-accent rounded-full"
                 disabled={saveMutation.isPending}
               >
                 {saveMutation.isPending ? (
@@ -160,9 +161,8 @@ export default function ImpostazioniSEO() {
                 )}
                 Salva Impostazioni
               </Button>
-            </form>
-          </CardContent>
-        </Card>
+          </form>
+        </div>
       </div>
     </div>
   );

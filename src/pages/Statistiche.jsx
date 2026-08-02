@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from "@/components/ui/table";
@@ -13,13 +11,14 @@ import {
 import { BarChart3, ArrowLeft, Loader2, MapPin, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import Header from '@/components/Header';
 
 const Pct = ({ value, count }) => {
-  if (value === null) return <span className="text-gray-400">—</span>;
+  if (value === null) return <span className="opacity-40">—</span>;
   return (
     <span>
       <span className="font-medium">{value}%</span>{' '}
-      <span className="text-xs text-gray-400">({count})</span>
+      <span className="text-xs opacity-60">({count})</span>
     </span>
   );
 };
@@ -57,24 +56,25 @@ export default function Statistiche() {
     : statistiche;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-liquid-page">
+      <Header />
+      <div className="max-w-5xl mx-auto p-4 md:p-6">
         <div className="flex items-center gap-4 mb-6">
           <Link to={createPageUrl('AdminDashboard')}>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="glass rounded-full">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold">
               {eventoSelezionato ? `Statistiche — ${eventoSelezionato.nome}` : 'Statistiche per Tappa'}
             </h1>
-            <p className="text-gray-500 text-sm">Quali tappe sono più difficili, saltate o richiedono aiuto</p>
+            <p className="opacity-70 text-sm">Quali tappe sono più difficili, saltate o richiedono aiuto</p>
           </div>
         </div>
 
         <div className="mb-6 flex items-center gap-2 max-w-xs">
-          <Calendar className="w-4 h-4 text-gray-400 shrink-0" />
+          <Calendar className="w-4 h-4 opacity-60 shrink-0" />
           <Select value={eventoId} onValueChange={setEventoId}>
             <SelectTrigger>
               <SelectValue placeholder="Tutte le partite" />
@@ -90,17 +90,15 @@ export default function Statistiche() {
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            <Loader2 className="w-8 h-8 animate-spin opacity-50" />
           </div>
         ) : statisticheVisibili.length === 0 ? (
-          <Card className="text-center py-12">
-            <CardContent>
-              <BarChart3 className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-              <p className="text-gray-500">
-                {eventoSelezionato ? 'Nessuna sede ha ancora squadre in questo evento' : 'Nessun luogo da mostrare'}
-              </p>
-            </CardContent>
-          </Card>
+          <div className="glass rounded-2xl text-center py-12">
+            <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-30" />
+            <p className="opacity-70">
+              {eventoSelezionato ? 'Nessuna sede ha ancora squadre in questo evento' : 'Nessun luogo da mostrare'}
+            </p>
+          </div>
         ) : (
           <div className="space-y-6">
             {statisticheVisibili.map((luogo) => {
@@ -108,27 +106,27 @@ export default function Statistiche() {
                 (a, b) => (b.pct_sbagliata ?? -1) - (a.pct_sbagliata ?? -1)
               );
               return (
-                <Card key={luogo.luogo_id}>
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2 flex-wrap">
+                <div key={luogo.luogo_id} className="glass rounded-2xl overflow-hidden">
+                  <div className="p-5 border-b border-border">
+                    <h2 className="text-lg font-bold flex items-center gap-2 flex-wrap">
                       {eventoSelezionato ? (
                         <>
-                          <Calendar className="w-5 h-5 text-blue-500" />
+                          <Calendar className="w-5 h-5 text-accent" />
                           {eventoSelezionato.nome}
-                          <Badge variant="outline" className="font-normal">
+                          <span className="text-xs font-medium px-3 py-1 rounded-full glass inline-flex items-center">
                             <MapPin className="w-3 h-3 mr-1" />
                             {luogo.luogo_nome}
-                          </Badge>
+                          </span>
                         </>
                       ) : (
                         <>
-                          <MapPin className="w-5 h-5 text-orange-500" />
+                          <MapPin className="w-5 h-5 text-accent" />
                           {luogo.luogo_nome}
                         </>
                       )}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="overflow-x-auto">
+                    </h2>
+                  </div>
+                  <div className="p-5 overflow-x-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -151,8 +149,8 @@ export default function Statistiche() {
                         ))}
                       </TableBody>
                     </Table>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               );
             })}
           </div>
