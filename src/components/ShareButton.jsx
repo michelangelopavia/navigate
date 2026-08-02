@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Share2, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 
-export default function ShareButton({ eventoId, variant = "outline", size = "sm" }) {
+export default function ShareButton({ eventoId, variant = "outline", size = "sm", className = "" }) {
   const [copied, setCopied] = useState(false);
 
   const getShareUrl = () => {
@@ -43,7 +43,7 @@ export default function ShareButton({ eventoId, variant = "outline", size = "sm"
       variant={variant} 
       size={size}
       onClick={handleShare}
-      className="gap-2"
+      className={`gap-2 ${className}`}
     >
       {copied ? (
         <>
