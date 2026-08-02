@@ -117,7 +117,7 @@ export default function DettaglioSquadraModal({ isOpen, onClose, squadra }) {
               key={item.numero}
               className="glass rounded-2xl p-4"
             >
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1">
                   {/* Icona Status */}
                   <div className={`mt-1 p-1.5 rounded-lg ${variante || ''}`}>
@@ -193,14 +193,14 @@ export default function DettaglioSquadraModal({ isOpen, onClose, squadra }) {
 
                 {/* Tempo e Punteggio */}
                 {item.completata && (
-                  <div className="text-right">
+                  <div className="flex items-center justify-between sm:flex-col sm:items-end gap-2 sm:gap-1 pl-8 sm:pl-0">
                     {item.tempo > 0 && (
-                      <div className="flex items-center gap-1 text-sm opacity-80 mb-1">
+                      <div className="flex items-center gap-1 text-sm opacity-80 order-2 sm:order-1 sm:mb-1">
                         <Clock className="w-4 h-4" />
                         <span>{formatTempo(item.tempo)}</span>
                       </div>
                     )}
-                    <div className="text-lg font-bold">
+                    <div className="text-lg font-bold order-1 sm:order-2">
                       {item.punteggio > 0 ? '+' : ''}{item.punteggio} pt
                     </div>
                   </div>

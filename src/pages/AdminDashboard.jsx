@@ -113,7 +113,7 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
             {navItems.map(({ to, icon: Icon, label }) => (
               <Link key={to} to={createPageUrl(to)} className="w-full sm:w-auto">
-                <Button variant="ghost" size="sm" className="glass rounded-full w-full sm:w-auto justify-center">
+                <Button variant="ghost" className="glass rounded-full w-full sm:w-auto justify-center">
                   <Icon className="w-4 h-4 mr-2" />
                   {label}
                 </Button>
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
             ))}
             {user?.role === 'super_admin' && (
               <Link to={createPageUrl('AssegnaAdminSede')} className="w-full sm:w-auto">
-                <Button variant="ghost" size="sm" className="glass rounded-full w-full sm:w-auto justify-center">
+                <Button variant="ghost" className="glass rounded-full w-full sm:w-auto justify-center">
                   <UserCog className="w-4 h-4 mr-2" />
                   Assegna Admin
                 </Button>
@@ -184,14 +184,13 @@ export default function AdminDashboard() {
           <div className="md:col-span-2">
             <div className="glass rounded-2xl p-5 mb-4">
               <h2 className="text-lg font-bold mb-3">Classifica Evento</h2>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
                 {eventi.map(e => (
                   <Button
                     key={e.id}
                     variant="ghost"
-                    size="sm"
                     onClick={() => setEventoSelezionato(e)}
-                    className={`rounded-full ${eventoSelezionato?.id === e.id ? 'glass-accent' : 'glass'}`}
+                    className={`rounded-full w-full sm:w-auto justify-start sm:justify-center ${eventoSelezionato?.id === e.id ? 'glass-accent' : 'glass'}`}
                   >
                     {e.nome}
                   </Button>
