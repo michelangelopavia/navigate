@@ -179,6 +179,7 @@ export default function Gioca() {
 
   // Timer effettivo tappa (usa il timestamp salvato nel database)
   useEffect(() => {
+    window.scrollTo(0, 0);
     if (squadra?.tempo_inizio && !squadra?.completata && squadra?.tempo_inizio_tappa_corrente) {
       setAiutoUsatoTappaCorrente(squadra.aiuti_usati?.includes(squadra.tappa_corrente) || false);
       const tempoInizioTappaSalvato = new Date(squadra.tempo_inizio_tappa_corrente).getTime();

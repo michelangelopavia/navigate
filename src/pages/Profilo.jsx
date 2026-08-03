@@ -170,7 +170,7 @@ export default function Profilo() {
                       <Users className="w-4 h-4" />
                       {(squadra.altri_giocatori?.length || 0) + 1} giocatori
                     </div>
-                    <div className="flex items-center justify-between gap-2 mt-3 flex-wrap">
+                    <div className="mt-3 space-y-2">
                       <div className="flex items-center gap-2 flex-wrap">
                         {!squadra.tempo_inizio && (
                           <span className="text-xs font-medium uppercase px-3 py-1 rounded-full glass-muted">
@@ -181,7 +181,7 @@ export default function Profilo() {
                           Tappa {squadra.tappa_corrente}/{10}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-2 justify-end">
                         <Button
                           variant="ghost"
                           size="icon"
