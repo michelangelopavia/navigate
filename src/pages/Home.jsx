@@ -74,7 +74,7 @@ export default function Home() {
     base44.auth.redirectToLogin(window.location.href);
   };
 
-  const stepIcon = `w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${isAuthenticated ? 'glass-accent' : 'glass-muted'}`;
+  const stepIcon = 'w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 glass-accent';
 
   return (
     <div className="min-h-screen bg-liquid-page text-foreground">

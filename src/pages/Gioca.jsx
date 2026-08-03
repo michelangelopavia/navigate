@@ -436,7 +436,7 @@ export default function Gioca() {
           className="max-w-md w-full"
         >
           <div className="glass rounded-[28px] overflow-hidden">
-            <div className="glass-dark p-8 text-center">
+            <div className="glass-tappa p-8 text-center">
               <MapPin className="w-16 h-16 mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-2">Pronto a Partire?</h1>
               <p className="text-lg opacity-90">{squadra.nome_squadra}</p>
@@ -453,7 +453,7 @@ export default function Gioca() {
               <Button
                 onClick={() => setShowRegole(true)}
                 variant="ghost"
-                className="w-full glass-dark rounded-full text-lg py-6"
+                className="w-full glass-tappa rounded-full text-lg py-6"
                 disabled={iniziaGiocoMutation.isPending}
               >
                 {iniziaGiocoMutation.isPending ? (
