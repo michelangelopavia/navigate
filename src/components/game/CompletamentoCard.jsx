@@ -66,7 +66,7 @@ export default function CompletamentoCard({ squadra, tempoTotale }) {
 
   return (
     <div className="glass rounded-[28px] max-w-md w-full overflow-hidden">
-      <div className="glass-dark p-8 text-center">
+      <div className="glass-tappa p-8 text-center">
         <Trophy className="w-20 h-20 mx-auto mb-4" />
         <h1 className="text-3xl font-bold uppercase tracking-wide mb-2">Complimenti!</h1>
         <p className="text-lg opacity-90">Hai completato la caccia al tesoro</p>
@@ -113,7 +113,7 @@ export default function CompletamentoCard({ squadra, tempoTotale }) {
 
         <div className="space-y-3">
           <Link to={createPageUrl('Classifiche')} className="block">
-            <Button variant="ghost" className="w-full glass-dark rounded-full">
+            <Button variant="ghost" className="w-full glass-tappa rounded-full">
               <Trophy className="w-4 h-4 mr-2" />
               Vedi Classifica
             </Button>

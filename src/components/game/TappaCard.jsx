@@ -115,7 +115,7 @@ export default function TappaCard({
     >
       <div className="glass rounded-[28px] overflow-hidden">
         {/* Header */}
-        <div className="glass-dark p-4">
+        <div className="glass-tappa p-4">
           <div className="flex items-center justify-between">
             <span className="text-lg font-bold">{t('stage')} {numeroTappa}/10</span>
             <div className="flex items-center gap-2">
@@ -183,7 +183,7 @@ export default function TappaCard({
             <Button
               type="submit"
               variant="ghost"
-              className="w-full glass-dark rounded-full text-lg py-6"
+              className="w-full glass-tappa rounded-full text-lg py-6"
               disabled={isLoading || isVerifying || !risposta.trim()}
             >
               {isLoading || isVerifying ? (
